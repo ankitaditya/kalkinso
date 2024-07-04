@@ -1,4 +1,6 @@
 const express = require('express');
+var fs = require('fs');
+var https = require('https');
 const path = require('path');
 
 const connectDB = require('../config/db')
@@ -24,6 +26,16 @@ app.get('/*', function (req, res) {
 });
 
 const port = process.env.PORT ?? 80;
-app.listen(port, function() {
-    console.info(`Server listening on http://localhost:${port}`);
+// app.listen(port, function() {
+//     console.info(`Server listening on http://localhost:${port}`);
+// });
+
+var httpsServerOptions = {
+  'key': fs.readFileSync('./https/key.pem'),
+  'cert': fs.readFileSync('./https/cert.pem')
+};
+var httpsServer = https.createServer(httpsServerOptions, app);
+
+httpsServer.listen(port, function() {
+    console.info(`Server listening on https://localhost:${port}`);
 });
