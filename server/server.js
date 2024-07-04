@@ -26,16 +26,16 @@ app.get('/*', function (req, res) {
 });
 
 const port = process.env.PORT ?? 80;
-// app.listen(port, function() {
-//     console.info(`Server listening on http://localhost:${port}`);
-// });
-
-var httpsServerOptions = {
-  'key': fs.readFileSync('./https/key.pem'),
-  'cert': fs.readFileSync('./https/cert.pem')
-};
-var httpsServer = https.createServer(httpsServerOptions, app);
-
-httpsServer.listen(port, function() {
-    console.info(`Server listening on https://kalkinso.com`);
+app.listen(port, function() {
+    console.info(`Server listening on http://localhost:${port}`);
 });
+
+// var httpsServerOptions = {
+//   'key': fs.readFileSync('./https/key.pem'),
+//   'cert': fs.readFileSync('./https/cert.pem')
+// };
+// var httpsServer = https.createServer(httpsServerOptions, app);
+
+// httpsServer.listen(port, function() {
+//     console.info(`Server listening on https://kalkinso.com`);
+// });
