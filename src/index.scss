@@ -1,0 +1,10 @@
+// Bring in all the styles for Carbon
+@use '@carbon/react';
+
+.cds--btn--primary{
+    background-color: #e31b25;
+}
+
+.cds--btn--primary:hover{
+    background-color: #921018;
+}

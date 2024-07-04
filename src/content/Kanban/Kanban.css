@@ -1,0 +1,24 @@
+
+  .modal-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .modal-column {
+    flex: 1;
+    margin-right: 1rem;
+  }
+  
+  .modal-column:last-child {
+    margin-right: 0;
+  }
+  
+  .comments {
+    flex: 1;
+  }

@@ -1,0 +1,33 @@
+.custom-tile {
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .custom-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .tile-content {
+    text-align: center;
+  }
+
+  .tile-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .tile-info {
+    padding: 15px;
+  }
+
+  .tile-title {
+    font-size: 1.25rem;
+    margin: 10px 0;
+  }
+
+  .tile-description {
+    font-size: 1rem;
+    color: #6f6f6f;
+  }

@@ -1,0 +1,18 @@
+.search-page {
+    padding: 20px;
+    /* margin-left: 8rem; */
+  }
+
+  .search-page img {
+    width: 100%;
+    height: auto;
+  }
+
+  .search-page .bx--tile {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .search-page mark {
+    background-color: yellow;
+  }

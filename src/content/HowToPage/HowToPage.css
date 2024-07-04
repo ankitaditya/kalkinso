@@ -1,0 +1,37 @@
+/* styles.css */
+body {
+    font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+    /* background-color: #f4f4f4; */
+  }
+  
+  #app {
+    padding: 20px;
+  }
+  
+  .breadcrumb {
+    margin-bottom: 20px;
+  }
+  
+  .how-to-heading {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  
+  .search-bar {
+    margin-bottom: 20px;
+  }
+  
+  .grid {
+    margin-top: 20px;
+  }
+  
+  .tile h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .tile p {
+    font-size: 1rem;
+    color: #555;
+  }
