@@ -6,6 +6,7 @@
   "dependencies": {
     "@carbon/charts": "^1.17.2",
     "@carbon/charts-react": "^1.17.2",
+    "@carbon/ibm-products": "^2.44.0",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
     "carbon-components-react": "^8.60.3",

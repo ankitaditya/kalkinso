@@ -6,6 +6,7 @@ import CustomTile from './CustomTile';
 import Banner from './Banner';
 import logo from './banner.webp';
 import AuthModal from '../Login/AuthModal';
+import Gallery from './Gallery/Gallery';
 
    const SearchPage = () => {
     const itemsPerPage = 10; // Number of items per page
@@ -72,65 +73,7 @@ import AuthModal from '../Login/AuthModal';
 
      return (
        <div className="search-page">
-        <Grid>
-            <Column md={4}
-                              lg={14}
-                              sm={4}>
-                <Banner logoSrc={logo}
-      altText="Company Logo"/>
-                <Search
-                id="search"
-                labelText="Search"
-                value={searchTerm}
-                onChange={handleSearchChange}
-                placeHolderText="Search tasks..."
-                />
-         </Column>
-         {/* <Column md={4}
-                              lg={7}
-                              sm={4}>
-         <Grid style={{marginTop:"20px", marginBottom:"20px"}}>
-            <Column>
-                <SelectableTag renderIcon={Asleep} text="Software" className="some-class"  />
-            </Column>
-            <Column>
-                <SelectableTag renderIcon={Asleep} text="Civil" className="some-class"  />
-            </Column>
-            <Column>
-                <SelectableTag renderIcon={Asleep} text="Electronics" className="some-class"  />
-            </Column>
-            <Column>
-                <SelectableTag renderIcon={Asleep} text="Mechanical" className="some-class"  />
-            </Column>
-            <Column>
-                <SelectableTag renderIcon={Asleep} text="Ideation" className="some-class"  />
-            </Column>
-            <Column>
-                <SelectableTag renderIcon={Asleep} text="Others" className="some-class"  />
-            </Column>
-         </Grid>
-         </Column> */}
-         {results.map(result => (
-            <Column key={result.id} md={4}
-            lg={14}
-            sm={4}
-            style={{marginBottom:"10px"}}>
-                <CustomTile title={`Task ${result.id}`} description={highlightText(result.description, searchTerm)} imgSrc={result.img} />
-            </Column>
-            ))}
-         <Column md={4}
-                              lg={14}
-                              sm={4}>
-         <Pagination
-          pagesUnknown={true}
-          totalItems={undefined}
-          pageSize={itemsPerPage}
-          pageSizes={[5, 10, 20, 50, 100]}
-          onChange={handlePageChange}
-          page={currentPage}
-        />
-         </Column>
-         </Grid>
+         <Gallery />
          <AuthModal open={isModalOpen} onClose={handleCloseModal} />
        </div>
      );

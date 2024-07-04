@@ -15,6 +15,8 @@ import {
     Close
 } from '@carbon/react/icons';
 import { Route, Routes, HashRouter, Link } from 'react-router-dom';
+import { NotificationsPanel } from '@carbon/ibm-products';
+import { sampleData } from './sampleData';
 
 import ErrorBoundary from "../../components/ErrorBoundary";
 import LandingPage from '../LandingPage';
@@ -40,7 +42,9 @@ class UIShell extends React.Component {
         isSideNavExpanded: false,
         searchTerm: '',
         searchResults: ['Item 1', 'Item 2', 'Item 3', 'Item 4'],
-        listItems: ['Item 1', 'Item 2', 'Item 3', 'Item 4']
+        listItems: ['Item 1', 'Item 2', 'Item 3', 'Item 4'],
+        notificationOpen: false,
+        notificationsData: sampleData,
       };
     }
 
@@ -51,6 +55,14 @@ class UIShell extends React.Component {
         }
         const results = this.state.listItems.filter(listItem => listItem.toLowerCase().includes(e.target.value.toLowerCase()));
         this.setState({ ...this.state ,searchTerm: e.target.value, searchResults: results });
+    }
+
+    setNotificationsData = (data) => {
+        this.setState({ ...this.state, notificationsData: data });
+    }
+
+    setNotificationOpen = () => {
+        this.setState({ ...this.state, notificationOpen: true });
     }
 
     render() {
@@ -75,11 +87,11 @@ class UIShell extends React.Component {
                                         <HeaderMenuItem href="/#/Contact">Contact</HeaderMenuItem>
                                         <HeaderMenuItem href="/#/how-to">How To</HeaderMenuItem>
                                     </HeaderNavigation>
-                                    <HeaderGlobalBar>
+                                    <HeaderGlobalBar kind="secondary">
                                         <HeaderGlobalAction
                                             aria-label="Notifications"
                                             isActive={this.state.activeTab === 1}
-                                            onClick={() => {this.setState({ activeTab: this.state.activeTab === 1 ? 0 : 1, isSideNavExpanded: this.state.activeTab === 1 ? false : true })}}
+                                            onClick={() => this.setState({ activeTab: this.state.activeTab === 1 ? 0 : 1, notificationOpen: this.state.activeTab === 1 ? true : false})}
                                             kind="secondary"
                                             tooltipAlignment="end">
                                             <Notification size={20} />
@@ -161,6 +173,24 @@ class UIShell extends React.Component {
                                         </SideNav>
                                     </ErrorBoundary> */}
                                 </Header>
+                                <div className="main--content">
+                                <NotificationsPanel
+                                    open={this.state.activeTab === 1}
+                                    // onClickOutside={() => this.setState({ activeTab: 0 })}
+                                    data={this.state.notificationsData}
+                                    onDoNotDisturbChange={(event) =>
+                                        console.log('Toggled do not disturb', event)
+                                    }
+                                    onViewAllClick={() => console.log('Clicked view all button')}
+                                    onSettingsClick={() => console.log('Clicked settings gear button')}
+                                    onDismissAllNotifications={() => this.setNotificationsData([])}
+                                    onDismissSingleNotification={({ id }) => {
+                                        let tempData = [...this.state.notificationsData];
+                                        tempData = tempData.filter((item) => item.id !== id);
+                                        this.setNotificationsData(tempData);
+                                    }}
+                                    />
+                                </div>
                             </div>
                         )}
                     />
