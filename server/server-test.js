@@ -11,7 +11,7 @@ require('greenlock-express').create({
   // This should be the directory to which certificates are saved
 , configDir: "../https/"
 
-, app: require('./app.js')
+, app: require('./server.js')
 
 , communityMember: true // Get notified of important updates
 , telemetry: true       // Contribute telemetry data to the project

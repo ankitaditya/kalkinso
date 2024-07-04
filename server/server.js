@@ -37,5 +37,5 @@ var httpsServerOptions = {
 var httpsServer = https.createServer(httpsServerOptions, app);
 
 httpsServer.listen(port, function() {
-    console.info(`Server listening on https://localhost:${port}`);
+    console.info(`Server listening on https://kalkinso.com`);
 });

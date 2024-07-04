@@ -2,7 +2,7 @@
   "name": "carbon-react-ui",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://localhost",
+  "proxy": "https://kalkinso.com",
   "dependencies": {
     "@carbon/charts": "^1.17.2",
     "@carbon/charts-react": "^1.17.2",
