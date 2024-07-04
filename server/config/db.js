@@ -5,12 +5,7 @@ const db = 'mongodb+srv://dbUser:photosoto@cluster0.g8dz9qi.mongodb.net/?retryWr
 
 const connectDB = async () => {
 	try {
-		await mongoose.connect(db, {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useCreateIndex: true,
-			useFindAndModify: false,
-		})
+		await mongoose.connect(db)
 		console.log('mongodb connected')
 	} catch (err) {
 		console.error(err.message)
