@@ -5,7 +5,10 @@ import {
     HeaderGlobalAction, SideNav, SideNavItems, Content,
     SideNavMenu, SideNavMenuItem, Theme, ExpandableSearch, HeaderPanel,
     SwitcherItem, SwitcherDivider, Switcher,
-    ContainedList, ContainedListItem, Tag, Button
+    ContainedList, ContainedListItem, Tag, Button,
+    TextInput,
+    NumberInput,
+    Dropdown
 } from '@carbon/react';
 import {
     Notification,
@@ -14,21 +17,22 @@ import {
     Fade,
     Close
 } from '@carbon/react/icons';
-import { Route, Routes, HashRouter, Link } from 'react-router-dom';
-import { NotificationsPanel } from '@carbon/ibm-products';
+import { Route, Routes, HashRouter } from 'react-router-dom';
+import { EditSidePanel, NotificationsPanel,  } from '@carbon/ibm-products';
 import { sampleData } from './sampleData';
 
-import ErrorBoundary from "../../components/ErrorBoundary";
+// import ErrorBoundary from "../../components/ErrorBoundary";
 import LandingPage from '../LandingPage';
 import NotFound from '../../components/NotFound';
 import ContactPage from "../ContactPage";
 import SearchPage from "../SearchPage";
 import Login from "../Login";
 import SignUp from "../Signup";
-import Kanban from "../Kanban";
+// import Kanban from "../Kanban";
 import ChatScreen from "../ChatScreen/ChatScreen";
 import Dashboard from "../Dashboard";
 import HowToPage from "../HowToPage";
+import SidePanel from "./SidePanel/SidePanel";
 // import Notification from '../../components/Notification';
 
 
@@ -106,33 +110,11 @@ class UIShell extends React.Component {
                                             <SwitcherIcon size={20} />
                                         </HeaderGlobalAction>
                                     </HeaderGlobalBar>
-                                    <HeaderPanel expanded={this.state.isSideNavExpanded}>
-                                        {/* <ExpandableSearch placeholder={`Search ${this.state.activeTab===1?'Notifications':'Apps'}`} labelText={`Search ${this.state.activeTab===1?'Notifications':'Apps'}`} value={this.state.searchTerm} onChange={(e)=>this.handleChange(e)} closeButtonLabelText="Clear search input" size="lg" /> */}
-                                        <ContainedList label={<div style={{
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                justifyContent: 'space-between'
-                                                                }}>
-                                                                        <span>{this.state.activeTab===1?'Notifications':'Apps'}</span>
-                                                                        <Tag size="sm" role="status" aria-label="4 items in list">
-                                                                            {this.state.listItems.length}
-                                                                        </Tag>
-                                                                    </div>} kind="on-page">
-                                            {this.state.searchResults.map((listItem, key) => 
-                                                <ContainedListItem 
-                                                    key={key} 
-                                                    action={
-                                                    <Button 
-                                                        kind="ghost" 
-                                                        iconDescription="Dismiss" 
-                                                        hasIconOnly 
-                                                        renderIcon={Close} 
-                                                        aria-label="Dismiss" />}>{
-                                                            listItem}
-                                                </ContainedListItem>)
-                                            }
-                                        </ContainedList>
-                                    </HeaderPanel>
+                                    {/* <HeaderPanel expanded={this.state.isSideNavExpanded}> */}
+                                    
+                                    <SidePanel isSideNavExpanded={this.state.isSideNavExpanded} closeSideNav={()=>{let newState = this.state;newState.isSideNavExpanded=false; this.setState({...newState})}} />
+                                    
+                                    {/* </HeaderPanel> */}
                                     {/* <ErrorBoundary>
                                         <SideNav aria-label="Side navigation" expanded={isSideNavExpanded}>
                                             <SideNavItems>

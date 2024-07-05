@@ -7,9 +7,9 @@ import { ClickableTile } from '@carbon/react';
 
 const baseClass = 'gallery-card';
 
-export const GalleryCard = ({ className, title, url, thumbnail }) => {
+export const GalleryCard = ({ className, title, url, thumbnail, open }) => {
   return (
-    <ClickableTile className={cx(className, baseClass)} href={url}>
+    <ClickableTile className={cx(className, baseClass)} onClick={()=>open()}>
       <div
         className={`${baseClass}__thumbnail`}
         style={{

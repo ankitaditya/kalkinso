@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { GalleryCard } from './GalleryCard';
+import SelectHeirarchy from '../SelectHeirarchy/SelectHeirarchy';
 import { Search } from '@carbon/react';
 import config from '../gallery-config';
 import logo from '../banner.webp';
@@ -15,6 +16,7 @@ const packagePath =
 
 export const Gallery = ({ site }) => {
   const [filteredConfig, setFilteredConfig] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const getLink = (dir) => {
     switch (site) {
@@ -43,6 +45,7 @@ export const Gallery = ({ site }) => {
   };
 
   return (
+    <>
     <div className={blockClass}>
       <div className={`${blockClass}__container`}>
         <h1 className={`${blockClass}__title`}>
@@ -61,6 +64,7 @@ export const Gallery = ({ site }) => {
               key={index}
               title={item.label}
               url={item.url}
+              open={()=>setOpen(true)}
               target="_blank" // NOTE: _top and _parent do not seem to work in codesandbox
               thumbnail={item.thumbnail}
             />
@@ -75,6 +79,8 @@ export const Gallery = ({ site }) => {
         </div>
       </div>
     </div>
+    <SelectHeirarchy open={open} onClose={()=>setOpen(false)} />
+    </>
   );
 };
 
