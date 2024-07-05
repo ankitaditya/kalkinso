@@ -50,14 +50,6 @@ const Login = () => {
                 required
                 style={{marginBottom:"15px"}}
               />
-              <Checkbox
-                labelText="I agree to the terms and conditions"
-                id="terms"
-                className='form-item'
-                checked={terms}
-                onChange={(e) => setTerms(e.target.checked)}
-                style={{marginTop:"15px"}}
-              />
               <Button type="submit" kind="primary" className="submit-button form-item" href='/#/home' style={{marginTop:"15px"}}>
                 Login
               </Button>

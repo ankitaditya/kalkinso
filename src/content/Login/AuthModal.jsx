@@ -27,20 +27,16 @@ const AuthModal = ({ open, onClose }) => {
       size="lg"
       preventCloseOnClickOutside
     >
-      <Grid fullWidth>
-        <Column sm={4} md={8} lg={8}>
-          <ContentSwitcher onChange={handleFormSwitch}>
-            <Switch name="login" text="Login" />
-            <Switch name="signup" text="Sign Up" />
-          </ContentSwitcher>
+      <ContentSwitcher onChange={handleFormSwitch}>
+        <Switch name="login" text="Login" />
+        <Switch name="signup" text="Sign Up" />
+      </ContentSwitcher>
 
-          {selectedForm === 'login' ? (
-            <Login />
-          ) : (
-            <SignUp />
-          )}
-        </Column>
-      </Grid>
+      {selectedForm === 'login' ? (
+        <Login />
+      ) : (
+        <SignUp />
+      )}
     </Modal>
   );
 };
