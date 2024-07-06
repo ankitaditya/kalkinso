@@ -73,7 +73,7 @@ class UIShell extends React.Component {
         return (
             <HashRouter>
                 <Theme theme='g90'>
-                    <HeaderContainer
+                    <HeaderContainer 
                         render={({isSideNavExpanded, onClickSideNavExpand}) => (
                             <div>
                                 <Header aria-label="IBM Platform Name">

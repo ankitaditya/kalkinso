@@ -12,11 +12,14 @@ import {
   Column,
   Search,
   FluidForm,
+  OrderedList,
+  ListItem,
 } from '@carbon/react';
 import { InfoSection, InfoCard } from '../../components/Info';
 import { Globe, Application, PersonFavorite } from '@carbon/react/icons';
 import Login from '../Login/Login';
 import HeroSection from './HeroSection';
+import TaskCarousel from './TaskCarousel';
 
 class LandingPage extends Component {
   render() {
@@ -93,8 +96,10 @@ class LandingPage extends Component {
                     md={8}
                     sm={4}
                     className="landing-page__tab-content">
-                    Swiping through the tasks, you'll find a variety of
-                    opportunities to contribute and earn. 
+                    <TaskCarousel component={<HeroSection ButtonComponent={<FluidForm style={{marginTop:"35px"}}>
+                                              <Button href='/#/register'>SignUp</Button>
+                                              <Button kind="secondary" href='/#/login'>Login</Button>
+                                            </FluidForm>}/>} />
                   </Column>
                 </Grid>
               </TabPanel>
@@ -105,8 +110,32 @@ class LandingPage extends Component {
                     md={8}
                     sm={4}
                     className="landing-page__tab-content">
-                    Carbon provides styles and components in Vanilla, React,
-                    Angular, and Vue for anyone building on the web.
+                    
+                    <Grid>
+                      <Column lg={8} md={6} sm={4} className="process-column">
+                        <h6>Receive direct payment from project managers upon task completion. The process involves:</h6>
+                        <OrderedList style={{margin:'2rem'}}>
+                          <ListItem>
+                            <strong>Search:</strong> Begin by searching for projects or tasks that match your skills and interests.
+                          </ListItem>
+                          <ListItem>
+                            <strong>Select:</strong> Choose the project or task that suits you best and meets your criteria.
+                          </ListItem>
+                          <ListItem>
+                            <strong>Work:</strong> Start working on the selected project, ensuring you meet all the specified requirements and deadlines.
+                          </ListItem>
+                          <ListItem>
+                            <strong>Submit:</strong> Once you have completed the work, submit it for review.
+                          </ListItem>
+                          <ListItem>
+                            <strong>Approval:</strong> Await approval from the project manager, who will review your submission for quality and accuracy.
+                          </ListItem>
+                          <ListItem>
+                            <strong>Payment:</strong> Upon approval, receive your payment directly from the project manager.
+                          </ListItem>
+                        </OrderedList>
+                      </Column>
+                    </Grid>
                   </Column>
                 </Grid>
               </TabPanel>

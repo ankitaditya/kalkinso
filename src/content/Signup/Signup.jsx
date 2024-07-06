@@ -15,6 +15,26 @@ const SignUp = ({
   const blockClass = `${pkg.prefix}--create-full-page`;
   const storyClass = 'create-full-page-stories';
   const navigate = useNavigate();
+  const [ information, setInformation ] = useState({
+                                                    step1: {
+                                                      firstName: '',
+                                                      lastName: '',
+                                                      email: '',
+                                                      mobileNumber: '',
+                                                      password: '',
+                                                      confirmPassword: '',
+                                                      panCard: '',
+                                                      cardholderName: '',
+                                                      cardNumber: ''
+                                                    },
+                                                    step2:{
+                                                      expiryDate: '',
+                                                      cvv: '',
+                                                      paymentMethod: '',
+                                                      upiId: '',
+                                                      termsConditions: false
+                                                    }
+                                                  });
   const carbonPrefix = usePrefix();
   const [textInput, setTextInput] = useState('');
   const [upiId, setUpiId] = useState("");
@@ -22,6 +42,47 @@ const SignUp = ({
   const [shouldReject, setShouldReject] = useState(false);
   const [isInvalid, setIsInvalid] = useState(false);
   const [simulatedDelay] = useState(750);
+  const validate = (step, name) => {
+    if(step === 1){
+      if(name === 'firstName'){
+        return information.step1.firstName.length === 0 || information.step1.firstName.length > 20;
+      } else if(name === 'lastName'){
+        return information.step1.lastName.length === 0 || information.step1.lastName.length > 20;
+      } else if(name === 'email'){
+        return information.step1.email.length === 0 || 
+        information.step1.email.length > 20 || 
+        !information.step1.email.includes('@') || 
+        !information.step1.email.includes('.');
+      } else if(name === 'mobileNumber'){
+        return information.step1.mobileNumber.length === 0 || information.step1.mobileNumber.length > 10 || isNaN(information.step1.mobileNumber);
+      } else if(name === 'password'){
+        /* Write a good password validation logic */
+        return information.step1.password.length === 0 || 
+        information.step1.password.length < 8 || 
+        information.step1.password.length > 20;
+      } else if(name === 'confirmPassword'){
+        return information.step1.confirmPassword.length === 0;
+      } else if(name === 'panCard'){
+        return information.step1.panCard.length === 0;
+      } else if(name === 'cardholderName'){
+        return information.step1.cardholderName.length === 0;
+      } else if(name === 'cardNumber'){
+        return information.step1.cardNumber.length === 0;
+      }
+    } else if(step === 2){
+      if(name === 'expiryDate'){
+        return information.step2.expiryDate.length === 0;
+      } else if(name === 'cvv'){
+        return information.step2.cvv.length === 0;
+      } else if(name === 'paymentMethod'){
+        return information.step2.paymentMethod.length === 0;
+      } else if(name === 'upiId'){
+        return information.step2.upiId.length === 0;
+      } else if(name === 'termsConditions'){
+        return information.step2.termsConditions === false;
+      }
+    }
+  }
   return <>
       <style>{`.${carbonPrefix}--modal { opacity: 0; }`};</style>
       <CreateFullPage className={`${blockClass}`} {...args} 
@@ -63,13 +124,23 @@ const SignUp = ({
                     onChange={e => {
                       setTextInput(e.target.value);
                       setIsInvalid(false);
+                      setShouldReject(false)
                     }}
+                    invalid={isInvalid}
+                    invalidText="This is a required field"
                   />
                   <TextInput
                     id="last-name"
                     labelText="Last Name"
                     placeholder="Enter your last name"
                     style={{marginBottom:"15px"}}
+                    onChange={e => {
+                      setTextInput(e.target.value);
+                      setIsInvalid(false);
+                      setShouldReject(false)
+                    }}
+                    invalid={isInvalid}
+                    invalidText="This is a required field"
                   />
                   <TextInput
                     id="email"
@@ -77,6 +148,13 @@ const SignUp = ({
                     type="email"
                     placeholder="Enter your email"
                     style={{marginBottom:"15px"}}
+                    onChange={e => {
+                      setTextInput(e.target.value);
+                      setIsInvalid(false);
+                      setShouldReject(false)
+                    }}
+                    invalid={isInvalid}
+                    invalidText="This is a required field"
                   />
                   <TextInput
                     id="mobile-number"
@@ -84,24 +162,52 @@ const SignUp = ({
                     type="tel"
                     placeholder="Enter your mobile number"
                     style={{marginBottom:"15px"}}
+                    onChange={e => {
+                      setTextInput(e.target.value);
+                      setIsInvalid(false);
+                      setShouldReject(false)
+                    }}
+                    invalid={isInvalid}
+                    invalidText="This is a required field"
                   />
                   <PasswordInput
                     id="password"
                     labelText="Password"
                     placeholder="Enter your password"
                     style={{marginBottom:"15px"}}
+                    onChange={e => {
+                      setTextInput(e.target.value);
+                      setIsInvalid(false);
+                      setShouldReject(false)
+                    }}
+                    invalid={isInvalid}
+                    invalidText="This is a required field"
                   />
                   <PasswordInput
                     id="confirm-password"
                     labelText="Confirm Password"
                     placeholder="Confirm your password"
                     style={{marginBottom:"15px"}}
+                    onChange={e => {
+                      setTextInput(e.target.value);
+                      setIsInvalid(true);
+                      setShouldReject(true);
+                    }}
+                    invalid={isInvalid}
+                    invalidText="This is a required field"
                   />
                   <TextInput
                     id="pan-card"
                     labelText="PAN Card Number"
                     placeholder="Enter your PAN card number"
                     style={{marginBottom:"15px"}}
+                    onChange={e => {
+                      setTextInput(e.target.value);
+                      setIsInvalid(false);
+                      setShouldReject(false);
+                    }}
+                    invalid={isInvalid}
+                    invalidText="This is a required field"
                   />
                 </FormGroup>
               </Form>
