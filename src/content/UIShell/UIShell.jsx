@@ -87,12 +87,12 @@ class UIShell extends React.Component {
                                     <HeaderName href="/#" prefix="KALKIN">
                                         SO
                                     </HeaderName>
-                                    <HeaderNavigation aria-label="Carbon React App">
+                                    {/* <HeaderNavigation aria-label="Carbon React App">
                                         <HeaderMenuItem href="/#/Contribute">Contributing</HeaderMenuItem>
                                         <HeaderMenuItem href="/#/Contact">Contact</HeaderMenuItem>
                                         <HeaderMenuItem href="/#/how-to">How To</HeaderMenuItem>
-                                    </HeaderNavigation>
-                                    <HeaderGlobalBar kind="secondary">
+                                    </HeaderNavigation> */}
+                                    {/* <HeaderGlobalBar kind="secondary">
                                         <HeaderGlobalAction
                                             aria-label="Notifications"
                                             isActive={this.state.activeTab === 1}
@@ -110,7 +110,7 @@ class UIShell extends React.Component {
                                             >
                                             <SwitcherIcon size={20} />
                                         </HeaderGlobalAction>
-                                    </HeaderGlobalBar>
+                                    </HeaderGlobalBar> */}
                                     {/* <HeaderPanel expanded={this.state.isSideNavExpanded}> */}
                                     
                                     <SidePanel isSideNavExpanded={this.state.isSideNavExpanded} closeSideNav={()=>{let newState = this.state;newState.isSideNavExpanded=false; this.setState({...newState})}} />
