@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 // import { Header, HeaderName, HeaderNav, HeaderMenuItem } from "@carbon/react";
-import { Grid, Row, Column } from '@carbon/react';
-import { Timer } from '@carbon/icons-react';
+import { Grid, Column } from '@carbon/react';
+import { Timer, Email } from '@carbon/icons-react';
 import { Button } from '@carbon/react';
 import './ComingSoon.css';
 
 const ComingSoon = () => {
     const calculateTimeLeft = () => {
-        const difference = +new Date('2023-12-31') - +new Date();
+        const difference = +new Date('2024-07-20') - +new Date();
         let timeLeft = {};
 
         if (difference > 0) {
@@ -50,11 +50,11 @@ const ComingSoon = () => {
         <Grid fullWidth className="coming-soon-content">
                 <Column lg={15} md={8} sm={6} className="center">
                     <h1>Coming Soon!</h1>
-                    <p>We are working hard to finish the development of this site. Visit us again soon!</p>
+                    <p>We are working hard to finish the development of this site. Visit us again soon! 
+                        <br /><Email size={12} /> <a href='mailto://info@kalkinso.com'>info@kalkinso.com</a></p>
                     <div className="timer">
                         {timerComponents.length ? timerComponents : <span>Time's up!</span>}
                     </div>
-                    <Button renderIcon={Timer} iconDescription="Timer Button">Get Notified</Button>
                 </Column>
         </Grid>
     );
