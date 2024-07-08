@@ -33,6 +33,7 @@ import ChatScreen from "../ChatScreen/ChatScreen";
 import Dashboard from "../Dashboard";
 import HowToPage from "../HowToPage";
 import SidePanel from "./SidePanel/SidePanel";
+import ComingSoon from "./ComingSoon";
 // import Notification from '../../components/Notification';
 
 
@@ -179,14 +180,15 @@ class UIShell extends React.Component {
                 </Theme>
                 <Content className='content'>
                     <Routes>
-                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/" element={<ComingSoon />} />
+                        {/* <Route path="/" element={<LandingPage />} />
                         <Route path="Contribute" element={<SearchPage />} />
                         <Route path="Login" element={<Login />} />
                         <Route path="Register" element={<SignUp />} />
                         <Route path="home" element={<Dashboard />} />
                         <Route path="chat" element={<ChatScreen />} />
                         <Route path="Contact" element={<ContactPage />} />
-                        <Route path="how-to" element={<HowToPage />} />
+                        <Route path="how-to" element={<HowToPage />} /> */}
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </Content>
