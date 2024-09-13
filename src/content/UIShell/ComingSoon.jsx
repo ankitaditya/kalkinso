@@ -7,7 +7,7 @@ import './ComingSoon.css';
 
 const ComingSoon = () => {
     const calculateTimeLeft = () => {
-        const difference = +new Date('2024-07-20') - +new Date();
+        const difference = +new Date('2024-07-31') - +new Date();
         let timeLeft = {};
 
         if (difference > 0) {
