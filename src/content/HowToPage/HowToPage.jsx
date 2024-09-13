@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Search, Tile, Grid, Row, Column, Breadcrumb, BreadcrumbItem } from '@carbon/react';
+import { Header } from "carbon-components-react";
 import './HowToPage.css';
 
 const HowToPage = () => {
@@ -68,7 +69,7 @@ const HowToPage = () => {
   );
 
   return (
-    <div id="app">
+    <div id="application">
       <Breadcrumb>
         <BreadcrumbItem href="#">Home</BreadcrumbItem>
         <BreadcrumbItem href="#" isCurrentPage>
@@ -84,7 +85,7 @@ const HowToPage = () => {
         size="lg"
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <Grid className="grid">
+      <Grid style={{marginTop: "5rem"}}>
           {filteredArticles.map((article, index) => (
             <Column key={index} md={4} lg={16}>
               <Tile>

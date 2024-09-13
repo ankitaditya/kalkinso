@@ -1,7 +1,7 @@
+require('dotenv').config();
 const express = require('express');
-var fs = require('fs');
-var https = require('https');
 const path = require('path');
+const request = require('request');
 
 const connectDB = require('../config/db')
 
@@ -13,7 +13,11 @@ app.use(express.json({ extended: false }))
 app.use('/api/users', require('../routes/api/users'))
 app.use('/api/auth', require('../routes/api/auth'))
 app.use('/api/profile', require('../routes/api/profile'))
-app.use('/api/posts', require('../routes/api/posts'))
+app.use('/api/chat-session', require('../routes/api/chat_sessions'))
+app.use('/api/tasks', require('../routes/api/tasks'))
+app.use('/api/kalkiai', require('../routes/api/kalkiai'))
+app.use('/api/kits', require('../routes/api/kits'))
+
 
 app.use(express.static(path.join(__dirname, '../build')));
 

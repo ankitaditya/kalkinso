@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Form,
   TextInput,
@@ -11,19 +11,24 @@ import {
   PasswordInput,
 } from '@carbon/react';
 import { LogoFacebook, LogoLinkedin, LogoGithub } from '@carbon/icons-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadUser, login, setLoading } from '../../actions/auth';
 // import './Login.css';  // Custom styling
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [terms, setTerms] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add form submission logic here
+    dispatch(setLoading(true));
+    setTimeout(() => {
+      dispatch(login(email, password));
+    }, 2000);
     console.log('Email:', email);
     console.log('Password:', password);
-    console.log('Terms accepted:', terms);
   };
 
   return (
@@ -50,12 +55,12 @@ const Login = () => {
                 required
                 style={{marginBottom:"15px"}}
               />
-              <Button type="submit" kind="primary" className="submit-button form-item" href='/#/home' style={{marginTop:"15px"}}>
+              <Button type="submit" kind="primary" className="submit-button form-item" style={{marginTop:"15px"}}>
                 Login
               </Button>
             </Form>
           </Column>
-          <Column md={8} lg={16} className="login-container">
+          {/* <Column md={8} lg={16} className="login-container">
           <div className="divider" style={{margin:"15px", marginBottom:"25px"}}>
                 Or login with
             </div>
@@ -82,7 +87,7 @@ const Login = () => {
                 Facebook
               </Button>
             </div>
-          </Column>
+          </Column> */}
       </Grid>
     </div>
   );

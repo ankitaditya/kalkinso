@@ -35,24 +35,7 @@ const options = {
 const AnalyticsDashboard = () => (
     <Grid>
         <Column lg={16} style={{margin:"2rem"}}>
-        <Grid>
-            <Column lg={8}>
-                <LineChart data={dummyData.salesOverTime} options={{ ...options, title: 'Sales Over Time' }} />
-            </Column>
-            <Column lg={8}>
-                <BoxplotChart data={dummyData.userActivity} options={{ ...options, title: 'User Activity', axes: { bottom: { mapsTo: 'category', scaleType: 'labels' }, left: { mapsTo: 'value', title: 'Value', scaleType: 'linear' } } }} />
-            </Column>
-        </Grid>
-        </Column>
-        <Column lg={16} style={{margin:"2rem"}}>
-        <Grid>
-            <Column lg={8}>
-                <PieChart data={dummyData.conversionRate} options={{ title: 'Conversion Rate' }} />
-            </Column>
-            <Column lg={8}>
-                <DonutChart data={dummyData.revenueBreakdown} options={{ title: 'Revenue Breakdown' }} />
-            </Column>
-        </Grid>
+            <LineChart data={dummyData.salesOverTime} options={{ ...options, title: 'Sales Over Time' }} />
         </Column>
     </Grid>
 );

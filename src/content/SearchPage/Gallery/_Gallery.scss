@@ -28,18 +28,20 @@ $block-class: 'gallery';
 }
 
 .#{$block-class} .#{$block-class}__filter {
+  width: 50vw;
+  margin: 0 auto;
   margin-top: $spacing-07;
 }
 
 .#{$block-class} .#{$block-class}__gallery {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: $spacing-07;
 }
 
-$item-width: 320px;
-$item-height: 240px;
+$item-width: 50vw;
+$item-height: 50vh;
 
 .#{$block-class} .#{$block-class}__gallery-item {
   width: $item-width;

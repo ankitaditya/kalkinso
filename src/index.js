@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+
 
 const client = new QueryClient();
 

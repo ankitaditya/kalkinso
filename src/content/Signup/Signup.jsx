@@ -1,213 +1,664 @@
-import { CreateFullPage, CreateFullPageStep, usePrefix, pkg } from "@carbon/ibm-products";
-import { Checkbox, Column, DefinitionTooltip, Form, FormGroup, Grid, InlineNotification, NumberInput, PasswordInput, RadioButton, RadioButtonGroup, TextInput, Toggle } from "@carbon/react";
-import { Dropdown } from "carbon-components-react";
-import { useState } from "react";
+import {
+  CreateFullPage,
+  CreateFullPageStep,
+  usePrefix,
+  pkg
+} from "@carbon/ibm-products";
+import {
+  Button,
+  Checkbox,
+  Column,
+  DefinitionTooltip,
+  Form,
+  FormGroup,
+  Grid,
+  InlineNotification,
+  NumberInput,
+  PasswordInput,
+  RadioButton,
+  RadioButtonGroup,
+  RadioTile,
+  Row,
+  Select,
+  SelectItem,
+  TextInput,
+  TileGroup,
+  Toggle,
+  Toggletip,
+  ToggletipButton,
+  ToggletipContent,
+  ToggletipLabel,
+  Tooltip
+} from "@carbon/react";
+import { InputOtp } from "primereact/inputotp";
+import { Checkmark, Close, Information, Subtract } from "@carbon/react/icons";
+import { Dropdown, Modal } from "carbon-components-react";
+import { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { createProfile } from "../../actions/profile";
+import { register, sendVerification, verifyOtp, setVerified, setOpenOtpModal, setLoading, loadUser } from "../../actions/auth";
+import { setAlert } from "../../actions/alert";
+import { connect, useDispatch, useSelector } from "react-redux";
+import NoDataIllustration from "./assets/NoDataIllustration";
 
-const SignUp = ({
-  ...args
-}) => {
-  const paymentMethods = [
-    { id: 'credit-card', text: 'Credit Card' },
-    { id: 'debit-card', text: 'Debit Card' },
-    { id: 'paypal', text: 'PayPal' },
-  ];
+const SignUp = (props) => {
   const blockClass = `${pkg.prefix}--create-full-page`;
-  const storyClass = 'create-full-page-stories';
-  const navigate = useNavigate();
-  const [ information, setInformation ] = useState({
-                                                    step1: {
-                                                      firstName: '',
-                                                      lastName: '',
-                                                      email: '',
-                                                      mobileNumber: '',
-                                                      password: '',
-                                                      confirmPassword: '',
-                                                      panCard: '',
-                                                      cardholderName: '',
-                                                      cardNumber: ''
-                                                    },
-                                                    step2:{
-                                                      expiryDate: '',
-                                                      cvv: '',
-                                                      paymentMethod: '',
-                                                      upiId: '',
-                                                      termsConditions: false
-                                                    }
-                                                  });
+  const dispatch = useDispatch();
+
+  const [information, setInformation] = useState({
+    step1: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      mobile: "+91",
+      password: "",
+      confirm_password: "",
+      adhar: "",
+    },
+    step2: {
+      upi: "",
+      terms_conditions: false
+    }
+  });
   const carbonPrefix = usePrefix();
-  const [textInput, setTextInput] = useState('');
-  const [upiId, setUpiId] = useState("");
   const [hasSubmitError, setHasSubmitError] = useState(false);
+  const [ selectedCategory, setSelectedCategory ] = useState('');
   const [shouldReject, setShouldReject] = useState(false);
-  const [isInvalid, setIsInvalid] = useState(false);
+  const [isInvalid, setIsInvalid] = useState({
+    first_name: null,
+    last_name: null,
+    email: null,
+    mobile: null,
+    password: null,
+    confirm_password: null,
+    adhar: null,
+    upi: null,
+    terms_conditions: null
+  });
+  const { verified, openOtpModal } = useSelector(state => state.auth);
   const [simulatedDelay] = useState(750);
-  const validate = (step, name) => {
-    if(step === 1){
-      if(name === 'firstName'){
-        return information.step1.firstName.length === 0 || information.step1.firstName.length > 20;
-      } else if(name === 'lastName'){
-        return information.step1.lastName.length === 0 || information.step1.lastName.length > 20;
-      } else if(name === 'email'){
-        return information.step1.email.length === 0 || 
-        information.step1.email.length > 20 || 
-        !information.step1.email.includes('@') || 
-        !information.step1.email.includes('.');
-      } else if(name === 'mobileNumber'){
-        return information.step1.mobileNumber.length === 0 || information.step1.mobileNumber.length > 10 || isNaN(information.step1.mobileNumber);
-      } else if(name === 'password'){
-        /* Write a good password validation logic */
-        return information.step1.password.length === 0 || 
-        information.step1.password.length < 8 || 
-        information.step1.password.length > 20;
-      } else if(name === 'confirmPassword'){
-        return information.step1.confirmPassword.length === 0;
-      } else if(name === 'panCard'){
-        return information.step1.panCard.length === 0;
-      } else if(name === 'cardholderName'){
-        return information.step1.cardholderName.length === 0;
-      } else if(name === 'cardNumber'){
-        return information.step1.cardNumber.length === 0;
-      }
-    } else if(step === 2){
-      if(name === 'expiryDate'){
-        return information.step2.expiryDate.length === 0;
-      } else if(name === 'cvv'){
-        return information.step2.cvv.length === 0;
-      } else if(name === 'paymentMethod'){
-        return information.step2.paymentMethod.length === 0;
-      } else if(name === 'upiId'){
-        return information.step2.upiId.length === 0;
-      } else if(name === 'termsConditions'){
-        return information.step2.termsConditions === false;
-      }
+
+  const ToggleTip = (label, isClickedDefault=false, props) => {
+    const user = useSelector((state) => state.auth);
+    const [ token, setToken ] = useState();
+    const [ isClicked, setIsClicked ] = useState(isClickedDefault);
+    const [ open, setOpen ] = useState(false);
+    const [ resend, setResend ] = useState(false);
+    const [timer, setTimer] = useState(30);
+    const CheckmarkInfo = () => <Tooltip label={`${label} is verified`} align="top-left">
+      <Checkmark className="sb-tooltip-trigger" style={{color: 'green'}} size={12} />
+  </Tooltip>;
+  useEffect(() => {
+    if(!user.isAuthenticated&&localStorage.getItem('token')) {
+    dispatch(setLoading(true));
+    dispatch(loadUser({token: localStorage.getItem('token')}))
+    }
+  },[])
+  useEffect(() => {
+    let interval = null;
+
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      setResend(false);
+      clearInterval(interval);
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timer]);
+    
+
+  const handleSubmit = () => {
+    console.log("submit clicked!");
+    let key  = ""
+    if(label === "Email" && isInvalid.email === false) {
+      key = "email";
+    } else if(label === "Mobile Number" && isInvalid.mobile === false){
+      key = "mobile";
+    } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
+      key = "adhar";
+    } else if(label === "UPI ID" && isInvalid.upi === false){
+      key = "upi";
+    }
+    if (key === "" || isInvalid.mobile===true) {
+      props.setAlert("Problem in verifying OTP: "+label, "error");
+      console.log("THIS IS INVALID: ",isInvalid)
+      return;
+    } else {
+      props.verifyOtp({[key]: information.step1[key], otp:token})
+    }
+  }
+
+  useEffect(() => {
+    let key  = ""
+    if(label === "Email" && isInvalid.email === false) {
+      key = "email";
+    } else if(label === "Mobile Number" && isInvalid.mobile === false){
+      key = "mobile";
+    } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
+      key = "adhar";
+    } else if(label === "UPI ID" && isInvalid.upi === false){
+      key = "upi";
+    }
+    if(verified[key]) {
+      setIsClicked(true);
+    } else if (verified[key] === null) {
+      props.setAlert("Invalid otp entered", "error");
+    }
+  }, [verified]);
+
+  useEffect(() => {
+    if(!openOtpModal) {
+      setOpen(openOtpModal);
+    }
+  }, [openOtpModal]);
+
+  const handleVerifyClick = () => {
+    console.log("Verify clicked!");
+    if(label === "Email" && isInvalid.email === false) {
+      props.sendVerification({email: information.step1.email});
+      setTimeout(() => setOpen(true), 5000);
+    } else if(label === "Mobile Number" && isInvalid.mobile === false){
+      props.sendVerification({mobile: information.step1.mobile});
+      setTimeout(() => setOpen(true), 5000);
+    } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
+      props.sendVerification({adhar: information.step1.adhar});
+      setTimeout(() => setOpen(true), 5000);
+    } else if(label === "UPI ID" && isInvalid.upi === false){
+      props.sendVerification({upi: information.step1.upi});
+      setTimeout(() => setOpen(true), 5000);
+    } else {
+      props.setAlert("Please enter a valid "+label, "error");
+    }
+  }
+
+  const ResendOtp = () => {
+    console.log("Resend otp clicked!");
+    if(label === "Email" && isInvalid.email === false) {
+      props.sendVerification({email: information.step1.email});
+      props.setAlert(`Verification OTP sent to ${information.step1.email}!`, "info")
+      setTimer(30);
+      setResend(true);
+    } else if(label === "Mobile Number" && isInvalid.mobile === false){
+      props.sendVerification({mobile: information.step1.mobile});
+      props.setAlert(`Verification OTP sent to ${information.step1.mobile}!`, "info")
+      setTimer(30);
+      setResend(true);
+    } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
+      props.sendVerification({adhar: information.step1.adhar});
+      props.setAlert(`Verification OTP sent to your registered mobile number!`, "info")
+      setTimer(30);
+      setResend(true);
+    } else if(label === "UPI ID" && isInvalid.upi === false){
+      props.sendVerification({upi: information.step1.upi});
+      props.setAlert(`Verification OTP sent to your registered mobile number!`, "info")
+      setTimer(30);
+      setResend(true);
     }
   }
   return <>
-      <style>{`.${carbonPrefix}--modal { opacity: 0; }`};</style>
-      <CreateFullPage className={`${blockClass}`} {...args} 
-      nextButtonText="Next" 
-      backButtonText="Back" 
-      cancelButtonText="Cancel" 
-      submitButtonText="Sign Up"
-      modalDangerButtonText="Cancel Sign Up"
-      modalSecondaryButtonText="Return to form"
-      modalTitle="Are you sure you want to cancel?"
-      modalDescription="If you cancel, your account will not be created."
-      onRequestSubmit={() => {navigate('/home')}}
-      onClose={() => {navigate('/')}}
-      >
-        <CreateFullPageStep title="Personal Details" subtitle="One or more partitions make up a topic. A partition is an ordered list
-        of messages." description="" onNext={() => {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            // Example usage of how to prevent the next step if some kind
-            // of error occurred during the `onNext` handler.
-            if (shouldReject) {
-              setHasSubmitError(true);
-              reject();
-            }
-            setIsInvalid(false);
-            resolve();
-          }, simulatedDelay);
+  <ToggletipLabel>{label}</ToggletipLabel>
+  <Toggletip align="top-left">
+  {isClicked? <CheckmarkInfo />:<ToggletipButton label={`Verify ${label}`} style={{color: 'red'}} onClick={()=>handleVerifyClick()}>
+       {" verify"}
+    </ToggletipButton>}
+    <ToggletipContent>
+      <p>{label} is verified</p>
+    </ToggletipContent>
+  </Toggletip>
+  {/* <Modal open={open} onRequestClose={() => { setOpen(false); setIsClicked(true); }}  closeButtonLabel="close" passiveModal modalHeading="You have been successfully signed out" /> */}
+  <Modal open={open} onRequestClose={() => setOpen(false)} onRequestSubmit={()=>handleSubmit()} modalHeading={`Verify otp for your ${label}`} modalLabel="Two Step Verification" primaryButtonText="Verify">
+          <InputOtp value={token} onChange={(e) => setToken(e.value)} mask integerOnly length={6} marginBottom/> <Button style={{marginTop:"1rem"}} disabled={resend} kind="ghost" onClick={()=>ResendOtp()}>{resend?`${timer} s`:"Resend"}</Button>
+  </Modal>
+</>};
+
+  const validate = (step, name, value) => {
+    if (step === 1) {
+      if (name === "first_name") {
+        setInformation({
+          ...information,
+          step1: { ...information.step1, first_name: value }
         });
-      }} disableSubmit={!textInput}>
-          <Grid fullWidth style={{ padding: '2rem' }}>
+        return value.length === 0 || value.length > 20;
+      } else if (name === "last_name") {
+        setInformation({
+          ...information,
+          step1: { ...information.step1, last_name: value }
+        });
+        return value.length === 0 || value.length > 20;
+      } else if (name === "email") {
+        setInformation({
+          ...information,
+          step1: { ...information.step1, email: value }
+        });
+        const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        return regex.test(value) === false;
+      } else if (name === "mobile") {
+        setInformation({
+          ...information,
+          step1: { ...information.step1, mobile: value }
+        });
+        return value.length === 0 || value.length < 13 || isNaN(value);
+      } else if (name === "password") {
+        /* Write a good password validation logic */
+        const regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@.#$!%*?&^])[A-Za-z\d_@.#$!%*?&]{8,15}$/;
+        setInformation({
+          ...information,
+          step1: { ...information.step1, password: value }
+        });
+        return regex.test(value) === false;
+      } else if (name === "confirm_password") {
+        setInformation({
+          ...information,
+          step1: { ...information.step1, confirm_password: value }
+        });
+        return value !== information.step1.password;
+      } else if (name === "adhar") {
+        setInformation({
+          ...information,
+          step1: { ...information.step1, adhar: value }
+        });
+        const regex = /^[2-9]{1}[0-9]{3}\s[0-9]{4}\s[0-9]{4}$/;
+        // if(regex.test(value) === true) {
+        //   props.setVerified({...verified,adhar: true});
+        // }
+        return regex.test(value) === false;
+      }
+    } else if (step === 2) {
+      if (name === "upi") {
+        const regex = /^[\w.-]+@[\w.-]+$/;
+        setInformation({
+          ...information,
+          step2: { ...information.step2, upi: value }
+        });
+        // if(regex.test(value) === true) {
+        //   props.setVerified({...verified,upi: true});
+        // }
+        return regex.test(value) === false;
+      } else if (name === "terms_conditions") { 
+        setInformation({
+          ...information,
+          step2: { ...information.step2, terms_conditions: value }
+        });
+        console.log("This is terms conditions", value);
+        return value === false;
+      }
+    }
+  };
+
+  const onSubmit = (e) => {
+    console.log("SUBMIT CLICKED:",information.step1, information.step2)
+    props.register({...information.step1, ...information.step2})
+  }
+
+  return (
+    <React.Fragment>
+      <style>
+        {`.${carbonPrefix}--modal { opacity: 0; }`};
+      </style>
+      <CreateFullPage
+        className={`${blockClass}`}
+        {...props}
+        nextButtonText="Next"
+        backButtonText="Back"
+        cancelButtonText="Cancel"
+        submitButtonText="Sign Up"
+        modalDangerButtonText="Cancel Sign Up"
+        modalSecondaryButtonText="Return to form"
+        modalTitle="Are you sure you want to cancel?"
+        modalDescription="If you cancel, your account will not be created."
+        onRequestSubmit={(e) => onSubmit(e)}
+        onClose={() => {
+          // navigate("/");
+        }}
+      >
+        <CreateFullPageStep
+          title="Select your path!"
+          subtitle="You can choose from the following paths, based on your interest."
+          description="If you are not sure, you can always choose explore and we will help you find your path."
+          onNext={() => {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                // Example usage of how to prevent the next step if some kind
+                // of error occurred during the `onNext` handler.
+                if (shouldReject) {
+                  setHasSubmitError(true);
+                  reject();
+                }
+                // setIsInvalid(false);
+                resolve();
+              }, simulatedDelay);
+            });
+          }}
+          disableSubmit={
+            !selectedCategory
+          }
+          introStep
+        >
+          <TileGroup
+            defaultSelected={selectedCategory}
+            legend=""
+            name="Select a category"
+            onChange={(value) => setSelectedCategory(value)}
+            valueSelected={selectedCategory}
+          >
+            <RadioTile
+              // className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
+              value="professionals"
+              id="tile-1"
+              tabIndex={selectedCategory === 'professionals' ? 0 : -1}
+            >
+              <NoDataIllustration variant="pro" size="lg" />
+              <span
+                // className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile-label`}
+              >
+                Professionals
+              </span>
+            </RadioTile>
+            <RadioTile
+              className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
+              value="entrepreneurs"
+              id="tile-2"
+              tabIndex={selectedCategory === 'entrepreneurs' ? 0 : -1}
+            >
+              <NoDataIllustration variant="ent" size="lg" />
+              <span
+                className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile-label`}
+              >
+                Entrepreneurs
+              </span>
+            </RadioTile>
+            <RadioTile
+              className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
+              value="administrators"
+              id="tile-3"
+              tabIndex={selectedCategory === 'administrators' ? 0 : -1}
+            >
+              <NoDataIllustration variant="fre" size="lg" />
+              <span
+                className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile-label`}
+              >
+                Administrators
+              </span>
+            </RadioTile>
+            <RadioTile
+              className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
+              value="explore"
+              id="tile-4"
+              tabIndex={selectedCategory === 'explore' ? 0 : -1}
+            >
+              <NoDataIllustration variant="exp" size="lg" />
+              <span
+                className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile-label`}
+              >
+                Explore
+              </span>
+            </RadioTile>
+          </TileGroup>
+        </CreateFullPageStep>
+        <CreateFullPageStep
+          title="Personal Details"
+          subtitle="One or more partitions make up a topic. A partition is an ordered list
+        of messages."
+          description=""
+          onNext={() => {
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                // Example usage of how to prevent the next step if some kind
+                // of error occurred during the `onNext` handler.
+                if (shouldReject) {
+                  console.log("SHOULD REJECT: ",shouldReject)
+                  console.log("IS INVALID: ",isInvalid)
+                  setHasSubmitError(true);
+                  reject();
+                }
+                // setIsInvalid(false);
+                resolve();
+              }, simulatedDelay);
+            });
+          }}
+          disableSubmit={
+            isInvalid.first_name ||
+            isInvalid.last_name ||
+            isInvalid.email ||
+            isInvalid.mobile ||
+            isInvalid.password ||
+            isInvalid.confirm_password ||
+            isInvalid.adhar ||
+            isInvalid.first_name === null ||
+            isInvalid.last_name === null ||
+            isInvalid.email === null ||
+            isInvalid.mobile === null ||
+            isInvalid.password === null ||
+            isInvalid.confirm_password === null ||
+            isInvalid.adhar === null || !(
+              verified.email && verified.mobile && verified.adhar
+            )
+          }
+        >
+          <Grid fullWidth style={{ padding: "2rem" }}>
             <Column sm={4} md={6} lg={8}>
               <Form>
                 <FormGroup legendText="">
                   <TextInput
                     id="first-name"
-                    labelText="First Name"
+                    labelText={ToggleTip('First Name', true, props)}
                     placeholder="Enter your first name"
-                    style={{marginBottom:"15px"}}
+                    style={{ marginBottom: "15px" }}
                     onChange={e => {
-                      setTextInput(e.target.value);
-                      setIsInvalid(false);
-                      setShouldReject(false)
+                      setIsInvalid({
+                        ...isInvalid,
+                        first_name: validate(1, "first_name", e.target.value)
+                      });
+                      setShouldReject(
+                        isInvalid.first_name ||
+                          isInvalid.last_name ||
+                          isInvalid.email ||
+                          isInvalid.mobile ||
+                          isInvalid.password ||
+                          isInvalid.confirm_password ||
+                          isInvalid.adhar
+                      );
                     }}
-                    invalid={isInvalid}
+                    invalid={
+                      isInvalid.first_name && isInvalid.first_name !== null
+                    }
                     invalidText="This is a required field"
+                    required
                   />
                   <TextInput
                     id="last-name"
-                    labelText="Last Name"
+                    labelText={ToggleTip('Last Name', true, props)}
                     placeholder="Enter your last name"
-                    style={{marginBottom:"15px"}}
+                    style={{ marginBottom: "15px" }}
                     onChange={e => {
-                      setTextInput(e.target.value);
-                      setIsInvalid(false);
-                      setShouldReject(false)
+                      setIsInvalid({
+                        ...isInvalid,
+                        last_name: validate(1, "last_name", e.target.value)
+                      });
+                      setShouldReject(
+                        !(
+                          information.step1.first_name ||
+                          information.step1.last_name ||
+                          information.step1.email ||
+                          information.step1.mobile ||
+                          information.step1.password ||
+                          information.step1.confirm_password ||
+                          information.step1.adhar
+                        )
+                      );
                     }}
-                    invalid={isInvalid}
+                    invalid={isInvalid.last_name && isInvalid.last_name !== null}
                     invalidText="This is a required field"
+                    required
                   />
                   <TextInput
                     id="email"
-                    labelText="Email"
+                    labelText={ToggleTip('Email', false, props)}
                     type="email"
                     placeholder="Enter your email"
-                    style={{marginBottom:"15px"}}
+                    style={{ marginBottom: "15px" }}
                     onChange={e => {
-                      setTextInput(e.target.value);
-                      setIsInvalid(false);
-                      setShouldReject(false)
+                      setIsInvalid({
+                        ...isInvalid,
+                        email: validate(1, "email", e.target.value)
+                      });
+                      setShouldReject(
+                        !(
+                          information.step1.first_name ||
+                          information.step1.last_name ||
+                          information.step1.email ||
+                          information.step1.mobile ||
+                          information.step1.password ||
+                          information.step1.confirm_password ||
+                          information.step1.adhar
+                        )
+                      );
                     }}
-                    invalid={isInvalid}
-                    invalidText="This is a required field"
+                    invalid={isInvalid.email && isInvalid.email !== null}
+                    invalidText="Please enter a valid email address"
+                    required
                   />
                   <TextInput
                     id="mobile-number"
-                    labelText="Mobile Number"
+                    labelText={ToggleTip('Mobile Number', false, props)}
                     type="tel"
+                    value={information.step1.mobile}
                     placeholder="Enter your mobile number"
-                    style={{marginBottom:"15px"}}
+                    style={{ marginBottom: "15px" }}
                     onChange={e => {
-                      setTextInput(e.target.value);
-                      setIsInvalid(false);
-                      setShouldReject(false)
+                      const regex = /^[/+0-9\b]+$/;
+                      if (e.target.value.length < 3 || !regex.test(e.target.value)) {
+                        return
+                      }
+                      setIsInvalid({
+                        ...isInvalid,
+                        mobile: validate(
+                          1,
+                          "mobile",
+                          e.target.value
+                        )
+                      });
+                      setShouldReject(
+                        isInvalid.first_name ||
+                          isInvalid.last_name ||
+                          isInvalid.email ||
+                          isInvalid.mobile ||
+                          isInvalid.password ||
+                          isInvalid.confirm_password ||
+                          isInvalid.adhar
+                      );
                     }}
-                    invalid={isInvalid}
+                    invalid={
+                      isInvalid.mobile && isInvalid.mobile !== null
+                    }
                     invalidText="This is a required field"
+                    required
                   />
                   <PasswordInput
                     id="password"
                     labelText="Password"
                     placeholder="Enter your password"
-                    style={{marginBottom:"15px"}}
+                    style={{ marginBottom: "15px" }}
                     onChange={e => {
-                      setTextInput(e.target.value);
-                      setIsInvalid(false);
-                      setShouldReject(false)
+                      setIsInvalid({
+                        ...isInvalid,
+                        password: validate(1, "password", e.target.value)
+                      });
+                      setShouldReject(
+                        isInvalid.first_name ||
+                          isInvalid.last_name ||
+                          isInvalid.email ||
+                          isInvalid.mobile ||
+                          isInvalid.password ||
+                          isInvalid.confirm_password ||
+                          isInvalid.adhar
+                      );
                     }}
-                    invalid={isInvalid}
-                    invalidText="This is a required field"
+                    invalid={isInvalid.password}
+                    invalidText={<ul><li>At least one lowercase alphabet i.e. [a-z]</li>
+                      <li>At least one uppercase alphabet i.e. [A-Z]</li>
+                      <li>At least one Numeric digit i.e. [0-9]</li>
+                      <li>At least one special character i.e. [‘@’, ‘$’, ‘.’, ‘#’, ‘!’, ‘%’, ‘*’, ‘?’, ‘&’, ‘^’]</li>
+                      <li>Also, the total length must be in the range [8-15]</li></ul>}
+                    required
                   />
                   <PasswordInput
                     id="confirm-password"
                     labelText="Confirm Password"
                     placeholder="Confirm your password"
-                    style={{marginBottom:"15px"}}
+                    style={{ marginBottom: "15px" }}
                     onChange={e => {
-                      setTextInput(e.target.value);
-                      setIsInvalid(true);
-                      setShouldReject(true);
+                      setIsInvalid({
+                        ...isInvalid,
+                        confirm_password: validate(
+                          1,
+                          "confirm_password",
+                          e.target.value
+                        )
+                      });
+                      setShouldReject(
+                        isInvalid.first_name ||
+                          isInvalid.last_name ||
+                          isInvalid.email ||
+                          isInvalid.mobile ||
+                          isInvalid.password ||
+                          isInvalid.confirm_password ||
+                          isInvalid.adhar
+                      );
                     }}
-                    invalid={isInvalid}
-                    invalidText="This is a required field"
+                    invalid={
+                      isInvalid.confirm_password &&
+                      isInvalid.confirm_password !== null
+                    }
+                    invalidText="Passwords do not match"
+                    required
                   />
                   <TextInput
-                    id="pan-card"
-                    labelText="PAN Card Number"
-                    placeholder="Enter your PAN card number"
-                    style={{marginBottom:"15px"}}
-                    onChange={e => {
-                      setTextInput(e.target.value);
-                      setIsInvalid(false);
-                      setShouldReject(false);
+                    id="adhar-card"
+                    labelText={ToggleTip('Adhar Card Number', true, props)}
+                    placeholder="Enter your Adhar card number"
+                    style={{ marginBottom: "15px" }}
+                    value={information.step1.adhar}
+                    onKeyDown={(e) => {
+                      if ((e.key.charCodeAt(0) >= 48 && e.key.charCodeAt(0) <= 57)||e.key === "Backspace") {
+                        if ((information.step1.adhar.length === 3 || information.step1.adhar.length === 8)&&information.step1.adhar.length<=14&&!(e.key === "Backspace")) {
+                          setIsInvalid({
+                            ...isInvalid,
+                            adhar: validate(1, "adhar", information.step1.adhar + e.key + " ")
+                          });
+                        } else if (information.step1.adhar.length <= 14&&!(e.key === "Backspace")) {
+                          setIsInvalid({
+                            ...isInvalid,
+                            adhar: validate(1, "adhar", information.step1.adhar+e.key)
+                          });
+                        } else if (e.key === "Backspace") {
+                          setIsInvalid({
+                            ...isInvalid,
+                            adhar: validate(1, "adhar", information.step1.adhar.slice(0, -1))
+                          });
+                        }
+                      }
                     }}
-                    invalid={isInvalid}
+                    onChange={e => {
+                      setShouldReject(
+                        isInvalid.first_name ||
+                          isInvalid.last_name ||
+                          isInvalid.email ||
+                          isInvalid.mobile ||
+                          isInvalid.password ||
+                          isInvalid.confirm_password ||
+                          isInvalid.adhar
+                      );
+                    }}
+                    invalid={isInvalid.adhar && isInvalid.adhar !== null}
                     invalidText="This is a required field"
+                    required
                   />
                 </FormGroup>
               </Form>
@@ -215,36 +666,55 @@ const SignUp = ({
           </Grid>
         </CreateFullPageStep>
 
-        <CreateFullPageStep title="Payment Details" subtitle="This is how many copies of a topic will be made for high availability" description="The partitions of each topic can be replicated across a configurable number of brokers."
+        <CreateFullPageStep
+          title="Payment Details"
+          subtitle="This is how many copies of a topic will be made for high availability"
+          description="The partitions of each topic can be replicated across a configurable number of brokers."
+          disableSubmit={
+            isInvalid.upi ||
+            isInvalid.upi === null ||
+            isInvalid.terms_conditions ||
+            isInvalid.terms_conditions === null || 
+            !verified.upi
+          }
+          onRequestSubmit={() => {
+            // return new Promise((resolve, reject) => {
+            //   setTimeout(() => {
+            //     if (shouldReject) {
+            //       setHasSubmitError(true);
+            //       reject();
+            //     }
+            //     setIsInvalid(false);
+            //     register({...information.step1, ...information.step2});
+            //   }, simulatedDelay);
+            // });
+            register({...information.step1, ...information.step2});
+          }}
         >
-        <Grid fullWidth style={{ padding: '2rem' }}>
+          <Grid fullWidth style={{ padding: "2rem" }}>
             <Column sm={4} md={6} lg={8}>
-            <Form>
-              <TextInput id="cardholder-name" labelText="Cardholder Name" required />
-              <TextInput id="card-number" labelText="Card Number" required />
-              <TextInput id="expiry-date" labelText="Expiry Date (MM/YY)" required />
-              <NumberInput
-                id="cvv"
-                label="CVV"
-                min={100}
-                max={999}
-                step={1}
-                required
-              />
-              <Dropdown
-                id="payment-method"
-                titleText="Payment Method"
-                label="Select a payment method"
-                items={paymentMethods}
-              />
-              <TextInput 
-                id="upi-id" 
-                labelText="UPI ID" 
-                value={upiId} 
-                onChange={(e) => setUpiId(e.target.value)} 
-                required 
-              />
-            </Form>
+              <Form>
+                <TextInput
+                  id="upi-id"
+                  labelText={ToggleTip('UPI ID', true, props)}
+                  placeholder="Enter your upi id"
+                  onChange={e => {
+                    setIsInvalid({
+                      ...isInvalid,
+                      upi: validate(2, "upi", e.target.value)
+                    });
+                    setShouldReject(
+                      isInvalid.upi ||
+                        isInvalid.upi === null ||
+                        isInvalid.terms_conditions ||
+                        isInvalid.terms_conditions === null
+                    );
+                  }}
+                  invalid={isInvalid.upi && isInvalid.upi !== null}
+                  invalidText="This is a required field"
+                  required
+                />
+              </Form>
             </Column>
           </Grid>
 
@@ -257,19 +727,51 @@ const SignUp = ({
               </h5>
 
               <h6 className={`${blockClass}__step-subtitle`}>
-                Please read the terms and conditions carefully. By checking the box below, you agree to the terms and conditions.
+                Please read the terms and conditions carefully. By checking the
+                box below, you agree to the terms and conditions.
               </h6>
               <Checkbox
-                  labelText={<div>I agree to the <a>terms and conditions</a></div>}
-                  id="terms-conditions"
-                  required
-                  style={{marginBottom:"15px"}}
-                />
+                labelText={
+                  <div>
+                    I agree to the <a>terms and conditions</a>
+                  </div>
+                }
+                id="terms-conditions"
+                onChange={e => {
+                  console.log(e.target.checked);
+                  setIsInvalid({
+                    ...isInvalid,
+                    terms_conditions: validate(
+                      2,
+                      "terms_conditions",
+                      e.target.checked
+                    )
+                  });
+                  setShouldReject(
+                    isInvalid.upi ||
+                      isInvalid.upi === null ||
+                      isInvalid.terms_conditions ||
+                      isInvalid.terms_conditions === null
+                  );
+                }}
+                invalid={
+                  isInvalid.terms_conditions &&
+                  isInvalid.terms_conditions === null
+                }
+                invalidText="This is a required field"
+                required
+                defaultValue={false}
+                style={{ marginBottom: "15px" }}
+              />
             </Column>
           </Grid>
         </CreateFullPageStep>
       </CreateFullPage>
-    </>;
-}
+    </React.Fragment>
+  );
+};
 
-export default SignUp;
+const mapStateToProps = (state) => ({
+})
+
+export default connect(mapStateToProps, { register, sendVerification, verifyOtp, setVerified, setAlert, setOpenOtpModal })(SignUp)

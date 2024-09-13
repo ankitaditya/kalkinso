@@ -2,7 +2,7 @@ import * as actionTypes from '../actions/types'
 
 const intialState = []
 
-export default function (state = intialState, action) {
+export default function alertReducer(state = intialState, action) {
 	switch (action.type) {
 		case actionTypes.SET_ALERT:
 			return [...state, action.payload]

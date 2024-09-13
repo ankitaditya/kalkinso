@@ -25,3 +25,9 @@ $baseClass: 'gallery-card';
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.#{$baseClass}__post-actions {
+  margin-left: 69%;
+  margin-bottom: 10px;
+  margin-top: -20px;
+}

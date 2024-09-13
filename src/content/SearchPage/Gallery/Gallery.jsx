@@ -2,21 +2,31 @@ import React, { useState, useEffect } from 'react';
 
 import { GalleryCard } from './GalleryCard';
 import SelectHeirarchy from '../SelectHeirarchy/SelectHeirarchy';
-import { Search } from '@carbon/react';
+import { Button, Checkbox, Popover, PopoverContent, RadioButton, RadioButtonGroup, Search } from '@carbon/react';
 import config from '../gallery-config';
 import logo from '../banner.webp';
 
 import './_Gallery.scss';
 import Banner from '../Banner';
+import { useNavigate } from 'react-router-dom';
+import { SearchBar, pkg } from '@carbon/ibm-products';
+import { useDispatch, useSelector } from 'react-redux';
+import { setOpenTask } from '../../../actions/task';
+import { ClickableTile } from 'carbon-components-react';
 
 const blockClass = `gallery`;
+pkg.component.SearchBar = true;
 
 const packagePath =
   'github/carbon-design-system/ibm-products/tree/main/examples/carbon-for-ibm-products';
 
-export const Gallery = ({ site }) => {
+export const Gallery = ({ site, handleSearch }) => {
   const [filteredConfig, setFilteredConfig] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [search, setSearch] = useState('');
+  const { openTask, isMulti } = useSelector((state) => state.task);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const getLink = (dir) => {
     switch (site) {
@@ -35,29 +45,42 @@ export const Gallery = ({ site }) => {
     setFilteredConfig(config);
   }, [config, site]);
 
-  const handleSearch = (ev) => {
-    if (!ev.target.value) {
-      setFilteredConfig(config);
-    } else {
-      const filter = new RegExp(ev.target.value, 'i');
-      setFilteredConfig(config.filter((item) => filter.test(item.label)));
-    }
-  };
-
   return (
     <>
-    <div className={blockClass}>
-      <div className={`${blockClass}__container`}>
-        <h1 className={`${blockClass}__title`}>
+    {/* <div className={blockClass}> */}
+      {/* <div className={`${blockClass}__container`}> */}
+        {/* <h1 className={`${blockClass}__title`}>
           <Banner logoSrc={logo}/>
-        </h1>
-        <Search
+        </h1> */}
+        <SearchBar
           className={`${blockClass}__filter`}
-          labelText="Find a Carbon for IBM Products example"
-          onChange={handleSearch}
-          placeholder="Filter sandboxes"
+          autoComplete="search"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              let event = {
+                value: e.target.value
+              }
+              handleSearch(event);
+            }
+          }}
+          // onChange={(e) => setSearch(e.value)}
+          onSubmit={(e)=>{
+            let event = {
+              value: e.value
+            }
+            handleSearch(event);
+          }}
+          // scopes={["All", "Components", "Patterns", "Guidelines", "Resources", "Utilities"].map((scope) => { return { id: scope, text: scope }; })} // NOTE: This is a workaround for the SearchBar component not accepting an array of strings
+          titleText='Search'
+          // hideScopesLabel={false}
+          // scopesTypeLabel='Scopes'
+          // scopeToString={(scope) => { return scope.text; }}
+          submitLabel='Search'
+          placeholderText='Search for a task...'
+          labelText='Search'
+          clearButtonLabelText='clear'
         />
-        <div className={`${blockClass}__gallery`}>
+        {/* <div className={`${blockClass}__gallery`}>
           {filteredConfig.map((item, index) => (
             <GalleryCard
               className={`${blockClass}__gallery-item`}
@@ -76,10 +99,9 @@ export const Gallery = ({ site }) => {
               aria-hidden="true"
             />
           ))}
-        </div>
-      </div>
-    </div>
-    <SelectHeirarchy open={open} onClose={()=>setOpen(false)} />
+        </div> */}
+      {/* </div> */}
+    {/* </div> */}
     </>
   );
 };

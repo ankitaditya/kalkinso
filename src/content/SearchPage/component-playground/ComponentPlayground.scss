@@ -1,0 +1,24 @@
+.component-playground {
+    overflow-y: scroll;
+    height: 87vh;
+    position: relative;
+    top: -25px;
+}
+
+.component-playground::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+.component-playground::-webkit-scrollbar
+{
+	width: 12px;
+	background-color: #F5F5F5;
+}
+
+.component-playground::-webkit-scrollbar-thumb
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #161616;
+}

@@ -7,6 +7,10 @@ import Banner from './Banner';
 import logo from './banner.webp';
 import AuthModal from '../Login/AuthModal';
 import Gallery from './Gallery/Gallery';
+import { useNavigate } from 'react-router-dom';
+import ComponentPlayground from './component-playground/ComponentPlayground';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadUser, setLoading } from '../../actions/auth';
 
    const SearchPage = () => {
     const itemsPerPage = 10; // Number of items per page
@@ -16,9 +20,19 @@ import Gallery from './Gallery/Gallery';
     name: `Item ${index + 1}`,
     }));
      const [searchTerm, setSearchTerm] = useState('');
+     const { token, isAuthenticated } = useSelector((state) => state.auth);
+     const dispatch = useDispatch();
      const [results, setResults] = useState([]);
      const [currentPage, setCurrentPage] = useState(1);
      const [isModalOpen, setIsModalOpen] = useState(false);
+     const navigate = useNavigate();
+
+     useEffect(() => {
+        if(!isAuthenticated&&!localStorage.getItem('token')) {
+          dispatch(setLoading(true));
+          dispatch(loadUser({token: localStorage.getItem('token')}))
+        }
+      },[]);
 
         const handleOpenModal = () => {
             setIsModalOpen(true);
@@ -60,21 +74,9 @@ import Gallery from './Gallery/Gallery';
        setResults(filteredResults.length ? filteredResults : allTasks);
      };
 
-     const highlightText = (text, highlight) => {
-       if (!highlight.trim()) {
-         return text;
-       }
-       const regex = new RegExp(`(${highlight})`, 'gi');
-       const parts = text.split(regex);
-       return parts.map((part, index) => {
-         return regex.test(part) ? <mark key={index}>{part}</mark> : part;
-       });
-     };
-
      return (
        <div className="search-page">
-         <Gallery />
-         <AuthModal open={isModalOpen} onClose={handleCloseModal} />
+         <ComponentPlayground />
        </div>
      );
    };

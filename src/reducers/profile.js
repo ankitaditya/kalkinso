@@ -1,20 +1,19 @@
 import * as actionTypes from '../actions/types'
 
-const intialState = {
-	profile: null,
-	profiles: [],
-	repos: [],
-	loading: true,
-	error: {},
-}
+const intialState =   {};
 
-export default function (state = intialState, action) {
+export default function profileReducer(state = intialState, action) {
 	switch (action.type) {
 		case actionTypes.GET_PROFILE:
+			return {
+				...state,
+				...action.payload,
+				loading: false,
+			}
 		case actionTypes.UPDATE_PROFILE:
 			return {
 				...state,
-				profile: action.payload,
+				...action.payload,
 				loading: false,
 			}
 		case actionTypes.GET_PROFILES:
@@ -23,7 +22,7 @@ export default function (state = intialState, action) {
 				profiles: action.payload,
 				loading: false,
 			}
-		case actionTypes.GET_GITHUB_REPOS:
+		case actionTypes.GET_KIT_URL:
 			return {
 				...state,
 				repos: action.payload,

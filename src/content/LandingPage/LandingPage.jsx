@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -20,15 +21,22 @@ import { Globe, Application, PersonFavorite } from '@carbon/react/icons';
 import Login from '../Login/Login';
 import HeroSection from './HeroSection';
 import TaskCarousel from './TaskCarousel';
+import { loadUser, setLoading } from '../../actions/auth';
 
 class LandingPage extends Component {
+
+  componentDidMount() {
+    // this.props.dispatch(setLoading(true));
+    // this.props.dispatch(loadUser({token: localStorage.getItem('token')}));
+  }
+
   render() {
 
     return (
       <Grid className="landing-page" fullWidth>
         <Column lg={16} md={8} sm={4} className="landing-page__banner">
           <HeroSection ButtonComponent={<FluidForm style={{marginTop:"35px"}}>
-            <Button href='/#/register'>SignUp</Button>
+            <Button href='/#/register'>Sign Up</Button>
             <Button kind="secondary" href='/#/login'>Login</Button>
           </FluidForm>}/>
         </Column>
@@ -76,7 +84,7 @@ class LandingPage extends Component {
                         type="text"
                         onKeyDownCapture={() => {  }}
                       />
-                      <Button href='/#/contribute'>Search Tasks</Button>
+                      <Button href='/#/Home/search'>Search Tasks</Button>
                     </Column>
                     </Grid>
                   </Column>
@@ -169,4 +177,8 @@ class LandingPage extends Component {
   }
 };
 
-export default LandingPage;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps)(LandingPage);

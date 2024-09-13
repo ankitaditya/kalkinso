@@ -1,12 +1,26 @@
 /* styles.css */
-body {
-    font-family: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-    /* background-color: #f4f4f4; */
-  }
   
-  #app {
+  #application {
     padding: 20px;
   }
+
+  #application::-webkit-scrollbar-track
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      background-color: #F5F5F5;
+    }
+
+    #application::-webkit-scrollbar
+    {
+      width: 12px;
+      background-color: #F5F5F5;
+    }
+
+    #application::-webkit-scrollbar-thumb
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+      background-color: #161616;
+    }
   
   .breadcrumb {
     margin-bottom: 20px;
@@ -24,6 +38,7 @@ body {
   
   .grid {
     margin-top: 20px;
+    max-height: 20vh;
   }
   
   .tile h2 {

@@ -1,4 +1,4 @@
-import uuid from 'uuid'
+import * as uuid from 'uuid'
 import * as actionTypes from './types'
 
 export const setAlert = (msg, alertType, timeout = 3000) => (dispatch) => {
