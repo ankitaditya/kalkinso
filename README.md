@@ -1,12 +1,12 @@
 <p align="center">
     <a href="http://kitura.io/">
-        <img src="https://landscape.cncf.io/logos/ibm-member.svg" height="100" alt="IBM Cloud">
+        <img src="./public/logo-new.png" height="100" alt="IBM Cloud">
     </a>
 </p>
 
 <p align="center">
-    <a href="https://cloud.ibm.com">
-    <img src="https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg" alt="IBM Cloud">
+    <a href="https://kalkinso.com">
+    <img src="https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg" alt="Kalkinso">
     </a>
     <img src="https://img.shields.io/badge/platform-node-lightgrey.svg?style=flat" alt="platform">
     <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
