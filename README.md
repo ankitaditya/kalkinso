@@ -12,81 +12,98 @@
     <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
 </p>
 
-# Carbon React with Node.js
+# Kalkinso Project
 
-React is a popular framework for creating user interfaces in modular components. In this sample application, you will create a web application using Express and React to serve web pages in Node.js, complete with standard best practices, including a health check and application metric monitoring.
+Kalkinso is a web application built using Node.js and React, designed to provide a robust and scalable platform for modern web development. This project follows best practices and includes features such as health checks and application metric monitoring.
 
-This app contains an opinionated set of components for modern web development, including:
+## Table of Contents
 
-* [React](https://facebook.github.io/react/)
-* [Sass](http://sass-lang.com/) 
-* [Carbon](https://www.carbondesignsystem.com/)
-* [Create React App](https://github.com/facebook/create-react-app)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Endpoints](#api-endpoints)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Deploying 
+## Features
 
-After you have created a new git repo from this git template, remember to rename the project.
-Edit `package.json` and change the default name to the name you used to create the template.
+This application includes an opinionated set of components for modern web development, including:
 
-Make sure you are logged into the IBM Cloud using the IBM Cloud CLI and have access 
-to you development cluster. If you are using OpenShift make sure you have logged into OpenShift CLI on the command line.
+- [React](https://facebook.github.io/react/)
+- [Sass](http://sass-lang.com/)
+- [Carbon](https://www.carbondesignsystem.com/)
+- [Create React App](https://github.com/facebook/create-react-app)
+- [Express](https://expressjs.com/)
+- [MongoDB](https://www.mongodb.com/)
 
-```$bash
-npm install --location=global @ibmgaragecloud/cloud-native-toolkit-cli
-```
+## Installation
 
-Use the IBM Garage for Cloud CLI to register the GIT Repo with Tekton or Jenkins, using `--tekton` flag if using Tekton:
+To get started with the Kalkinso project, follow these steps:
 
-```$bash
-oc sync <project> [--tekton]
-oc pipeline
-```
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/yourusername/kalkinso.git
+    cd kalkinso
+    ```
 
-Ensure you have the Cloud-Native Toolkit installed in your cluster to make this method of pipeline registry quick and easy [Cloud-Native Toolkit](https://cloudnativetoolkit.dev/)
+2. Install the dependencies:
+    ```sh
+    npm install
+    ```
 
-#### Native Application Development
+3. Set up environment variables:
+    Create a `.env` file in the root directory and add the necessary environment variables. Example:
+    ```env
+    PORT=3000
+    MONGODB_URI=mongodb://localhost:27017/kalkinso
+    JWT_SECRET=your_jwt_secret
+    ```
 
-Install the latest [Node.js](https://nodejs.org/en/download/) 6+ LTS version.
+4. Start the development server:
+    ```sh
+    npm run dev
+    ```
 
-Once the Node toolchain has been installed, you can download the project dependencies with:
+## Usage
 
-```bash
-npm install -g yarn
-yarn install
-```
+To use the application, open your browser and navigate to `http://localhost:3000`. You can interact with the web interface and explore the features provided by the Kalkinso project.
 
-##### Local development
+## API Endpoints
 
-To run application for local development and get live updates on code changes:
+The following are the main API endpoints available in the Kalkinso project:
 
-```sh
-yarn start:dev
-```
+- **User Authentication**
+  - `POST /api/auth/register`: Register a new user
+  - `POST /api/auth/login`: Log in an existing user
 
-##### Test
+- **User Management**
+  - `GET /api/users`: Get a list of all users
+  - `GET /api/users/:id`: Get details of a specific user
+  - `PUT /api/users/:id`: Update user information
+  - `DELETE /api/users/:id`: Delete a user
 
-To run unit tests:
+- **Health Check**
+  - `GET /api/health`: Check the health status of the application
 
-```sh
-yarn test
-```
+## Contributing
 
-##### Run production build
+We welcome contributions to the Kalkinso project. To contribute, follow these steps:
 
-To try a production build, run:
-
-```sh
-yarn build
-yarn start
-```
-
-## Next Steps
-
-* Learn more about augmenting your Node.js applications on IBM Cloud with the [Node Programming Guide](https://cloud.ibm.com/docs/node?topic=nodejs-getting-started).
-* Explore other [sample applications](https://cloud.ibm.com/developer/appservice/starter-kits) on IBM Cloud.
+1. Fork the repository.
+2. Create a new branch:
+    ```sh
+    git checkout -b feature/your-feature-name
+    ```
+3. Make your changes and commit them:
+    ```sh
+    git commit -m "Add your commit message"
+    ```
+4. Push to the branch:
+    ```sh
+    git push origin feature/your-feature-name
+    ```
+5. Create a pull request.
 
 ## License
 
-This sample application is licensed under the Apache License, Version 2. Separate third-party code objects invoked within this code pattern are licensed by their respective providers pursuant to their own separate licenses. Contributions are subject to the [Developer Certificate of Origin, Version 1.1](https://developercertificate.org/) and the [Apache License, Version 2](https://www.apache.org/licenses/LICENSE-2.0.txt).
-
-[Apache License FAQ](https://www.apache.org/foundation/license-faq.html#WhatDoesItMEAN)
+This project is licensed under the Apache 2.0 License. See the [LICENSE](LICENSE) file for details.
