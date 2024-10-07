@@ -1,0 +1,28 @@
+/* MultiPageWordProcessor.css */
+
+.word-processor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 20px;
+  }
+  
+  .page {
+    background-color: white;
+    padding: 40px;
+    width: 60vw;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+
+  .upload-page {
+    width: 60vw;
+    padding: 40px;
+    margin-bottom: 20px;
+  }
+  
+  .page > .bn-container {
+    height: 100%;
+  }

@@ -24,6 +24,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 			type: actionTypes.AUTH_ERROR,
 		})
 		dispatch(setLoading(true))
+		window.localStorage.removeItem('__data')
 		window.location.href = `${window.location.origin}/#/login`
 		setTimeout(() => dispatch(setLoading(false)), 1000)
 	}

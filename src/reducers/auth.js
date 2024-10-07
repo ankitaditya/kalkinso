@@ -58,6 +58,8 @@ export default function authReducer(state = intialState, action) {
 				loading: false,
 			}
 		case actionTypes.LOGIN_FAIL:
+			localStorage.removeItem('token')
+			localStorage.removeItem('__data')
 			return {
 				...state,
 				token: action?.payload,
@@ -66,6 +68,7 @@ export default function authReducer(state = intialState, action) {
 			}
 		case actionTypes.LOGOUT:
 			localStorage.removeItem('token')
+			localStorage.removeItem('__data')
 			return {
 				...state,
 				token: null,
@@ -74,6 +77,7 @@ export default function authReducer(state = intialState, action) {
 			}
 		case actionTypes.DELETE_ACCOUNT:
 			localStorage.removeItem('token')
+			localStorage.removeItem('__data')
 			return {
 				...state,
 				token: null,

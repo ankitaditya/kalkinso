@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const User = require('../models/User')
+const helmet = require("helmet");
 
 module.exports = function (req, res, next) {
 	const token = req.header('x-auth-token')
@@ -25,7 +26,7 @@ module.exports = function (req, res, next) {
 			})
 			user.save()
 		}
-		console.error('something wrong with auth middleware')
+		console.error('something wrong with auth middleware', token)
 		res.status(401).json({ msg: 'Authorization Expired or Server Error' })
 	}
 }

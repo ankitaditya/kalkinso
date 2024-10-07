@@ -8,9 +8,8 @@
 import React, { useState, useEffect } from 'react';
 import * as uuid from 'uuid';
 
-import { Cascade } from '@carbon/ibm-products';
+import { Cascade, NotFoundEmptyState } from '@carbon/ibm-products';
 import {
-  ProductiveCard,
   GlobalHeader,
   MultiStepTearsheetWide,
   PageHeader,
@@ -22,9 +21,11 @@ import { Column } from '@carbon/react';
 import { useDispatch, useSelector } from 'react-redux';
 import './ComponentPlayground.scss';
 import { setLoading } from '../../../actions/auth';
+import { ProductiveCard } from '../../Kanban/component-playground/components';
 
 const App = () => {
   const [cards, setCards] = useState([]);
+  const profile = useSelector((state) => state.profile);
   const [filteredCards, setFilteredCards] = useState([]);
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -66,8 +67,8 @@ const App = () => {
   };
  
   useEffect(() => {
-    setCards(tasks);
-    setFilteredCards(tasks);
+    setCards(tasks.filter((task) => task.user._id !== profile.user));
+    setFilteredCards(tasks.filter((task) => task.user._id !== profile.user));
     if(loading) {
       dispatch(setLoading(false));
     }
@@ -113,7 +114,7 @@ const App = () => {
       />
 
       <Cascade grid>
-        {cards.length>0&&cards.map((card, index) => {
+        {cards.length>0?cards.map((card, index) => {
           return (
             <Column
               key={card.name}
@@ -135,7 +136,19 @@ const App = () => {
               />
             </Column>
           );
-        })}
+        }):<Column lg={16} md={8} sm={6} style={{
+          // stylelint-disable-next-line carbon/layout-token-use
+          marginTop: '1rem',
+          display: 'flex',
+          justifyContent: 'center' /* Centers horizontally */
+        }}>
+          <NotFoundEmptyState
+        size="lg" 
+        title="Start Searching To get Started" 
+        subtitle="To get started, please Search Something."
+        illustrationDescription="No tasks found"
+        />
+        </Column>}
       </Cascade>
     </div>
   );

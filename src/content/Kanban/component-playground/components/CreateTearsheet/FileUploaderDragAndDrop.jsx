@@ -116,8 +116,8 @@ const FileUploaderDragAndDrop = (props) => {
     
     const rand = Math.random() * 1000;
       AWS.config.update({
-        accessKeyId: "AKIA6GBMDGBC5LFG7IUW",
-        secretAccessKey: "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",
+        accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
+        secretAccessKey: "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",
       });
       const s3 = new S3({
         params: { Bucket: 'kalkinso.com' },

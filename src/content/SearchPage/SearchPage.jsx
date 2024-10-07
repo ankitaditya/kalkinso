@@ -27,12 +27,12 @@ import { loadUser, setLoading } from '../../actions/auth';
      const [isModalOpen, setIsModalOpen] = useState(false);
      const navigate = useNavigate();
 
-     useEffect(() => {
-        if(!isAuthenticated&&!localStorage.getItem('token')) {
-          dispatch(setLoading(true));
-          dispatch(loadUser({token: localStorage.getItem('token')}))
-        }
-      },[]);
+    //  useEffect(() => {
+    //     if(!isAuthenticated&&!localStorage.getItem('token')) {
+    //       dispatch(setLoading(true));
+    //       dispatch(loadUser({token: localStorage.getItem('token')}))
+    //     }
+    //   },[]);
 
         const handleOpenModal = () => {
             setIsModalOpen(true);

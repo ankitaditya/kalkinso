@@ -58,6 +58,29 @@ export default function chatSessionsReducer(state = initialState, action) {
                 currentSession: [...state.currentSession, action.payload.slice(-1)[0]],
                 loading: false,
             }
+        case actionTypes.UPDATE_MESSAGE:
+            let tempCurrentSession = state.currentSession;
+            if (tempCurrentSession[tempCurrentSession.length-1].content.id === action.payload.id) {
+                tempCurrentSession[tempCurrentSession.length-1].content.id = action.payload._id;
+                if (action.payload?.subTasks?.length > 0 && tempCurrentSession[tempCurrentSession.length-1].content.task_lists?.length > 0) {
+                    tempCurrentSession[tempCurrentSession.length-1].content.task_lists = tempCurrentSession[tempCurrentSession.length-1].content?.task_lists?.map((task) => {
+                        let subTaskObject = action.payload.subTasks.find((subTask) => subTask.id === task.id);
+                        if (subTaskObject) {
+                            return {
+                                ...task,
+                                id: subTaskObject.key,
+                            }
+                        } else {
+                            return task;
+                        }
+                    });
+                }
+            }
+            return {
+                ...state,
+                currentSession: tempCurrentSession,
+                loading: false,
+            }
         default:
             return state
     }

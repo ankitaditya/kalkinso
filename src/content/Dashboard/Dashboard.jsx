@@ -59,13 +59,14 @@ const SocialFeed = () => {
     const dispatch = useDispatch();
     const [items, setItems] = useState({});
     useEffect(()=>{
-      if(profile?.user){
+      if(profile?.user&&!selectedTask?.entries?.length){
         dispatch(getSelectedTasks("kalkinso.com",`users/${profile.user}/tasks`));
       }
     },[profile])
     const [useNormalizedItems, setUseNormalizedItems] = useState(!!items?.entries?.find((item) => item.children));
     const [normalizedItems, setNormalizedItems] = useState(useNormalizedItems ? normalize(items) : null);
     const [addSelectComponent, setAddSelectComponent] = useState(<Loading active={true}  />);
+    const { file_context } = useSelector((state)=>state.task.kanban);
     useEffect(()=>{
       if(selectedTask?.entries?.length>0){
         setUseNormalizedItems(!!selectedTask.entries.find((item) => item.children));
@@ -90,32 +91,6 @@ const SocialFeed = () => {
       { index: 9,type: 'running', label: 'Powered' },
       { index: 10,type: 'pending', label: 'Preparing' },
     ];
-    const contextMenuItemTemplate = (item) => {
-      return (
-        <div className="p-d-flex p-ai-center p-jc-between" style={{ width: '250px', margin:"0.5rem", cursor:"pointer" }}>
-          <span>{item.icon}</span>
-          <span style={{marginLeft:"1rem"}}>{item.label}</span>
-        </div>
-      );
-    }
-    const [ contextMenuItems, setContextMenuItems ] = useState([
-            { label: 'Add', template: contextMenuItemTemplate, 
-            items: [
-                { label: 'File', command: (e)=>{
-                    alert("File clicked");
-                },template: contextMenuItemTemplate, icon: <Document /> },
-                { label: 'Folder', command: (e)=>{
-                    alert("Folder clicked");
-                },template: contextMenuItemTemplate, icon: <Folder /> }
-            ],
-            icon: <Add /> },
-            { label: 'Copy', command: (e)=>{
-                alert("Copy clicked");
-            },template: contextMenuItemTemplate, icon: <Copy /> },
-            { label: 'Delete', command: (e)=>{
-              alert("Delete clicked");
-          },template: contextMenuItemTemplate, icon: <TrashCan /> }
-        ]);
       const handleOnSubmit = (selection) => {
         console.log('Selected Items:', selection);
       };
@@ -151,8 +126,6 @@ const SocialFeed = () => {
         setAddSelectComponent(<AddSelectBody title="Select Items"
           description="Choose items from the list"
           items={items}
-          contextMenuItems={contextMenuItems}
-          setContextMenuItems={setContextMenuItems}
           itemsLabel="Tasks"
           globalSearchLabel="Search Items"
           onCloseButtonText="Close"

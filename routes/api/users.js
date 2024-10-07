@@ -8,6 +8,7 @@ const nodemailer = require('nodemailer');
 // Assuming you have some method to generate OTP
 const { generateOTP, verifyOTP } = require('../../utils/otpUtils');
 const config = require('config')
+const auth = require('../../middleware/auth')
 
 const User = require('../../models/User')
 const Profile = require('../../models/Profile')
@@ -68,6 +69,7 @@ router.post(
 				user: user._id,
 				first_name:first_name,
 				last_name:last_name,
+				username: `${first_name.toLocaleLowerCase()}.${last_name.toLocaleLowerCase()}${`${user._id}`.slice(-4)}`,
 				user_role:user_role,
 				verification_status:{
 					email:{
@@ -125,6 +127,131 @@ router.post(
 			if (err.message.includes('duplicate key error collection')) {
 				let message = err.message.includes('email') ? 'email' : (err.message.includes('mobile') ? 'mobile' : 'upi')
 				console.error(`ERROR: A user with same ${message} already exists!: -> `,err.message)
+				return res.status(400).json([{ msg: `A user with same ${message} already exists!` }])
+			} else{
+				res.status(500).json([{ msg: err.message }])
+			}
+		}
+	}
+)
+
+router.post(
+	'/organizations/add',
+	auth,
+	[
+		body('org_id', 'Org Id is required').isEmail(),
+		body('ip_address', 'IP ADDRESS is required').not().isEmpty(),
+		body('user_id', 'Please include a valid user_id').isEmail(),
+		body('access_key', 'Please include a valid access_key').not().isEmpty(),
+		body('upi', 'Please include a valid UPI').not().isEmpty(),
+		body('adhar', 'Please include a valid last 4 digit of your Adhar number').not().isEmpty(),
+		body('mobile', 'Please include a valid mobile number').not().isEmpty(),
+		body('first_name', 'Name is required').not().isEmpty(),
+		body('last_name', 'Name is required').not().isEmpty(),
+		body('user_role', 'Please include a valid user_role').not().isEmpty()
+	],
+	async (req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() })
+		}
+		const { org_id, ip_address, first_name, last_name, user_id, mobile, user_role, upi, adhar, access_key } = req.body;
+		const org_user = await User.findOne({ email: org_id })
+		if (!org_user){
+			return res
+					.status(400)
+					.json({ errors: [{ msg: 'Invalid Organization Id Credentials' }] })
+		}
+		
+		try {
+			let user = await User.findOne({ user_id })
+			if (user) {
+				return res
+					.status(400)
+					.json([{ msg: 'User already exists' }])
+			}
+
+			const avatar = gravatar.url(user_id, {
+				s: '200',
+				r: 'pg',
+				d: 'mm',
+			})
+
+			user = new User({
+				first_name:first_name, 
+				last_name:last_name, 
+				email:user_id, 
+				mobile:mobile,
+				terms_conditions: org_user.terms_conditions,
+				avatar: avatar,
+				password: org_user.password,
+				upi: upi,
+				adhar: adhar,
+			})
+
+			let profile = new Profile({
+				user: user._id,
+				first_name:first_name, 
+				last_name:last_name, 
+				user_role:user_role,
+				username: `${first_name.toLocaleLowerCase()}.${last_name.toLocaleLowerCase()}${`${user._id}`.slice(-4)}`,
+				verification_status:{
+					email:{
+						value:user_id,
+						isVerified:true
+					},
+					phone:{
+						value:org_user.mobile,
+						isVerified:true
+					},
+					pan:{
+						value:adhar,
+						isVerified:true
+					},
+					upi:{
+						value: upi,
+						isVerified:true
+					},
+					adhar:{
+						value:adhar,
+						isVerified:true
+					}
+				},
+			  isActive:true,
+			})
+
+			// const salt = await bcrypt.genSalt(10)
+			// user.password = await bcrypt.hash(password, salt)
+
+			await user.save()
+			await profile.save()
+
+			const payload = {
+				user: {
+					id: user.id,
+				},
+			}
+			jwt.sign(
+				payload,
+				'my-jwt-secret',
+				{ expiresIn: "4 hours" },
+				(err, token) => {
+					if (err) {
+						throw err
+					}
+					res.json({ token })
+				}
+			)
+		} catch (err) {
+			const user = User.findOne({ email: user_id })
+			if(user) {
+				await User.findOneAndDelete({ email: user_id })
+				await Profile.findOneAndDelete({ user: user.id })
+			}
+			if (err.message.includes('duplicate key error collection')) {
+				let message = err.message.includes('email') ? 'email' : (err.message.includes('mobile') ? 'mobile' : 'upi')
+				console.error(`ERROR: A user with same ${message} already exists!: -> `,err.message)
+				console.error(err)
 				return res.status(400).json([{ msg: `A user with same ${message} already exists!` }])
 			} else{
 				res.status(500).json([{ msg: err.message }])

@@ -827,11 +827,14 @@ export default function taskReducer(state = intialState, action) {
 				}
 			}
 		case actionTypes.ADD_TASK:
+			let task = action.payload
+			task.subTasks = task.subTasks.map(sub_task => sub_task.id)
+			delete task.id
 			return {
 				...state,
 				kanban: {
 					...state.kanban,
-					tasks: [action.payload, ...state.kanban.tasks]
+					tasks: [task, ...state.kanban.tasks]
 				}
 			}
 		case actionTypes.DELETE_TASK:

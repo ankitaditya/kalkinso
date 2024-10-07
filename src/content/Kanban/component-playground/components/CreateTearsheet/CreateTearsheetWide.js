@@ -67,38 +67,39 @@ const MultiStepTearsheetWide = (props) => {
   
   const [createValues, setCreateValues] = useState({
     "user": {
-    "first_name": profile?.first_name,
-    "last_name": profile?.last_name,
-    "email": profile?.email,
-    "mobile": profile?.mobile,
-    "upi": profile?.upi,
-    "adhar": profile?.adhar,
-    "terms_conditions":  profile?.terms_conditions,
-    "avatar": profile?.avatar,
-    "date": profile?.date
+      "first_name": profile?.first_name,
+      "last_name": profile?.last_name,
+      "email": profile?.email,
+      "mobile": profile?.mobile,
+      "upi": profile?.upi,
+      "adhar": profile?.adhar,
+      "terms_conditions":  profile?.terms_conditions,
+      "avatar": profile?.avatar,
+      "date": profile?.date
     },
     "name": "",
     "description": "",
+    "short_description": "",
     "assigned": [],
     "time": {
     "estimated": [
       {
-      "user": "646cbcb0f29d303de1b5df7f",
-      "value": 4
+        "user": "646cbcb0f29d303de1b5df7f",
+        "value": 4
       },
       {
-      "user": "646cbcb0f29d303de1b5df80",
-      "value": 2
+        "user": "646cbcb0f29d303de1b5df80",
+        "value": 2
       }
     ],
     "actual": {
-      "user": "646cbcb0f29d303de1b5df81",
-      "value": 6
+        "user": "646cbcb0f29d303de1b5df81",
+        "value": 6
     }
     },
     "cost": {
-    "estimated": 384,
-    "actual": 416
+        "estimated": 384,
+        "actual": 416
     },
     "org": profile?.org,
     "location": profile?.location,
@@ -207,19 +208,36 @@ const MultiStepTearsheetWide = (props) => {
                 //   setStepOneTextInputValue(event.target.value);
               }}
               name="name"
-              slug={aiLabel('task_name')}
+              slug={aiLabel(setCreateValues, 'name', createValues)}
               invalid={false}
               invalidText="This is a required field"
             />
             <TextArea
+              labelText="Short Description"
+              id="tearsheet-multi-step-story-text-input-multi-step-1-input-2-1"
+              rows={4}
+              //value={topicDescriptionValue}
+              value={createValues ? createValues.short_description : ''}
+              placeholder="Enter task short description"
+              name="short_description"
+              slug={aiLabel(setCreateValues, 'short_description', createValues)}
+              onChange={(event) =>
+                setCreateValues({
+                  ...createValues,
+                  [event.target.name]: event.target.value,
+                  short_description: event.target.value,
+                })
+              }
+            />
+            <TextArea
               labelText="Description"
-              id="tearsheet-multi-step-story-text-input-multi-step-1-input-2"
+              id="tearsheet-multi-step-story-text-input-multi-step-1-input-2-2"
               rows={4}
               //value={topicDescriptionValue}
               value={createValues ? createValues.description : ''}
               placeholder="Enter task description"
               name="description"
-              slug={aiLabel('task_description')}
+              slug={aiLabel(setCreateValues, 'description', createValues)}
               onChange={(event) =>
                 setCreateValues({
                   ...createValues,

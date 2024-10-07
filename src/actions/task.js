@@ -8,12 +8,21 @@ import {
   SET_TASKS,
   GET_SUB_TASKS,
   SET_DELETE_FILE,
+  UPDATE_MESSAGE,
 } from './types';
 import { setAlert } from './alert';
 import { setLoading } from './auth';
+import { cache } from '../utils/redux-cache';
+import { getSelectedTasks } from './kits';
 
 // Action to get all tasks
-export const getTasks = (taskPath=null) => async dispatch => {
+export const getTasks = (taskPath=null, from_cache=true) => async dispatch => {
+  // if (from_cache) {
+  //   if (cache({type:GET_TASKS, taskPath}, dispatch)) {
+  //     dispatch(setLoading(false));
+  //     return;
+  //   }
+  // }
   try {
     dispatch(setLoading(true));
     const res = await axios.get('/api/tasks');
@@ -28,6 +37,12 @@ export const getTasks = (taskPath=null) => async dispatch => {
           }
         });
       }
+      let data = window.localStorage.getItem('__data')?JSON.parse(window.localStorage.getItem('__data')):{};
+      data[GET_TASKS] = {
+        type: GET_TASKS,
+        payload: taskPath&&taskPath!=='create'?res?.data.filter((card, index) => card.parentTasks.length === 0||sub_tasks.includes(card._id)):res?.data.filter((card, index) => card.parentTasks.length === 0),
+      };
+      window.localStorage.setItem('__data', JSON.stringify(data));
       dispatch({
         type: GET_TASKS,
         payload: taskPath&&taskPath!=='create'?res?.data.filter((card, index) => card.parentTasks.length === 0||sub_tasks.includes(card._id)):res?.data.filter((card, index) => card.parentTasks.length === 0),
@@ -35,10 +50,8 @@ export const getTasks = (taskPath=null) => async dispatch => {
     }
     dispatch(setLoading(false));
   } catch (err) {
-    dispatch({
-      type: TASKS_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
-    });
+    dispatch(setLoading(false));
+    dispatch(setAlert(err.response.statusText, 'info'));
   }
 };
 
@@ -66,6 +79,7 @@ export const addTask = (taskData, task_id=null, Prefix=null) => async dispatch =
     if (task_id) {
       taskData.parentTasks = [task_id];
     }
+    const taskPath = Prefix;
     if(Prefix?.split('&&')?.length>1){
       Prefix = Prefix.split('&&').join('/');
     } else if(Prefix&&Prefix==='create'){
@@ -80,7 +94,12 @@ export const addTask = (taskData, task_id=null, Prefix=null) => async dispatch =
       type: ADD_TASK,
       payload: res.data,
     });
-    window.location.reload();
+    dispatch({
+      type: UPDATE_MESSAGE,
+      payload: res.data,
+    })
+    dispatch(getTasks(taskPath, false))
+    dispatch(getSelectedTasks('kalkinso.com', 'ankit.see', false));
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
@@ -93,6 +112,10 @@ export const addTask = (taskData, task_id=null, Prefix=null) => async dispatch =
 export const updateTask = (id, taskData) => async dispatch => {
   try {
     const res = await axios.put(`/api/tasks/${id}`, {taskFields:taskData});
+    if(window.location.hash.toLocaleLowerCase().includes('#/home.')){
+      dispatch(getTasks(window.location.hash.toLocaleLowerCase().replace('#/home/',''), false))
+      dispatch(getSelectedTasks('kalkinso.com', 'ankit.see', false));
+    }
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -109,6 +132,10 @@ export const updateTask = (id, taskData) => async dispatch => {
 export const deleteTask = (id) => async dispatch => {
   try {
     await axios.delete(`/api/tasks/${id}`);
+    if(window.location.hash.toLocaleLowerCase().includes('#/home')){
+      dispatch(getTasks(window.location.hash.toLocaleLowerCase().replace('#/home/',''), false))
+      dispatch(getSelectedTasks('kalkinso.com', 'ankit.see', false));
+    }
     dispatch({
       type: DELETE_TASK,
       payload: id,

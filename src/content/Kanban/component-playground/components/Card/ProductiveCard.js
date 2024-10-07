@@ -65,8 +65,8 @@ const ProductiveCard = (props) => {
       dispatch(setOpenTask(props.data._id));
     }
   };
-
-  const actionIcons = [
+  const profile = useSelector((state) => state.profile);
+  const actionIcons = props.data.user._id===profile.user?[
     {
       id: '1',
       icon: () => (
@@ -97,6 +97,19 @@ const ProductiveCard = (props) => {
       },
       iconDescription: 'Edit',
     },
+  ]:[
+    {
+      id: '1',
+      icon: () => (
+        <StatusIcon
+          iconDescription={statusIconKind?.label}
+          kind={statusIconKind?.type}
+          size="sm"
+          theme="dark"
+        />
+      ),
+      iconDescription: statusIconKind?.label,
+    }
   ];
 
   return (
@@ -108,11 +121,11 @@ const ProductiveCard = (props) => {
       // overflowActions={}
       onPrimaryButtonClick={()=>{
         if(taskPath&&taskPath==='create'){
-        window.location.href = `/#/home/${props.data._id}`
+        window.location.href = `${window.location.pathname}#/home/${props.data._id}`
         } else if (taskPath){
-          window.location.href = `/#/home/${taskPath}&&${props.data._id}`
+          window.location.href = `${window.location.pathname}#/home/${taskPath}&&${props.data._id}`
         } else {
-          window.location.href = `/#/home/${props.data._id}`
+          window.location.href = `${window.location.pathname}#/home/${props.data._id}`
         }
       }}
       primaryButtonText={"View"}

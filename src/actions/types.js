@@ -43,6 +43,7 @@ export const UPLOAD_FILE = 'UPLOAD_FILE'
 export const RENAME_FILE = 'RENAME_FILE'
 export const DELETE_FILE = 'DELETE_FILE'
 export const SET_DELETE_FILE = 'SET_DELETE_FILE'
+export const ADD_FILE = 'ADD_FILE'
 export const MOVE_FILE = 'MOVE_FILE'
 export const COPY_FILE = 'COPY_FILE'
 
@@ -79,6 +80,13 @@ export const GET_MESSAGES = 'GET_MESSAGES'
 export const CLEAR_CHAT_SESSION = 'CLEAR_CHAT_SESSION'
 export const CHAT_SESSION_ERROR = 'CHAT_SESSION_ERROR'
 export const SET_LOADING_MESSAGE = 'SET_LOADING_MESSAGE'
+export const UPDATE_MESSAGE = 'UPDATE_MESSAGE'
 
 /* KIT ACTIONS */
 export const GET_SELECTED_TASK = 'GET_SELECTED_TASK'
+
+
+/* CACHE MANAGEMENT */
+
+export const CLEAR_CACHE = 'CLEAR_CACHE'
+export const LOAD_CACHE = 'LOAD_CACHE'

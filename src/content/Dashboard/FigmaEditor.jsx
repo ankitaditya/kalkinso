@@ -11,8 +11,8 @@ export default class ImageEditorWorkbench extends React.Component {
     this.imageEditorInst = new TuiImageEditor(this.rootEl.current, {
       includeUI: {
         loadImage: {
-          path: 'img/sampleImage.jpg',
-          name: 'SampleImage',
+          path: this.props.image_uri,
+          name: this.props.title,
         },
         theme: {}, // You can customize the theme here
         menu: ['crop', 'flip', 'rotate', 'draw', 'shape', 'icon', 'text', 'mask', 'filter'],

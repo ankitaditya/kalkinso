@@ -17,7 +17,7 @@ class TaskCarousel extends React.Component {
         "Write a blog post",
         "Create a social media post",
     ],
-    aiLabel: AISlug(),
+    // aiLabel: AISlug,
   };
 
   render() {
@@ -33,7 +33,7 @@ class TaskCarousel extends React.Component {
                     media={<img src={"https://www.shutterstock.com/image-photo/tasks-word-on-wooden-cubes-260nw-1904598853.jpg"} alt={task} style={{ width: '80vw', height: 'auto', borderRadius: '8px 8px 0 0' }} />}
                     primaryButtonText="Add to Board"
                     title={task}
-                    slug={this.state.aiLabel}
+                    // slug={this.state.aiLabel((props)=>{}, "Kalkinso", {})}
                     >
                     <p>
                         As you swipe through the tasks, you'll discover a wide range of opportunities to contribute and earn rewards. 

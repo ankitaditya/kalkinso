@@ -111,7 +111,7 @@ export let AddSelectRow = ({
 
   const onNavigateItem = () => {
     focusHandler(true);
-    setParentSelected(item.id, item.title, parentId, item.prefix);
+    setParentSelected(item.id, item.title, parentId, item);
   };
 
   const modifierHandler = (id, selectedItem) => {
@@ -198,20 +198,23 @@ export let AddSelectRow = ({
             />
           )}
           {item.children && (
-            <Button
-              className={`${blockClass}-view-children`}
-              renderIcon={(props) => <ChevronRight size={16} {...props} />}
-            //   iconDescription={navIconDescription}
-              tooltipPosition="left"
-              tooltipAlignment="center"
-              title=""
-              hasIconOnly
-              onClick={onNavigateItem}
-              kind="ghost"
-              size="sm"
-              tabIndex={-1}
-              aria-hidden={true}
-            />
+            // <Button
+            //   className={`${blockClass}-view-children`}
+            //   renderIcon={(props) => }
+            // //   iconDescription={navIconDescription}
+            //   tooltipPosition="left"
+            //   tooltipAlignment="center"
+            //   title=""
+            //   hasIconOnly
+            //   onClick={onNavigateItem}
+            //   kind="ghost"
+            //   size="sm"
+            //   tabIndex={-1}
+            //   aria-hidden={true}
+            // />
+            <ChevronRight style={{
+              cursor:"pointer"
+            }} tabIndex={-1} className={`${blockClass}-view-children`} size={16} onClick={onNavigateItem}  />
           )}
           {item.meta && (
             <Button
@@ -226,8 +229,8 @@ export let AddSelectRow = ({
               onClick={metaPanelHandler}
             />
           )}
-        </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -21,11 +21,9 @@ const UserSchema = new mongoose.Schema({
 	},
 	upi: {
 		type: String,
-		unique: true,
 	},
 	adhar: {
 		type: String,
-		unique: true,
 	},
 	terms_conditions: {
 		type: String,

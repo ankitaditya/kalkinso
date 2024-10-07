@@ -6,16 +6,27 @@ import { ProgressBar } from 'primereact/progressbar';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 import { Tag } from 'primereact/tag';
+import AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import 'primeflex/primeflex.css';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primeicons/primeicons.css";
 
-export default function FileUploadWidget({emptyStateTemplate}) {
+export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}) {
+    AWS.config.update({
+        accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
+        secretAccessKey: "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",
+    });
+    const s3 = new S3({
+        params: { Bucket: bucket },
+        region: 'ap-south-1',
+    });
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef(null);
     
     const onTemplateSelect = (e) => {
+        console.log(item)
         let _totalSize = totalSize;
         let files = e.files;
 
@@ -25,16 +36,28 @@ export default function FileUploadWidget({emptyStateTemplate}) {
 
         setTotalSize(_totalSize);
     };
-
+    
     const onTemplateUpload = (e) => {
-        let _totalSize = 0;
-
+        let _totalSize = totalSize;
+        console.log("I am in upload!")
         e.files.forEach((file) => {
-            _totalSize += file.size || 0;
+            _totalSize -= file.size || 0;
+            const params = {
+                Bucket: bucket,
+                Key: `${item.id}${file.name}`,
+                Body: file,
+              };
+              console.log(params)
+              s3.putObject(params).promise().then((res)=>{
+                console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${res}`);
+              }).catch((reason)=>{
+                console.log(reason)
+              })
         });
 
-        setTotalSize(_totalSize);
         toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
+        e.files = []
+        setTotalSize(_totalSize>0?_totalSize:0);
     };
 
     const onTemplateRemove = (file, callback) => {
@@ -96,14 +119,14 @@ export default function FileUploadWidget({emptyStateTemplate}) {
     const cancelOptions = { icon: 'pi pi-fw pi-times', iconOnly: true, className: 'custom-cancel-btn p-button-danger p-button-rounded p-button-outlined' };
 
     return (
-        <div style={{marginTop:"2rem"}}>
+        <div style={{marginTop:"2rem", marginBottom: "2rem"}}>
             <Toast style={{zIndex:9999999}} ref={toast}></Toast>
 
             <Tooltip target=".custom-choose-btn" content="Choose" position="bottom" />
             <Tooltip target=".custom-upload-btn" content="Upload" position="bottom" />
             <Tooltip target=".custom-cancel-btn" content="Clear" position="bottom" />
 
-            <FileUpload ref={fileUploadRef} name="demo[]" url="/api/upload" multiple accept="image/*" maxFileSize={1000000*200}
+            <FileUpload ref={fileUploadRef} style={{marginTop:"2rem", marginBottom: "2rem"}} name="kits_upload" url='/api/kits/upload' multiple accept="*" maxFileSize={1000000*200}
                 onUpload={onTemplateUpload} onSelect={onTemplateSelect} onError={onTemplateClear} onClear={onTemplateClear}
                 headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate}
                 chooseOptions={chooseOptions} uploadOptions={uploadOptions} cancelOptions={cancelOptions} />

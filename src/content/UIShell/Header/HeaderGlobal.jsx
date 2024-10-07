@@ -27,13 +27,18 @@ const HeaderGlobal = () => {
     useEffect(() => {
         console.log('isAuthenticated:', auth);
         if(!isAuthenticated&&localStorage.getItem('token')) {
-        dispatch(setLoading(true));
-        dispatch(loadUser({token: localStorage.getItem('token')}))
+            if(
+                (window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))
+            ){
+                localStorage.setItem('token', window.location.pathname.split('/')[1].replace('token=',''))
+            }
+            dispatch(setLoading(true));
+            dispatch(loadUser({token: localStorage.getItem('token')}))
         }
     },[])
     return (
 
-        isAuthenticated?(<><HeaderGlobalBar kind="secondary">
+        isAuthenticated&&!(window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))?(<><HeaderGlobalBar kind="secondary">
             <HeaderGlobalAction
                 aria-label="Notifications"
                 isActive={ state.activeTab === 1}

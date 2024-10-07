@@ -11,8 +11,10 @@ const KanbanBoard = () => {
   const { tasks } = useSelector((state) => state.task.kanban);
   const [ breadcrumb, setBreadcrumb ] = useState([]);
   useEffect(() => {
-    dispatch(setLoading(true));
-    dispatch(getTasks(taskPath))
+    if(!tasks.length){
+      dispatch(setLoading(true));
+      dispatch(getTasks(taskPath))
+    }
   },[])
   useEffect(() => {
     console.log('Task path:', taskPath);

@@ -7,7 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Cascade, ExpressiveCard, pkg, StatusIcon, UserProfileImage } from '@carbon/ibm-products';
+import { Cascade, ExpressiveCard, NotFoundEmptyState, pkg, StatusIcon, UserProfileImage } from '@carbon/ibm-products';
 import {
   ProductiveCard,
   GlobalHeader,
@@ -20,7 +20,7 @@ import {
 import { Accordion, AccordionItem, ButtonSet, ClickableTile, Column, ContentSwitcher, FileUploader, IconButton, IconSwitch, InlineLoading, Switch, TextArea, Tile, Tooltip } from '@carbon/react';
 import './ComponentPlayground.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { Attachment, Chat, Delete, Edit, FaceActivated, FileStorage, Folder, FolderOpen, Image, Send, TableOfContents, TrashCan, User } from '@carbon/react/icons';
+import { Add, Attachment, Chat, Delete, Edit, FaceActivated, FileStorage, Folder, FolderOpen, Image, Send, TableOfContents, TrashCan, User } from '@carbon/react/icons';
 import { Editor } from 'primereact/editor';
 import { Markup } from 'interweave';
 import costaPic from './_story-assets/costa.jpeg';
@@ -30,11 +30,31 @@ import { setLoading } from '../../../actions/auth';
 import { getSubTasks } from '../../../actions/task';
 pkg.component.ProductiveCard = true;
 pkg.component.Cascade = true;
+pkg.component.NotFoundEmptyState = true;
 
 const App = ({breadcrumb}) => {
   const { tasks } = useSelector((state) => state.task.kanban);
   const { taskPath } = useParams();
-  const [ cardsComponent, setCardsComponent ] = useState([]);
+  const [ cardsComponent, setCardsComponent ] = useState(
+    <Column lg={16} md={8} sm={6} style={{
+      // stylelint-disable-next-line carbon/layout-token-use
+      marginTop: '5rem',
+      display: 'flex',
+      justifyContent: 'center' /* Centers horizontally */
+    }}>
+      <NotFoundEmptyState
+    size="lg" 
+    title="No tasks found" 
+    subtitle="To get started, please create a new task."
+    illustrationDescription="No tasks found"
+    action={{
+      "kind": "secondary",
+      "text": "Create new",
+      "renderIcon": Add,
+      onClick: () => setMultiStepTearsheetOpen(true)
+    }}
+    />
+    </Column>);
   const [cards, setCards] = useState(tasks);
   const [contentSwitch, setContentSwitch] = useState({index: 0, name: 'one', text: 'Table of Contents'});
   const [sendComment, setSendComment] = useState({isSubmitting: false, success: false, failed: false});
@@ -102,9 +122,45 @@ const App = ({breadcrumb}) => {
           </Column>
         );
       } else {
-        return <></>
+        return <Column lg={16} md={8} sm={6} style={{
+          // stylelint-disable-next-line carbon/layout-token-use
+          marginTop: '5rem',
+          display: 'flex',
+          justifyContent: 'center' /* Centers horizontally */
+        }}>
+          <NotFoundEmptyState
+        size="lg" 
+        title="No tasks found" 
+        subtitle="To get started, please create a new task."
+        illustrationDescription="No tasks found"
+        action={{
+          "kind": "secondary",
+          "text": "Create new",
+          "renderIcon": Add,
+          onClick: () => setMultiStepTearsheetOpen(true)
+        }}
+        />
+        </Column>;
       }
-    }):[]);
+    }):<Column lg={16} md={8} sm={6} style={{
+      // stylelint-disable-next-line carbon/layout-token-use
+      marginTop: '5rem',
+      display: 'flex',
+      justifyContent: 'center' /* Centers horizontally */
+    }}>
+      <NotFoundEmptyState
+    size="lg" 
+    title="No tasks found" 
+    subtitle="To get started, please create a new task."
+    illustrationDescription="No tasks found"
+    action={{
+      "kind": "secondary",
+      "text": "Create new",
+      "renderIcon": Add,
+      onClick: () => setMultiStepTearsheetOpen(true)
+    }}
+    />
+    </Column>);
   },[cards])
   const [comments, setComments] = useState([
     {
@@ -209,13 +265,6 @@ const App = ({breadcrumb}) => {
 
   return (
     <div className="component-playground">
-      {/* <GlobalHeader /> */}
-      {/* <div
-        style={{
-          // stylelint-disable-next-line carbon/layout-token-use
-          marginTop: '48px',
-        }}
-      ></div> */}
       <PageHeader 
         setIsOpen={setMultiStepTearsheetOpen} 
         breadcrumb={breadcrumb} 

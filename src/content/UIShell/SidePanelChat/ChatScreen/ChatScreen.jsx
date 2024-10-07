@@ -23,12 +23,21 @@ import { ClickableTile } from 'carbon-components-react';
 import { Cascade, ProductiveCard, SidePanel, pkg } from '@carbon/ibm-products';
 import { useDispatch, useSelector } from 'react-redux';
 import { MultiStepTearsheetWide, TearsheetNarrow, TearsheetWide } from '../../../Kanban/component-playground/components';
-import { setIsMulti, setOpenTask } from '../../../../actions/task';
+import { addTask, setIsMulti, setOpenTask } from '../../../../actions/task';
 import { Editor } from 'primereact/editor';
 import { sendMessage, setLoadingMessage } from '../../../../actions/kalkiai';
 import Showdown from 'showdown';
 import { pdfExporter } from 'quill-to-pdf';
 import { saveAs } from "file-saver";
+import AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
+import { useParams } from 'react-router-dom';
+
+AWS.config.update({
+  accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
+  secretAccessKey: "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",
+});
+
 pkg.component.ProductiveCard = true;
 pkg.component.SidePanel = true;
 pkg.component.Cascade = true;
@@ -37,6 +46,60 @@ const ChatScreen = () => {
   const showdown = new Showdown.Converter();
   const { user } = useSelector((state) => state.auth);
   const profile = useSelector((state)=>state.profile);
+  const createTaskTemplate = {
+    "user": {
+      "first_name": profile?.first_name,
+      "last_name": profile?.last_name,
+      "email": profile?.verification_status?.email?.value,
+      "mobile": profile?.verification_status?.mobile?.value,
+      "upi": profile?.verification_status?.upi?.value,
+      "adhar": profile?.verification_status?.adhar?.value,
+      "terms_conditions":  profile?.terms_conditions,
+      "avatar": profile?.avatar,
+      "date": profile?.date
+    },
+    "name": "",
+    "description": "",
+    "assigned": [
+        {
+          "user": profile?.user,
+          "status": "To Do",
+          "isVolunteer": false,
+          "rating": profile?.rating,
+      }
+    ],
+    "time": {
+    "estimated": [
+      {
+        "user": "646cbcb0f29d303de1b5df7f",
+        "value": 4
+      },
+      {
+        "user": "646cbcb0f29d303de1b5df80",
+        "value": 2
+      }
+    ],
+    "actual": {
+    }
+    },
+    "cost": {
+        "estimated": 384,
+        "actual": 416
+    },
+    "org": profile?.org,
+    "location": "Online",
+    "status": "To Do",
+    "skills": [],
+    "analytics": {},
+    "priority": "",
+    "subTasks": [],
+    "parentTasks": [],
+    "attachments": [],
+    "tags": [],
+    "date": new Date().toLocaleDateString(),
+    "createdAt": "2023-08-11T19:02:19.529Z",
+    "updatedAt": "2023-10-21T02:32:14.518Z"
+  };
   const { currentSession, loading } = useSelector((state) => state.chat);
   const [messages, setMessages] = useState([
     {role: "assistant", content: "Hello there! I am an assistant for your idea implementation? You can generate tasks, create plans, and much more. How can I help you today?"}
@@ -45,6 +108,8 @@ const ChatScreen = () => {
   const [ quillInstance, setQuillInstance ] = useState(false);
   const { tasks } = useSelector((state) => state.task);
   const [cards, setCards] = useState(tasks);
+  const [ taskPath , setTaskPath ] = useState(null);
+  const [createdTask, setCreatedTask] = useState({});
   const [messagesComponent, setMessagesComponent] = useState();
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
   const [cardToEdit, setCardToEdit] = useState();
@@ -52,7 +117,7 @@ const ChatScreen = () => {
   const [wideTearsheetOpen, setWideTearsheetOpen] = useState(false);
   const [multiStepTearsheetOpen, setMultiStepTearsheetOpen] = useState(false);
   const dispatch = useDispatch();
-  const exportPdf = (event) => {
+  const exportPdf = (event, path=null) => {
     // we pass the delta object to the generatePdf function of the pdfExporter
     // be sure to AWAIT the result, because it returns a Promise
     // it will resolve to a Blob of the PDF document
@@ -84,23 +149,43 @@ const ChatScreen = () => {
     console.log("This is event: ",event);
     pdfExporter.generatePdf(event.editor.delta).then((blob) => {
       console.log("This is blob: ",blob);
-      saveAs(blob, "pdf-export.pdf");
+      if (path) {
+        const s3 = new S3({
+            params: { Bucket: 'kalkinso.com' },
+            region: 'ap-south-1',
+        });
+        const params = {
+          Bucket: 'kalkinso.com',
+          Key: path,
+          Body: blob,
+        };
+        s3.putObject(params).promise().then((res)=>{
+          console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${res}`);
+        }).catch((reason)=>{
+          console.log(reason)
+        });
+      } else {
+        saveAs(blob, "pdf-export.pdf");
+      }
     });
 
     // we use saveAs from the file-saver package to download the blob
   };
   // const [pdf, setPdf] = useState(()=>exportPdf());
   useEffect(()=>{
-    // setPdf(()=>exportPdf(quillInstance));
-    // console.log("This is changed idea: ",quillInstance);
-    // console.log("This is changed messages: ",messages);
-  },[quillInstance]);
+    if(window.location.hash.toLowerCase().includes('#/home')
+      &&window.location.hash.toLowerCase().replace('#/home','')
+    &&window.location.hash.toLowerCase().replace('#/home','')!=='/create'
+    &&window.location.hash.toLowerCase().replace('#/home','')!==''){
+      setTaskPath(window.location.hash.toLowerCase().replace('#/home/',''));
+    } else {
+      setTaskPath(null);
+    }
+  },[window.location.hash]);
 
   useEffect(() => {
-    // setPdf(()=>exportPdf(quillInstance));
-    console.log("This is changed idea: ",idea);
-    // console.log("This is changed pdf: ",pdf);
-  },[idea])
+    console.log("This is task path sidebar chat: ",taskPath);
+  }, [taskPath]);
 
   useEffect(() => {
     console.log("This is changed messages: ",messages);
@@ -155,17 +240,58 @@ const ChatScreen = () => {
                         />
                       ),
                       iconDescription: "Create",
-                      onClick: () => setMultiStepTearsheetOpen(true)
+                      disabled: createdTask[`${index}-${message.role}-prod-card-body`],
+                      onClick: () => {
+                        let newTask = {...createTaskTemplate};
+                        let tempCreatedTask = {...createdTask};
+                        tempCreatedTask[`${index}-${message.role}-prod-card-body`] = true
+                        newTask.name = card.project_name;
+                        newTask.short_description = card.project_description;
+                        newTask.description = card.standard_operating_procedures;
+                        // newTask.terms_conditions = card.project_terms_conditions;
+                        newTask.time.estimated = [
+                                                      {
+                                                          "user": profile?.user,
+                                                          "value": card.project_total_estimated_time,
+                                                      }
+                                                  ];
+                        newTask.cost.estimated = card.project_total_estimated_cost;
+                        newTask.cost.actual = card.project_total_estimated_cost;
+                        newTask.subTasks = card.task_list.map((task) => {
+                          tempCreatedTask[`${index}-${message.role}-prod-task-body`] = true
+                          return {
+                            ...createTaskTemplate,
+                            name: task.sub_task,
+                            description: task.standard_operating_procedures,
+                            time: {
+                              estimated: [
+                                {
+                                  "user": user?._id,
+                                  "value": task.estimated_time,
+                                }
+                              ]
+                            },
+                            cost: {
+                              estimated: task.estimated_cost,
+                              actual: task.estimated_cost
+                            },
+                            short_description: task.description,
+                            // terms_conditions: task.terms_conditions
+                          }
+                        });
+                        dispatch(addTask(newTask, taskPath?.split('&&')?.splice(-1)?taskPath?.split('&&')?.splice(-1)[0]:null, taskPath));
+                        setCreatedTask(tempCreatedTask);
+                      }
                     },
                   ]}
                   actionsPlacement="top"
                   // onClick={()=>handleTaskOpen('single')}
                   description={card.project_description}
                   // overflowActions={}
-                  onPrimaryButtonClick={() => handleTaskOpen('single')}
+                  // onPrimaryButtonClick={() => handleTaskOpen('single')}
                   // primaryButtonText={"View"}
                   // secondaryButtonText={"Start"}
-                  onSecondaryButtonClick={() => handleTaskOpen('multi')}
+                  // onSecondaryButtonClick={() => handleTaskOpen('multi')}
                   // title={cards[card.index].name}
                 >
                   <Grid>
@@ -200,17 +326,82 @@ const ChatScreen = () => {
                           />
                         ),
                         iconDescription: "Create",
-                        onClick: () => setMultiStepTearsheetOpen(true)
+                        diabled: createdTask[`${index}-${message.role}-prod-task-body`],
+                        onClick: () => {
+                          let newTask = {...createTaskTemplate};
+                          let tempCreatedTask = {...createdTask};
+                          if (tempCreatedTask[`${index}-${message.role}-prod-card-body`]) {
+                            newTask = {
+                              ...createTaskTemplate,
+                              name: task.sub_task,
+                              description: task.standard_operating_procedures,
+                              time: {
+                                estimated: [
+                                  {
+                                    "user": user?._id,
+                                    "value": task.estimated_time,
+                                  }
+                                ]
+                              },
+                              cost: {
+                                estimated: task.estimated_cost,
+                                actual: task.estimated_cost
+                              },
+                              parentTasks: [card?._id],
+                              short_description: task.description,
+                              // terms_conditions: task.terms_conditions
+                            };
+                            dispatch(addTask(newTask, card?._id, taskPath?taskPath+'&&'+card?._id:card?._id));
+                            setCreatedTask({...tempCreatedTask, [`${index}-${message.role}-prod-task-body`]: true});
+                          }
+                          tempCreatedTask[`${index}-${message.role}-prod-card-body`] = true;
+                          newTask.name = card.project_name;
+                          newTask.short_description = card.project_description;
+                          newTask.description = card.standard_operating_procedures;
+                          // newTask.terms_conditions = card.project_terms_conditions;
+                          newTask.time.estimated = [
+                                                        {
+                                                            "user": user?._id,
+                                                            "value": card.project_total_estimated_time,
+                                                        }
+                                                    ];
+                          newTask.cost.estimated = card.project_total_estimated_cost;
+                          newTask.cost.actual = card.project_total_estimated_cost;
+                          tempCreatedTask[`${index}-${message.role}-prod-task-body`] = true;
+                          newTask.subTasks = [
+                            {
+                              ...createTaskTemplate,
+                              name: task.sub_task,
+                              description: task.standard_operating_procedures,
+                              time: {
+                                estimated: [
+                                  {
+                                    "user": user?._id,
+                                    "value": task.estimated_time,
+                                  }
+                                ]
+                              },
+                              cost: {
+                                estimated: task.estimated_cost,
+                                actual: task.estimated_cost
+                              },
+                              short_description: task.description,
+                              // terms_conditions: task.terms_conditions
+                            }
+                          ];
+                          dispatch(addTask(newTask, taskPath?.split('&&')?.splice(-1)?taskPath?.split('&&')?.splice(-1)[0]:null, taskPath));
+                          setCreatedTask(tempCreatedTask);
+                        }
                       },
                     ]}
                     actionsPlacement="top"
                     // onClick={()=>handleTaskOpen('single')}
                     description={task.description}
                     // overflowActions={}
-                    onPrimaryButtonClick={() => handleTaskOpen('single')}
+                    // onPrimaryButtonClick={() => handleTaskOpen('single')}
                     // primaryButtonText={"View"}
                     // secondaryButtonText={"Start"}
-                    onSecondaryButtonClick={() => handleTaskOpen('multi')}
+                    // onSecondaryButtonClick={() => handleTaskOpen('multi')}
                     // title={cards[card.index].name}
                   >
                     <Grid>
@@ -244,7 +435,50 @@ const ChatScreen = () => {
                         />
                       ),
                       iconDescription: "Create",
-                      onClick: () => setMultiStepTearsheetOpen(true)
+                      disabled: createdTask[`${index}-${message.role}-prod-card-body`],
+                      onClick: () => {
+                        let newTask = {...createTaskTemplate};
+                        let tempCreatedTask = {...createdTask};
+                        tempCreatedTask[`${index}-${message.role}-prod-card-body`] = true
+                        newTask.name = card.project_name;
+                        newTask.short_description = card.project_description;
+                        newTask.description = card.standard_operating_procedures;
+                        // newTask.terms_conditions = card.project_terms_conditions;
+                        newTask.time.estimated = [
+                                                      {
+                                                          "user": user?._id,
+                                                          "value": card.project_total_estimated_time,
+                                                      }
+                                                  ];
+                        newTask.cost.estimated = card.project_total_estimated_cost;
+                        newTask.cost.actual = card.project_total_estimated_cost;
+                        if(card?.task_list?.length>0){
+                          newTask.subTasks = card.task_list.map((task) => {
+                            tempCreatedTask[`${index}-${message.role}-prod-task-body`] = true
+                            return {
+                              ...createTaskTemplate,
+                              name: task.sub_task,
+                              description: task.standard_operating_procedures,
+                              time: {
+                                estimated: [
+                                  {
+                                    "user": user?._id,
+                                    "value": task.estimated_time,
+                                  }
+                                ]
+                              },
+                              cost: {
+                                estimated: task.estimated_cost,
+                                actual: task.estimated_cost
+                              },
+                              short_description: task.description,
+                              // terms_conditions: task.terms_conditions
+                            }
+                          });
+                        }
+                        dispatch(addTask(newTask, taskPath?.split('&&')?.splice(-1)?taskPath?.split('&&')?.splice(-1)[0]:null, taskPath));
+                        setCreatedTask(tempCreatedTask);
+                      }
                     },
                   ]}
                   actionsPlacement="top"
@@ -305,6 +539,7 @@ const ChatScreen = () => {
     if (currentSession.slice(-1)[0].role === 'assistant'&&currentSession.length>1) {
     const markdownMatch = /((#{1,6}\s.*|!\[.*\]\(.*\)|\*{1,2}.*\*{1,2}|\[.*\]\(.*\)|\* .*)*.*(#{1,6}\s.*|!\[.*\]\(.*\)|\*{1,2}.*\*{1,2}|\[.*\]\(.*\)|\* .*)+.*(#{1,6}\s.*|!\[.*\]\(.*\)|\*{1,2}.*\*{1,2}|\[.*\]\(.*\)|\* .*)*)+/;
     if(typeof currentSession.slice(-1)[0].content === 'object') {
+
       setMessages([
         ...messages,
         {
@@ -339,9 +574,10 @@ const ChatScreen = () => {
               console.log("This is event when text is changed: ",idea);
             }
           } />,
-          actions: [{label:"Yes",onClick:()=>{
+          actions: [{label:"Yes",onClick:(event)=>{
             dispatch(setLoadingMessage(true));
             dispatch(sendMessage({ role: "user", content: quillInstance?quillInstance:(currentSession.slice(-1)[0].content) }, user, profile.user));
+            exportPdf(event, `users/${profile.user}/tasks/ideas/${new Date().toISOString()}.pdf`);
             setMessages([...messages, 
               {
                 role: 'assistant',
@@ -351,7 +587,7 @@ const ChatScreen = () => {
                     setQuillInstance(showdown.makeHtml(currentSession.slice(-1)[0].content))
                   }
                 }} showHeader={false} readOnly />,
-                actions: [{label:"Download PDF",onClick:exportPdf, kind:"secondary"}],
+                actions: [{label:"Download PDF",onClick:(event)=>exportPdf(event, null), kind:"secondary"}],
               },
               { role: "user", content: "Yes" }
             ]);

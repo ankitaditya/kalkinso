@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Tag, Accordion, AccordionItem, FileUploaderDropContainer } from '@carbon/react';
+import { Tag, Accordion, AccordionItem, FileUploaderDropContainer, TreeNode, TreeView, IconButton, Column, Grid } from '@carbon/react';
 import PropTypes from 'prop-types';
 import { NoDataEmptyState } from '@carbon/ibm-products';
-import { pkg } from '@carbon/ibm-products';
 import { AddSelectMetaPanel } from '@carbon/ibm-products/lib/components/AddSelect/AddSelectMetaPanel';
 import FileViewer from 'react-file-viewer';
 import { CustomErrorComponent } from 'custom-error';
@@ -11,10 +10,43 @@ import CodeEditor from './CodeEditor';
 import FileUploadWidget from './Widgets/FileUpload';
 import BlockNoteEditor from './BlockNoteEditor';
 import FigmaEditor from './FigmaEditor';
+import { Close, Download, Save } from '@carbon/react/icons';
+import { useDispatch } from 'react-redux';
+import { save } from '../../actions/kits';
+import { setLoading } from '../../actions/auth';
+// import * as Y from "yjs";
+// import { WebrtcProvider } from "y-webrtc";
+import { ReactDropzone } from './Widgets/ReactDropzone';
+import { buildPathToTree, exportToPDF } from './utils';
+import { ButtonSet } from 'carbon-components-react';
+import "./MultiPageWordProcessor/MultiPageWordProcessor.css";
+import PhotoEditor from './PhotoEditor';
 
 
 const blockClass = `home--add-select__sidebar`;
 const componentName = 'AddSelectSidebar';
+
+function renderTree({ nodes, replacer, expanded, withIcons = false }) {
+  let nodesArray = nodes;
+  if (nodes&&replacer) {
+    nodesArray = buildPathToTree(nodes.map((node) => {
+      return node.id.replace(replacer, '');
+    }));
+    console.log("Node Array: ",nodesArray);
+  }
+  if (!nodesArray) {
+    return;
+  }
+  return nodesArray.map(({ children, renderIcon, isExpanded, ...nodeProps }) => (
+    <TreeNode
+      key={nodeProps.id}
+      renderIcon={withIcons ? renderIcon : null}
+      isExpanded={expanded ?? isExpanded}
+      {...nodeProps}>
+      {renderTree({ nodes: children, expanded, withIcons })}
+    </TreeNode>
+  ));
+}
 
 const monacoSupportedFileExtensions = {
   "abap": {"language":"abap"},
@@ -86,14 +118,18 @@ const AddSelectSidebar = ({
   items,
   metaPanelTitle,
   modifiers,
+  pathExternal,
   multiSelection,
+  setMultiSelection,
   noSelectionDescription,
   noSelectionTitle,
   setDisplayMetaPanel,
 }) => {
   const hasModifiers = modifiers?.options?.length > 0;
   const hasSelections = multiSelection.length > 0;
-
+  const [ isChanged, setIsChanged ] = useState(false);
+  const dispatch = useDispatch();
+  const [content, setContent] = useState("");
   const getNewItem = (item) => {
     const { meta, icon, avatar, ...newItem } = item;
     return newItem;
@@ -107,12 +143,12 @@ const AddSelectSidebar = ({
     return getNewItem(items[selectionId]);
   });
 
-  useEffect(() => {}, [multiSelection]);
-
   const getTitle = (item) => (
     <div className={`${blockClass}-accordion-title`}>
       <div className={`${blockClass}-selected-item`}>
-        <p className={`${blockClass}-selected-item-title`}>{item.title}</p>
+        <p className={`${blockClass}-selected-item-title`}>
+          Details
+        </p>
         <p className={`${blockClass}-selected-item-subtitle`}>
           {item.subtitle}
         </p>
@@ -128,26 +164,55 @@ const AddSelectSidebar = ({
   );
 
   const renderFile = (item) => {
+    // const doc = new Y.Doc();
     const files = [{filename: item.title, value: item.signedUrl}];
     if(!item?.signedUrl){
       return <></>;
     }
-    if (item.fileType === 'txt') {
-      return <BlockNoteEditor initialContent={item.signedUrl} />
+    if (item.fileType === 'txt' || (item.fileType === 'pdf'&&!item.title.includes("view.pdf"))) {
+      // const provider = new WebrtcProvider(item.id, doc); // setup a yjs provider (explained below)
+      return <div className='word-processor'>
+      <BlockNoteEditor 
+      // provider={provider} 
+      // doc={doc}
+      className="page"
+      setContent={
+        (content)=>setContent(content)} 
+      initialContent={
+        item.signedUrl
+      }
+      setIsChanged={setIsChanged}
+      item_id={item.id}
+      bucket="kalkinso.com" 
+      /></div>;
+      // return <MultiPageWordProcessor
+      //   style={{marginTop:"2rem", marginBottom: "2rem"}} 
+      //   setContent={
+      //     (content)=>setContent(content)} 
+      //   initialContent={
+      //     item.signedUrl
+      //   }
+      //   item_id={item.id}
+      //   bucket="kalkinso.com" 
+      // />
     }
-    if (item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg') {
-      return <FigmaEditor usageStatistics={false} style={{width:"auto"}} />;
+    if (item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg' || item.fileType === 'webp') {
+      // return <FigmaEditor image_uri={item.signedUrl} title={item.title}  usageStatistics={false} style={{width:"auto", marginTop:"2rem", marginBottom: "2rem"}} />;
+      return <PhotoEditor image_uri={item.signedUrl} title={item.title} closeImgEditor={()=>{
+                  setMultiSelection(multiSelection.filter((item_id)=>item_id!==item.id))
+                }}  usageStatistics={false} className='page' style={{width:"100%", height:"80vh"}} />;
     }
     if (monacoSupportedFileExtensions.hasOwnProperty(item.fileType)) {
-      console.log("HTML file: ", files);
-      return <CodeEditor file={files} style={{height: "80vh", width: "100%"}} />;
+      return <CodeEditor file={files} className="page" style={{height: "80vh", width: "100%", marginTop:"2rem", marginBottom: "2rem"}} />;
     } else {
-      return <FileViewer
-              style={{height: "80vh", width: "100%"}}
+      return <div className='page'>
+              <FileViewer
+              style={{height: "80vh", width: "100%", marginTop:"2rem", marginBottom: "2rem"}}
               fileType={item.fileType}
               filePath={item.signedUrl}
               errorComponent={CustomErrorComponent}
-              onError={()=>{console.log("Error in reading file!")}}/>;
+              onError={()=>{console.log("Error in reading file!")}}/>
+              </div>;
     }
     
   }
@@ -164,7 +229,7 @@ const AddSelectSidebar = ({
   }
 
   return (
-    <div className={blockClass}>
+    <div className={`${blockClass} word-processor`}>
       <div className={`${blockClass}-header`}>
         <p className={`${blockClass}-title`}>{influencerTitle}</p>
         {/* <Tag type="gray" size="sm">
@@ -173,40 +238,75 @@ const AddSelectSidebar = ({
       </div>
       {hasSelections ? (
         <Accordion align="start">
-          {sidebarItems.map((item) => (
+          {sidebarItems.map((item, index) => (
             <>
-            <AccordionItem title={getTitle(item)} key={item.id}>
-              {Object.keys(item).map((key) => {
-                if (key === 'signedUrl' || key === 'id' || key === 'value') {
-                    return null
-                }
-                return (
-                <div className={`${blockClass}-item`} key={key}>
-                  <p className={`${blockClass}-item-header`}>{key}</p>
-                  <p className={`${blockClass}-item-body`}>{item[key]}</p>
-                </div>
-              )})}
-            </AccordionItem>
-            {renderFile(item)}
-            {!item?.signedUrl&&(
-              <FileUploadWidget emptyStateTemplate={<NoDataEmptyState
-                subtitle={noSelectionDescription}
-                title={noSelectionTitle}
-                size='lg'
-                illustrationTheme={illustrationTheme}
-              />} />
+            {
+              item.title!==item.value&&(
+                <AccordionItem title={getTitle(item)} key={item.id}>
+                  {Object.keys(item).map((key) => {
+                    if (key === 'signedUrl' || key === 'id' || key === 'value') {
+                        return null
+                    }
+                    return (
+                    <div className={`${blockClass}-item`} key={key}>
+                      <p className={`${blockClass}-item-header`}>{key}</p>
+                      <p className={`${blockClass}-item-body`}>{item[key]}</p>
+                    </div>
+                  )})}
+                </AccordionItem>
+              )
+            }
+            {item.signedUrl&&(<>
+            {item?.signedUrl&&!(item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg' || item.fileType === 'webp')&&(<IconButton disabled={!isChanged} kind='ghost' title='save' align='bottom-right' onClick={()=>{
+                  dispatch(setLoading(true));
+                  dispatch(save(
+                    'kalkinso.com',
+                    item.id,
+                    JSON.stringify(content)
+                  ));
+                  setContent(null);
+                }}>
+                  <Save />
+                </IconButton>)}
+                {item?.signedUrl&&(
+                  <IconButton kind='ghost' title='save' align='bottom-right' onClick={()=>{
+                    if (item.fileType === 'txt') {
+                      dispatch(setLoading(true));
+                      exportToPDF(content, item.title).then(() => {
+                        dispatch(setLoading(false));
+                      }).catch((error) => {
+                        dispatch(setLoading(false));
+                        console.error(error);
+                      }).finally(() => {
+                        dispatch(setLoading(false));
+                      });
+                    } else {
+                      const aTag = document.createElement("a");
+                      aTag.href = item.signedUrl;
+                      aTag.download = item.title;
+                      document.body.appendChild(aTag);
+                      aTag.click();
+                      aTag.remove();
+                    }
+                  }}>
+                    <Download />
+                  </IconButton>)}
+                  {!(item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg' || item.fileType === 'webp')&&(
+                    <IconButton kind='ghost' title='close' align='bottom-right' onClick={()=>{
+                      setMultiSelection(multiSelection.filter((item_id)=>item_id!==item.id))
+                    }}>
+                      <Close />
+                    </IconButton>)}</>)}
+            {item.signedUrl&&renderFile(item)}
+            {item.id&&(!item?.signedUrl)&&(
+              <ReactDropzone data={true} content={content} setContent={setContent} multiSelection={multiSelection} setMultiSelection={setMultiSelection} renderTreeFiles={renderTree} items={items} item={item} path={pathExternal} />
             )}
             </>
           ))}
         </Accordion>
       ) : (
         <div className={`${blockClass}-body`}>
-          <NoDataEmptyState
-            subtitle={noSelectionDescription}
-            title={noSelectionTitle}
-            size="sm"
-            illustrationTheme={illustrationTheme}
-          />
+          <ReactDropzone data={false} path={pathExternal} />
         </div>
       )}
     </div>

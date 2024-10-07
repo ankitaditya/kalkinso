@@ -7,6 +7,7 @@ const auth = require('../../middleware/auth');
 const Task = require('../../models/Tasks');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const formidable = require('formidable');
 
 const router = express.Router();
 const s3 = new AWS.S3();
@@ -124,7 +125,14 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
 
     // Process the subfolders
     if (folders.length > 0) {
-        for (const folder of folders) {
+      let tempFolders = folders;
+        if(task&&task.subTasks?.length>0){
+          taskFolders = task.subTasks.map(subTask=>{
+            return folders.find(folder=>folder.Prefix.includes(subTask))
+          });
+          tempFolders = [...folders.filter(folder=>!task.subTasks.includes(folder.Prefix.split('/').filter(Boolean).pop())),...taskFolders];
+        }
+        for (const folder of tempFolders) {
             const folderKey = folder.Prefix;
             params.Prefix = folderKey;
 
@@ -198,7 +206,7 @@ router.post('/delete', async (req, res) => {
     if(isTask){
       const task = await Task.findById(isTask);
       if(task){
-        await task.remove();
+        await task.deleteOne();
       }
     }
     const data = await s3.listObjectsV2(params).promise();
@@ -227,5 +235,15 @@ router.post('/', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+router.post('/upload', async (req, res) => {
+  const form = formidable({ multiples: true });
+  form.parse(req, (err, fields, files) => {
+      console.log('fields: ', fields);
+      console.log('files: ', files);
+  });
+  res.send("Uploaded!")
+})
+
 
 module.exports = router

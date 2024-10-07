@@ -8,7 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { PageHeader as CCPageHeader } from '@carbon/ibm-products';
+import { PageHeader as CCPageHeader, Checklist } from '@carbon/ibm-products';
 import { Lightning, Gears, Edit, Search } from '@carbon/react/icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -74,7 +74,7 @@ const getActions = (item, props, taskIndex) => {
         iconDescription: `Action ${item}`,
         label: 'Search',
         onClick: () => {
-          window.location.href = '/#/search';
+          window.location.href = `${window.location.pathname}#/search`;
         },
       }
     case 4:
@@ -114,7 +114,7 @@ const PageHeader = (props) => {
       key: 'home',
       isCurrentPage: true,
       onClick: () => {
-        window.location.href = '/#/home/create';
+        window.location.href = `${window.location.pathname}#/home/create`;
       },
     }
   ]);
@@ -127,7 +127,7 @@ const PageHeader = (props) => {
         key: 'home',
         isCurrentPage: true,
         onClick: () => {
-          window.location.href = '/#/home/create';
+          window.location.href = `${window.location.pathname}#/home/create`;
         },
       }])
       setActionBarItems([2,3].map((item, index) => getActions(item, props, taskIndex)))
@@ -136,7 +136,7 @@ const PageHeader = (props) => {
         if(taskPath?.split("&&").slice(-1)[0]===task._id){
           setTaskIndex(index);
           setTaskCard(task);
-          setActionBarItems([4,2, 3, 1].map((item, index) => getActions(item, props, taskIndex)))
+          setActionBarItems([2, 3, 1].map((item, index) => getActions(item, props, taskIndex)))
           setTags(task.skills?.map((skill, index) => ({
             type: colors[index % colors.length],
             label: skill,
@@ -151,7 +151,7 @@ const PageHeader = (props) => {
             key: 'home',
             isCurrentPage: false,
             onClick: () => {
-              window.location.href = '/#/home/create';
+              window.location.href = `${window.location.pathname}#/home/create`;
             },
           },
         ]
@@ -164,7 +164,7 @@ const PageHeader = (props) => {
           key: 'home',
           isCurrentPage: false,
           onClick: () => {
-            window.location.href = '/#/home/create';
+            window.location.href = `${window.location.pathname}#/home/create`;
           },
         }, 
         ...taskPath?.split("&&").slice(0,-1).map(
@@ -175,7 +175,7 @@ const PageHeader = (props) => {
                 key: path, 
                 isCurrentPage: true, 
                 onClick: () => {
-                  window.location.href = `/#/home/${taskPath.split("&&").slice(0, index+1).join("&&")}`;
+                  window.location.href = `${window.location.pathname}#/home/${taskPath.split("&&").slice(0, index+1).join("&&")}`;
                 }
               }
             }
@@ -184,7 +184,7 @@ const PageHeader = (props) => {
               key: path, 
               isCurrentPage: false, 
               onClick: () => {
-                window.location.href = `/#/home/${taskPath.split("&&").slice(0, index+1).join("&&")}`;
+                window.location.href = `${window.location.pathname}#/home/${taskPath.split("&&").slice(0, index+1).join("&&")}`;
               }
             }
           }
@@ -197,8 +197,8 @@ const PageHeader = (props) => {
       <div
         style={{
           // stylelint-disable-next-line carbon/layout-token-use
-          marginRight: '50px',
-          maxWidth: '400px',
+          marginRight: '100px',
+          maxWidth: '500px',
         }}
       >
         <Markdown remarkPlugins={[remarkGfm]}>{
@@ -206,17 +206,33 @@ const PageHeader = (props) => {
         }</Markdown>
       </div>
       <p>
-        Cost Estimation: {taskCard?.cost?.estimated}
-        <br />
-        Time Estimation: {taskCard?.time?.estimated?Math.min(...taskCard?.time?.estimated?.map(val=>parseInt(val?.value)))/5>=1?`${Math.min(...taskCard?.time?.estimated?.map(val=>parseInt(val?.value)))/5} days`:`${Math.min(...taskCard?.time?.estimated?.map(val=>parseInt(val?.value)))} hours`:'0 hours'}
-        <br />
-        Number of Users: {taskCard?.time?.estimated?.length}
-        <br />
-        <AvatarGroup>
-          <Avatar image={taskCard?.user?.avatar} shape='circle' />
-          <Avatar image={taskCard?.user?.avatar} shape='circle' />
-          <Avatar label='+2' shape='circle' />
-        </AvatarGroup>
+        <Checklist
+          toggleLabelAlign='right'
+          toggleLabel='Toggle Checklist'
+          theme='dark'
+          title='Task Progress'
+          chartValue={tasks.filter(card=>card.status==='Completed').length/tasks.length}
+          chartLabel={`${Math.round(tasks.filter(card=>card.status==='Completed').length/tasks.length*100)}% complete`}
+          taskLists={[
+            {
+              title: 'Details',
+              tasks: [
+                {
+                  kind: 'checked',
+                  label: `Cost ~  : ${taskCard?.cost?.estimated}`,
+                },
+                {
+                  kind: 'checked',
+                  label: `Time ~  : ${taskCard?.time?.estimated?Math.min(...taskCard?.time?.estimated?.map(val=>parseInt(val?.value)))/5>=1?`${Math.min(...taskCard?.time?.estimated?.map(val=>parseInt(val?.value)))/5} days`:`${Math.min(...taskCard?.time?.estimated?.map(val=>parseInt(val?.value)))} hours`:'0 hours'}`,
+                },
+                {
+                  kind: 'checked',
+                  label: `Users   : ${taskCard?.time?.estimated?.length}`,
+                }
+              ],
+            }
+          ]}
+        />
       </p>
     </div>
   );

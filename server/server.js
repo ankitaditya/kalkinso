@@ -1,11 +1,57 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const request = require('request');
+const helmet = require('helmet')
+const jwt = require('jsonwebtoken')
+var cors = require('cors')
 
 const connectDB = require('../config/db')
 
 const app = express();
+var allowlist = ['http://localhost', 'https://localhost', 'https://kalkinso.com', 'http://kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io']
+var corsOptionsDelegate = function (req, callback) {
+  var corsOptions;
+  if (allowlist.indexOf(req.header('Origin')) !== -1) {
+    corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false } // disable CORS for this request
+  }
+  callback(null, corsOptions) // callback expects two parameters: error and options
+}
+app.use(cors(
+  corsOptionsDelegate
+))
+const authVerify = (token) => {
+  try {
+		const decoded = jwt.verify(token, 'my-jwt-secret')
+    console.log(token)
+		return true
+	} catch (err) {
+		console.log('something wrong with auth middleware')
+		return false
+	}
+}
+// app.use(helmet({
+//   frameguard: false // Disable frameguard globally
+// }));
+
+// Apply frameguard only to specific routes or conditions
+
+app.use((req, res, next) => {
+  // Example condition: apply frameguard only for certain routes
+  // console.log(req.path.split('/')[1])
+  if (req.path.startsWith('/token=')||req.path.startsWith('/static')||req.path.startsWith('/api')) {
+    // Apply frameguard for this route
+    if(req.path.startsWith('/token=')&&!authVerify(req.path.replace('/token=','').slice(0,-1))){
+      helmet.frameguard({ action: 'deny' })(req, res, next);
+    } else {
+      // window.localStorage.setItem('token',req.path.split('/')[1].replace('token=',''))
+      next(); // For other routes, continue without frameguard
+    }
+  } else {
+    helmet.frameguard({ action: 'deny' })(req, res, next);
+  }
+});
 
 connectDB()
 

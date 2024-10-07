@@ -55,6 +55,7 @@ router.post(
           }
       }
       if( Array.isArray(result)&&result_has_task_list){
+        let return_result = Array.from(result);
         result.forEach( async (res, key) => {
             if(typeof res['content'] === 'object' && Array.isArray(res['content']?.task_list)){
                 let parent_task = new Tasks({
@@ -83,7 +84,7 @@ router.post(
                     }),
                 });
                 // await parent_task.save();
-                res['content'].task_list.forEach( async (element) => {
+                res['content'].task_list.forEach( async (element, element_key) => {
                     let new_task = new Tasks({
                         user: user._id,
                         name: element.sub_task,
@@ -128,8 +129,12 @@ router.post(
                     //     {$set: {'subTasks': [...parent_task.subTasks,new_task._id]}}, 
                     //     {new: true});
                     // console.log(parent_task);
+                    if(typeof return_result[key]['content'] === 'string'){
+                      return_result[key]['content'] = JSON.stringify(res['content']);
+                      return_result[key]['content']['id'] = parent_task._id;
+                    }
+                    return_result[key]['content']['task_list'][element_key]['id'] = new_task._id;
                 });
-                        result[key]['content'] = JSON.stringify(res['content']);
                         // console.log(parent_task);
                     }
                 });
@@ -147,7 +152,7 @@ router.post(
         //     }
         // });
         // await new_session.save();
-        return res.json({session: new_session, result: result});
+        return res.json({session: new_session, result: return_result});
       }
       if (!new_session) {
         return res.status(400).json({ msg: "Session not found" });

@@ -31,6 +31,7 @@ router.post(
 			temp_task.user = req.user.id
 			temp_task2.user = req.user.id
 			temp_task2.attachments = []
+			temp_task2.subTasks = []
 			console.log(temp_task)
 			const task_mod = new Task(temp_task2)
 			task_mod.attachments = await temp_task.attachments.map((file)=>{
@@ -54,7 +55,67 @@ router.post(
 				});
 				return {type: params.Key.split('.').pop(), url: params.Key}
 			})
+			let tempSubTasks = await temp_task.subTasks.map((task_obj)=>{
+				task_obj.parentTasks = [task_mod._id]
+				task_obj.user = req.user.id
+				const subTask = new Task(task_obj)
+				subTask.base_path = Prefix?`users/${req.user.id}/tasks/${Prefix}/${task_mod._id}/${subTask._id}/`:`users/${req.user.id}/tasks/${task_mod._id}/${subTask._id}/`
+				let params = {
+					Bucket: "kalkinso.com",
+					Key: `${subTask.base_path}index.txt`,
+					Body: JSON.stringify([
+						{
+							type: "heading",
+							content: subTask.name,
+							props: {
+								level: 3
+							}
+						},
+						{
+							type: "paragraph",
+							content: subTask.description,
+							props: {
+								align: "justify"
+							}
+						},
+					]),
+				}
+				s3.putObject(params).promise().then((data) => {
+					console.log(`Successfully copied data to ${params.Bucket}/${params.Key}: ${data}`);
+				}).catch((err) => {
+					console.log(err, err.stack);
+				});
+				subTask.save()
+				return subTask._id
+			})
+			task_mod.subTasks = [...task_mod.subTasks,...tempSubTasks]
 			task_mod.base_path = Prefix?`users/${req.user.id}/tasks/${Prefix}/${task_mod._id}/`:`users/${req.user.id}/tasks/${task_mod._id}/`
+			let params = {
+				Bucket: "kalkinso.com",
+				Key: `${task_mod.base_path}index.txt`,
+				Body: JSON.stringify([
+					{
+						type: "heading",
+						content: task_mod.name,
+						props: {
+							level: 3
+						}
+					},
+					{
+						type: "paragraph",
+						content: task_mod.description,
+						props: {
+							align: "justify"
+						}
+					},
+				]),
+			}
+			try {
+				await s3.putObject(params).promise()
+			} catch (err) {
+				console.log(err, err.stack)
+			}
+			
 			await task_mod.save()
 			if(task_id){
 				await Task.findOneAndUpdate(
@@ -64,8 +125,12 @@ router.post(
 				)
 			}
 			task_mod.user = await User.findById(task_mod.user).select(['first_name', 'last_name', 'email', 'mobile', 'upi', 'adhar', 'avatar'])
-			
-			res.json(task_mod)
+			let result = JSON.parse(JSON.stringify(task_mod))
+			result.id = task.id
+			result.subTasks = await result.subTasks.map((task, key)=>{
+				return {id: temp_task.subTasks[key].id, key: task}
+			})
+			res.json(result)
 		} catch (err) {
 			console.error(err.message)
 			res.status(500).json({ msg: err.message })
@@ -100,9 +165,7 @@ router.post('/subtasks',[
 	}
 })
 
-router.get('/search/:search',[
-	auth
-], async (req, res) => {
+router.get('/search/:search', async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
 		let tasks = await Task.aggregate([
@@ -234,15 +297,16 @@ const deleteTasks = async (req, res) => {
 		}
 		const data = await s3.listObjectsV2(params).promise();
 		const objects = data.Contents.map(({ Key }) => ({ Key }));
-		console.log("This are objects: ", objects)
-		const deleteParams = {
-		Bucket: "kalkinso.com",
-		Delete: {
-			Objects: objects,
-			Quiet: false,
-		},
-		};
-		await s3.deleteObjects(deleteParams).promise();
+		if(objects.length>0){
+			const deleteParams = {
+			Bucket: "kalkinso.com",
+			Delete: {
+				Objects: objects,
+				Quiet: false,
+			},
+			};
+			await s3.deleteObjects(deleteParams).promise();
+		}
 		if(task.parentTasks.length>0){
 		task.parentTasks.forEach(async (task_id)=>{
 			await Task.findOneAndUpdate(

@@ -16,7 +16,7 @@ import useParentSelect from '@carbon/ibm-products/lib/components/AddSelect/hooks
 import usePath from '@carbon/ibm-products/lib/components/AddSelect/hooks/usePath';
 import { pkg } from '@carbon/ibm-products';
 import { Column } from 'carbon-components-react';
-import { Add, AddFilled, Edit, FolderAdd } from '@carbon/react/icons';
+import { Add, AddFilled, Copy, Document, Edit, Folder, FolderAdd, TrashCan } from '@carbon/react/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContextMenu } from 'primereact/contextmenu';
 import { deleteFile } from '../../actions/kits';
@@ -42,8 +42,6 @@ const AddSelectBody = forwardRef(
       defaultModifiers,
       description,
       filterByLabel,
-      contextMenuItems,
-      setContextMenuItems,
       globalFilterOpts,
       globalFiltersLabel,
       globalFiltersIconDescription,
@@ -90,9 +88,9 @@ const AddSelectBody = forwardRef(
     const { sortDirection, setSortDirection, sortAttribute, setSortAttribute } =
       useItemSort();
     const [ itemToDelete, setItemToDelete ] = useState(null);
+    const [ pathExternal, setPathExternal ] = useState({});
     const { parentSelected, setParentSelected } = useParentSelect();
     const { path, setPath, pathOnclick, resetPath } = usePath(itemsLabel);
-    const initialMenuItems = Array.from(contextMenuItems);
     const profile = useSelector((state) => state.profile);
 
     const resetState = () => {
@@ -169,13 +167,14 @@ const AddSelectBody = forwardRef(
       return true;
     };
 
-    const parentSelectionHandler = (id, title, parentId, prefix) => {
+    const parentSelectionHandler = (id, title, parentId, item) => {
       setParentSelected(id);
       setPath(id, title, parentId);
     };
 
     useEffect(() => {
       if(path){
+        setPathExternal({[path.map((item) => item.title==='Tasks'?profile.username:item.title).join('/')]:path[path.length-1]});
         console.log('path: ', path.map((item) => item.title==='Tasks'?profile.username:item.title).join('/'));
       }
     }, [path]);
@@ -197,14 +196,41 @@ const AddSelectBody = forwardRef(
     const dispatch = useDispatch();
     const showBreadsCrumbs = setShowBreadsCrumbs();
     const { file_context } = useSelector((state)=>state.task.kanban);
+    const contextMenuItemTemplate = (item) => {
+      return (
+        <div className="p-d-flex p-ai-center p-jc-between" style={{ width: '250px', margin:"0.5rem", cursor:"pointer" }}>
+          <span>{item.icon}</span>
+          <span style={{marginLeft:"1rem"}}>{item.label}</span>
+        </div>
+      );
+    }
+    const [ contextMenuItems, setContextMenuItems ] = useState([
+      { label: 'Add', template: contextMenuItemTemplate, 
+      items: [
+          { label: 'File', command: (e)=>{
+              console.log(path.map((item) => item.title==='Tasks'?profile.username:item.title).join('/'));
+          },template: contextMenuItemTemplate, icon: <Document /> },
+          { label: 'Folder', command: (e)=>{
+              alert("Folder clicked");
+          },template: contextMenuItemTemplate, icon: <Folder /> }
+      ],
+      icon: <Add /> },
+      { label: 'Copy', command: (e)=>{
+          alert("Copy clicked");
+      },template: contextMenuItemTemplate, icon: <Copy /> },
+      { label: 'Delete', command: (e)=>{
+        alert("Delete clicked");
+    },template: contextMenuItemTemplate, icon: <TrashCan /> }
+  ]);
     const showSort = (searchTerm || globalFiltersApplied) && hasResults;
     const showTags = setShowTags();
+    const initialMenuItems = Array.from(contextMenuItems);
     const deleteMenuItems = [
       {
         ...contextMenuItems.slice(-1)[0],
         command: (e) => {
           if(file_context){
-            dispatch(deleteFile('kalkinso.com', file_context.id, file_context.icon==='Folder'?file_context.value:false));
+            dispatch(deleteFile('kalkinso.com', file_context.id, file_context.icon==='Folder'&&file_context.title!==file_context.value?file_context.value:false));
           }
         }
       }
@@ -225,29 +251,6 @@ const AddSelectBody = forwardRef(
       parentId: path[0].id,
     };
 
-    const commonTearsheetProps = {
-      ...rest,
-      className: tearsheetClassnames,
-      open,
-      title,
-      description,
-      actions: [
-        {
-          label: onCloseButtonText,
-          kind: 'secondary',
-          onClick: onCloseHandler,
-        },
-        {
-          label: onSubmitButtonText,
-          kind: 'primary',
-          onClick: submitHandler,
-          disabled: multi ? multiSelection.length === 0 : !singleSelection,
-        },
-      ],
-      portalTarget,
-      ref,
-    };
-
     const sidebarProps = {
       appliedModifiers,
       closeIconDescription,
@@ -258,6 +261,8 @@ const AddSelectBody = forwardRef(
       metaPanelTitle,
       modifiers: items?.modifiers,
       multiSelection,
+      pathExternal,
+      setMultiSelection,
       noSelectionDescription,
       noSelectionTitle,
       setDisplayMetaPanel,

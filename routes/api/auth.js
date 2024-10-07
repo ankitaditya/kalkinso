@@ -6,8 +6,8 @@ const config = require('config')
 const twilio = require('twilio');
 const { body, validationResult } = require('express-validator')
 const axios = require('axios')
-
 const auth = require('../../middleware/auth')
+
 const User = require('../../models/User')
 
 const router = express.Router()
@@ -97,6 +97,89 @@ router.post(
 					user.sessions.push(jwt_result)
 					user = await User.findOneAndUpdate(
 						{ email },
+						{ $set: user },
+						{ new: true }
+					)
+					const user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
+					await res.json({ ...jwt_result, session_id: user_session._id, first_name:user.first_name, last_name:user.last_name })
+				}
+			)
+		} catch (err) {
+			console.error(err.message)
+			res.status(500).send('Server error')
+		}
+	}
+)
+
+router.post(
+	'/organizations/login',
+	auth,
+	[
+		body('org_id', 'Please include a valid organization_id').isEmail(),
+		body('access_key', 'access_key is required').exists(),
+		body('ip_address', 'Please include a valid ip_address').exists(),
+		body('user_id', 'user_id is required').exists(),
+	],
+	async (req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() })
+		}
+
+		const { org_id, access_key, ip_address, user_id } = req.body
+
+		try {
+			let user = await User.findOne({ email: org_id })
+
+			if (!user) {
+				return res
+					.status(400)
+					.json({ errors: [{ msg: 'Invalid Organization Id Credentials' }] })
+			}
+
+			const isMatch = await bcrypt.compare(access_key, user.password)
+			if (!isMatch) {
+				return res
+					.status(400)
+					.json({ errors: [{ msg: 'Invalid Org Credentials' }] })
+			}
+
+			user = await User.findOne({ email: user_id })
+
+			if (!user) {
+				return res
+					.status(400)
+					.json({ errors: [{ msg: 'Invalid User Id Credentials' }] })
+			}
+
+			const isMatchUser = await bcrypt.compare(access_key, user.password)
+			if (!isMatchUser) {
+				return res
+					.status(400)
+					.json({ errors: [{ msg: 'Invalid User Credentials' }] })
+			}
+
+			const payload = {
+				user: {
+					id: user.id,
+				},
+			}
+			let jwt_result = {}
+			jwt.sign(
+				payload,
+				'my-jwt-secret',
+				{ expiresIn: '4 hours' },
+				async (err, token) => {
+					if (err) {
+						throw err
+					}
+					if (!user.sessions) {
+						user.sessions = []
+					}
+					jwt_result['token'] = token
+					user.sessions.push(jwt_result)
+					user = await User.findOneAndUpdate(
+						{ email:user_id },
 						{ $set: user },
 						{ new: true }
 					)

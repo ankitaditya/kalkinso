@@ -12,20 +12,76 @@ import {
     TextArea,
     IconButton
 } from '@carbon/react';
-import { AiGenerate, ChatBot } from '@carbon/react/icons';
+import { AiGenerate, Bot, ChatBot } from '@carbon/react/icons';
 import BlockNoteEditor from '../Dashboard/BlockNoteEditor';
+import { Children, useEffect, useState } from 'react';
+import { suggestBetterText } from '../Dashboard/utils';
 
-const AISlug = (context) => {
-    return <Slug className="slug-container" size="xs">
+const AISlug = (contextFunc, name, context) => {
+    const [initialContent, setInitialContent] = useState([
+        {type: "paragraph", content: 'Welcome to the AI Slug!' }
+    ]);
+    const [content, setContent] = useState(null);
+    const [contextComponent, setContextComponent] = useState(<BlockNoteEditor
+                                            {...{
+                                              initialContent, 
+                                              setContent, 
+                                            }}
+                                          />);
+    useEffect(()=>{
+      if(initialContent){
+        setContextComponent(<BlockNoteEditor
+          {...{
+            initialContent, 
+            setContent, 
+          }}
+        />)
+      }
+    },[initialContent])
+    return <Slug className="slug-container" size="xs" align="right">
     <SlugContent>
-      <h4>Kalki AI {context}</h4>
+      <h4><Bot /></h4>
       <hr />
-      <BlockNoteEditor />
+      {contextComponent}
       <SlugActions>
-        <IconButton kind="ghost" label="Generate Random">
+        {/* <IconButton kind="ghost" onClick={
+          () => {
+            if(content){
+              suggestBetterText(content.map((block)=>Array.isArray(block.content)?block.content.map(val=>val.text).join(' '):null).join(' '),
+            `Give suggestions for task ${name}`).then((res)=>{
+                console.log(res);
+                setContextComponent(<></>);
+                setInitialContent([
+                  {type: "paragraph", content: res}
+                ]);
+              }).catch((err)=>{
+                console.log(err);
+              });
+            }
+          }
+        } label="Generate Random">
             <AiGenerate />
-        </IconButton>
-        <IconButton kind="ghost" label="Chat">
+        </IconButton> */}
+        <IconButton kind="ghost" onClick={
+          () => {
+            if(content){
+              suggestBetterText(content.map((block)=>Array.isArray(block.content)?block.content.map(val=>val.text).join(' '):null).join(' '),
+            `Give suggestions for task ${name}`).then((res)=>{
+                console.log(res);
+                setContextComponent(<></>);
+                setInitialContent([
+                  {type: "paragraph", content: res}
+                ]);
+                contextFunc({
+                  ...context,
+                  [name]: res
+                });
+              }).catch((err)=>{
+                console.log(err);
+              });
+            }
+          }
+        } label="Chat">
             <ChatBot />
         </IconButton>
       </SlugActions>

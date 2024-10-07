@@ -18,8 +18,16 @@ const HeaderItemExplore = () => {
                 window.location.href = window.location.origin + '/#/Home/create'
                 window.location.reload()
             }
-        }>Dashboard</HeaderMenuItem></>:<HeaderMenuItem onClick={()=>{
-            window.location.href = window.location.origin + '/#/Home/search'
+        }>Dashboard</HeaderMenuItem><HeaderMenuItem 
+        style={{cursor: 'pointer'}}
+        onClick={
+            ()=>{
+                localStorage.removeItem('token')
+                window.location.href = window.location.origin + '/#/'
+                window.location.reload()
+            }
+        }>Logout</HeaderMenuItem></>:<HeaderMenuItem onClick={()=>{
+            window.location.href = window.location.origin + '/#/search'
             window.location.reload()
         }}>Explore</HeaderMenuItem>
     );
