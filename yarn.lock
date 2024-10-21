@@ -14981,6 +14981,11 @@ react-number-format@^5.3.1:
   resolved "https://registry.npmjs.org/react-number-format/-/react-number-format-5.4.1.tgz"
   integrity sha512-NICOjo/70dcAiwVmH6zMWoZrTQDlBrEXV/f7S0t/ewlpzp4z00pasg5G1yBX6NHLafwOF3QZ+VvK/XApwSKxdA==
 
+react-otp-input@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/react-otp-input/-/react-otp-input-3.1.1.tgz"
+  integrity sha512-bjPavgJ0/Zmf/AYi4onj8FbH93IjeD+e8pWwxIJreDEWsU1ILR5fs8jEJmMGWSBe/yyvPP6X/W6Mk9UkOCkTPw==
+
 react-reconciler@~0.29.0:
   version "0.29.2"
   resolved "https://registry.npmjs.org/react-reconciler/-/react-reconciler-0.29.2.tgz"

@@ -11,7 +11,7 @@ import FileUploadWidget from './Widgets/FileUpload';
 import BlockNoteEditor from './BlockNoteEditor';
 import FigmaEditor from './FigmaEditor';
 import { Close, Download, Save } from '@carbon/react/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { save } from '../../actions/kits';
 import { setLoading } from '../../actions/auth';
 // import * as Y from "yjs";
@@ -21,6 +21,7 @@ import { buildPathToTree, exportToPDF } from './utils';
 import { ButtonSet } from 'carbon-components-react';
 import "./MultiPageWordProcessor/MultiPageWordProcessor.css";
 import PhotoEditor from './PhotoEditor';
+import { setDeleteFile } from '../../actions/task';
 
 
 const blockClass = `home--add-select__sidebar`;
@@ -130,6 +131,7 @@ const AddSelectSidebar = ({
   const [ isChanged, setIsChanged ] = useState(false);
   const dispatch = useDispatch();
   const [content, setContent] = useState("");
+  const { file_context } = useSelector((state)=>state.task.kanban);
   const getNewItem = (item) => {
     const { meta, icon, avatar, ...newItem } = item;
     return newItem;
@@ -163,6 +165,20 @@ const AddSelectSidebar = ({
     </div>
   );
 
+  document.onkeydown = (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "s" && isChanged && file_context?.id && content) {
+          event.preventDefault(); // Prevent the default browser behavior (saving the webpage)
+          dispatch(setLoading(true));
+          dispatch(save(
+            'kalkinso.com',
+            file_context.id,
+            JSON.stringify(content)
+          ));
+          setIsChanged(false);
+          setContent(null);
+      }
+    }
+
   const renderFile = (item) => {
     // const doc = new Y.Doc();
     const files = [{filename: item.title, value: item.signedUrl}];
@@ -182,6 +198,7 @@ const AddSelectSidebar = ({
         item.signedUrl
       }
       setIsChanged={setIsChanged}
+      onKeyDown = {()=>dispatch(setDeleteFile(item))}
       item_id={item.id}
       bucket="kalkinso.com" 
       /></div>;
@@ -200,14 +217,26 @@ const AddSelectSidebar = ({
       // return <FigmaEditor image_uri={item.signedUrl} title={item.title}  usageStatistics={false} style={{width:"auto", marginTop:"2rem", marginBottom: "2rem"}} />;
       return <PhotoEditor image_uri={item.signedUrl} title={item.title} closeImgEditor={()=>{
                   setMultiSelection(multiSelection.filter((item_id)=>item_id!==item.id))
-                }}  usageStatistics={false} className='page' style={{width:"100%", height:"80vh"}} />;
+                }}
+                onKeyDown = {()=>dispatch(setDeleteFile(item))}
+              usageStatistics={false} className='page' style={{width:"100%", height:"80vh"}} />;
     }
     if (monacoSupportedFileExtensions.hasOwnProperty(item.fileType)) {
-      return <CodeEditor file={files} className="page" style={{height: "80vh", width: "100%", marginTop:"2rem", marginBottom: "2rem"}} />;
+      return <CodeEditor 
+                file={files} 
+                setContent={
+                    (content)=>setContent(content)
+                  }  
+                setIsChanged={setIsChanged}
+                onKeyDown = {()=>dispatch(setDeleteFile(item))}
+                item_id={item.id}
+                className="page" 
+                style={{height: "80vh", width: "100%", marginTop:"2rem", marginBottom: "2rem"}} 
+              />;
     } else {
       return <div className='page'>
               <FileViewer
-              style={{height: "80vh", width: "100%", marginTop:"2rem", marginBottom: "2rem"}}
+              style={{height: "80vh", width: "100%", maxWidth:"50vw", marginTop:"2rem", marginBottom: "2rem"}}
               fileType={item.fileType}
               filePath={item.signedUrl}
               errorComponent={CustomErrorComponent}
@@ -264,6 +293,7 @@ const AddSelectSidebar = ({
                     item.id,
                     JSON.stringify(content)
                   ));
+                  setIsChanged(false);
                   setContent(null);
                 }}>
                   <Save />

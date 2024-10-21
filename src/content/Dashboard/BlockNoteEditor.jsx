@@ -36,6 +36,7 @@ import { deleteFile, save } from "../../actions/kits";
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { MathCurve } from "@carbon/react/icons";
+import { handleSaveShortcuts } from "../../utils/redux-cache";
 
 // Initialize Turndown to convert HTML to Markdown if needed
 const turndownService = new TurndownService();
@@ -157,6 +158,7 @@ export default function BlockNoteEditor(
     item_id,
     bucket,
     setIsChanged,
+    onKeyDown,
     ...rest
     // provider, 
     // doc
@@ -206,10 +208,12 @@ export default function BlockNoteEditor(
   // Renders the editor instance using a React component.
   return <BlockNoteView {...rest} theme="light" editor={editor} formattingToolbar={false} onChange={(props)=>{
       setContent(editor.document);
+      onKeyDown();
       if(setIsChanged){
         setIsChanged(true);
       }
-  }}>
+  }}
+  >
     <FormattingToolbarController
         formattingToolbar={() => (
           <FormattingToolbar>

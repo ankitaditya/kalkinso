@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
 
-const CodeEditor = ({file, ...rest}) => {
+const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) => {
   const editorRef = useRef(null);
   const modelConfig = {
     "abap": {"language":"abap"},
@@ -77,6 +77,14 @@ const CodeEditor = ({file, ...rest}) => {
               defaultLanguage={modelConfig[ext]?.language || modelConfig.default.language}
               defaultValue={res.data}
               theme="vs-light"
+              onChange={(value, event) => {
+                console.log("Change is being made");
+                setContent(value);
+                onKeyDown();
+                if(setIsChanged){
+                  setIsChanged(true);
+                }
+              }}
               {...rest}
             />
           );

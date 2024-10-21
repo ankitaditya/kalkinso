@@ -1,3 +1,35 @@
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+// Function to generate a signed URL
+export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600) {
+    const client = new S3Client({
+        region:'ap-south-1',
+        credentials: {
+            accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
+            secretAccessKey: "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",
+        }
+    });
+    try {
+      // Create a GetObjectCommand with the bucket and object key
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: objectKey,
+      });
+  
+      // Generate a signed URL with an expiration time
+      const signedUrl = await getSignedUrl(client, command, {
+        expiresIn: expiresIn, // URL expiration time in seconds (default: 1 hour)
+      });
+  
+      console.log("Signed URL:", signedUrl);
+      return signedUrl;
+    } catch (error) {
+      console.error("Error generating signed URL", error);
+      throw error;
+    }
+  }
+
 export const cache = (action, dispatch) => {
     
     if (action.type === 'CLEAR_CACHE') {
@@ -146,3 +178,11 @@ export function renameIdAndReplaceObject(data, targetId, newId, newObject) {
   
     return data;
   }
+
+export function handleSaveShortcuts(event){
+    if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+      event.preventDefault(); // Prevent the default browser behavior (saving the webpage)
+      // Call your custom function here
+      console.log("ctrl + s pressed")
+  }
+}

@@ -30,7 +30,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 	}
 }
 
-export const register = ({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, confirm_password }) => async (dispatch) => {
+export const register = ({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, confirm_password, user_role }) => async (dispatch) => {
 	console.log('register is clicked!')
 	setAuthToken(null)
 	const config = {
@@ -38,7 +38,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 			'Content-Type': 'application/json',
 		},
 	}
-	const body = JSON.stringify({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password })
+	const body = JSON.stringify({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, user_role })
 	try {
 		const res = await axios.post('/api/users', body, config)
 		console.log('RESULT: ', res)
@@ -124,7 +124,7 @@ export const sendVerification = ({email=null, mobile=null, adhar=null, upi=null}
 		bodyJson = { mobile }
 		verifyType = 'mobile'
 	} else if (adhar){
-		bodyJson = { adhar }
+		bodyJson = { adhar:adhar.replace(/ /g, '') }
 		verifyType = 'adhar'
 	} else if (upi){
 		bodyJson = { upi }

@@ -41,21 +41,28 @@ export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}
         let _totalSize = totalSize;
         console.log("I am in upload!")
         e.files.forEach((file) => {
-            _totalSize -= file.size || 0;
             const params = {
                 Bucket: bucket,
                 Key: `${item.id}${file.name}`,
                 Body: file,
+                ContentType: file.type,
               };
               console.log(params)
-              s3.putObject(params).promise().then((res)=>{
-                console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${res}`);
-              }).catch((reason)=>{
-                console.log(reason)
-              })
+              s3.upload(params, (err, data) => {
+                if (err) {
+                  console.log(err);
+                  toast.current.show({ severity: 'error', summary: 'Error', detail: 'File Upload Error' });
+                }
+                if (data) {
+                  console.log(data);
+                  toast.current.show({ severity: 'success', summary: 'Success', detail: 'File Uploaded' });
+                }
+              }).on('httpUploadProgress', (progress) => {
+                const value = progress.loaded / progress.total * file.size;
+                setTotalSize(_totalSize-value);
+                toast.current.show({ severity: 'info', summary: 'Info', detail: `${value}% Uploaded` });
+              });
         });
-
-        toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
         e.files = []
         setTotalSize(_totalSize>0?_totalSize:0);
     };

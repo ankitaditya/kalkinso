@@ -19,7 +19,8 @@ import { Column } from 'carbon-components-react';
 import { Add, AddFilled, Copy, Document, Edit, Folder, FolderAdd, TrashCan } from '@carbon/react/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { ContextMenu } from 'primereact/contextmenu';
-import { deleteFile } from '../../actions/kits';
+import { addFile, deleteFile, save } from '../../actions/kits';
+import { setDeleteFile } from '../../actions/task';
 
 pkg.component.NotFoundEmptyState = true;
 pkg.component.AddSelectSidebar = true;
@@ -204,11 +205,12 @@ const AddSelectBody = forwardRef(
         </div>
       );
     }
-    const [ contextMenuItems, setContextMenuItems ] = useState([
+    const contextMenuItems = [
       { label: 'Add', template: contextMenuItemTemplate, 
       items: [
           { label: 'File', command: (e)=>{
-              console.log(path.map((item) => item.title==='Tasks'?profile.username:item.title).join('/'));
+              dispatch(save('kalkinso.com', file_context.slice(-1)[0].id+'New Document.txt', ''));
+              dispatch(addFile(file_context.slice(-1)[0].id+'New Document.txt'));
           },template: contextMenuItemTemplate, icon: <Document /> },
           { label: 'Folder', command: (e)=>{
               alert("Folder clicked");
@@ -221,7 +223,7 @@ const AddSelectBody = forwardRef(
       { label: 'Delete', command: (e)=>{
         alert("Delete clicked");
     },template: contextMenuItemTemplate, icon: <TrashCan /> }
-  ]);
+  ];
     const showSort = (searchTerm || globalFiltersApplied) && hasResults;
     const showTags = setShowTags();
     const initialMenuItems = Array.from(contextMenuItems);
@@ -272,6 +274,7 @@ const AddSelectBody = forwardRef(
     const displayColumnView =
       multi && useNormalizedItems && !searchTerm && !globalFiltersApplied;
 
+      
     // main content
     const body = normalizedItems&&(
       <Grid>
@@ -301,7 +304,7 @@ const AddSelectBody = forwardRef(
               [`${blockClass}__sub-header-multi`]: multi,
             })}
             onContextMenu={(e)=>{
-              setContextMenuItems(initialMenuItems.slice(0,-1))
+              dispatch(setDeleteFile(path));
               cm.current.show(e)
             }}
           >

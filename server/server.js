@@ -8,7 +8,7 @@ var cors = require('cors')
 const connectDB = require('../config/db')
 
 const app = express();
-var allowlist = ['http://localhost', 'https://localhost', 'https://kalkinso.com', 'http://kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io']
+var allowlist = ['http://localhost', 'https://localhost', 'https://kalkinso.com', 'http://kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {

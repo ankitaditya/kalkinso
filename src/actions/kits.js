@@ -4,7 +4,7 @@ import { getTasks, setIsMulti, setOpenTask } from './task';
 import { setLoading } from './auth';
 import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
-import { cache } from '../utils/redux-cache';
+import { cache, generateSignedUrl } from '../utils/redux-cache';
 AWS.config.update({
     accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
     secretAccessKey: "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",
@@ -89,7 +89,7 @@ export const deleteFile = (bucketName="kalkinso.com", Prefix='', isTask=false) =
             isTask
         });
         dispatch({
-            type: actionTypes.SET_DELETE_FILE,
+            type: actionTypes.DELETE_FILE,
             payload: Prefix,
         });
         dispatch(setLoading(false));
@@ -124,12 +124,14 @@ export const renameFile = (payload) => async (dispatch) => {
     try {
         const resp = await s3.copyObject(params).promise();
         await s3.deleteObject({Bucket: bucketname, Key: file_id.join('/')}).promise();
+        const signedUrl = await generateSignedUrl('kalkinso.com', new_file_id.join('/'));
         dispatch(setLoading(false));
         dispatch({
             type: actionTypes.RENAME_FILE,
             payload: {
                 file_id: file_id.join('/'),
-                new_file_id: new_file_id.join('/')
+                new_file_id: new_file_id.join('/'),
+                signedUrl: signedUrl,
             },
         });
     } catch (err) {
@@ -142,6 +144,7 @@ export const renameFile = (payload) => async (dispatch) => {
 }
 
 export const addFile = (id) => async (dispatch) => {
+    const signedUrl = await generateSignedUrl('kalkinso.com', id);
     dispatch({
         type: actionTypes.ADD_FILE,
         payload:{
@@ -152,6 +155,7 @@ export const addFile = (id) => async (dispatch) => {
                 title: id.split('/').slice(-1)[0],
                 value: id.split('/').slice(-1)[0],
                 fileType: id.split('.').slice(-1)[0],
+                signedUrl: signedUrl,
             },
         },
     });
@@ -193,7 +197,15 @@ export const save = (bucketName="kalkinso.com", Prefix='', content=null) => asyn
     };
     try {
         const res = await s3.putObject(params).promise();
-        // dispatch(getSelectedTasks(bucketName, 'ankit.see', false));
+        const signedUrl = await generateSignedUrl('kalkinso.com', Prefix);
+        dispatch({
+            type: actionTypes.RENAME_FILE,
+            payload: {
+                file_id: Prefix,
+                new_file_id: Prefix,
+                signedUrl: signedUrl,
+            },
+        });
         dispatch(setLoading(false));
     } catch (err) {
         console.log(err);

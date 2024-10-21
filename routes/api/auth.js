@@ -387,8 +387,8 @@ router.post('/verify-mobile-otp', async (req, res) => {
 		const config = {
 				headers: {
 					'Content-Type': 'application/json',
-					'x-api-key': "key_live_ZEHbNQAsUcyDImvu3gy4dVTJcbJn6KlW",
-					'x-api-secret': "secret_live_2Gf8QUmxL8U5aiaT8mIDGc4HxgSGPoIX",
+					'x-api-key': "key_live_Uq3nkkDORnjxl06HRnI42HzcAUgYXyBf",
+					'x-api-secret': "secret_live_7aK9hE1sjKjyqkW3Bw3S8qA8EK0prkQN",
 					'x-api-version': "2.0",
 				},
 			}
@@ -396,7 +396,7 @@ router.post('/verify-mobile-otp', async (req, res) => {
 		let send_otp_config = {
 			headers: {
 				'Content-Type': 'application/json',
-				'x-api-key': "key_live_ZEHbNQAsUcyDImvu3gy4dVTJcbJn6KlW",
+				'x-api-key': "key_live_Uq3nkkDORnjxl06HRnI42HzcAUgYXyBf",
 				'x-api-version': "2.0",
 				'Authorization': `${access_token_response.data.access_token}`
 			}
@@ -422,8 +422,8 @@ router.post('/verify-adhar-otp', async (req, res) => {
 		const config = {
 			headers: {
 				'Content-Type': 'application/json',
-				'x-api-key': "key_live_ZEHbNQAsUcyDImvu3gy4dVTJcbJn6KlW",
-				'x-api-secret': "secret_live_2Gf8QUmxL8U5aiaT8mIDGc4HxgSGPoIX",
+				'x-api-key': "key_live_Uq3nkkDORnjxl06HRnI42HzcAUgYXyBf",
+				'x-api-secret': "secret_live_7aK9hE1sjKjyqkW3Bw3S8qA8EK0prkQN",
 				'x-api-version': "2.0",
 			},
 		}
@@ -431,7 +431,7 @@ router.post('/verify-adhar-otp', async (req, res) => {
 	let verify_otp_config = {
 		headers: {
 			'Content-Type': 'application/json',
-			'x-api-key': "key_live_ZEHbNQAsUcyDImvu3gy4dVTJcbJn6KlW",
+			'x-api-key': "key_live_Uq3nkkDORnjxl06HRnI42HzcAUgYXyBf",
 			'x-api-version': "2.0",
 			'Authorization': `${access_token_response.data.access_token}`
 		}
@@ -456,8 +456,8 @@ router.post('/verify-adhar-otp', async (req, res) => {
 		const config = {
 			headers: {
 				'Content-Type': 'application/json',
-				'x-api-key': "key_live_ZEHbNQAsUcyDImvu3gy4dVTJcbJn6KlW",
-				'x-api-secret': "secret_live_2Gf8QUmxL8U5aiaT8mIDGc4HxgSGPoIX",
+				'x-api-key': "key_live_Uq3nkkDORnjxl06HRnI42HzcAUgYXyBf",
+				'x-api-secret': "secret_live_7aK9hE1sjKjyqkW3Bw3S8qA8EK0prkQN",
 				'x-api-version': "2.0",
 			},
 		}
@@ -465,7 +465,7 @@ router.post('/verify-adhar-otp', async (req, res) => {
 	let verify_upi = {
 		headers: {
 			'Content-Type': 'application/json',
-			'x-api-key': "key_live_ZEHbNQAsUcyDImvu3gy4dVTJcbJn6KlW",
+			'x-api-key': "key_live_Uq3nkkDORnjxl06HRnI42HzcAUgYXyBf",
 			'x-api-version': "2.0",
 			'Authorization': `${access_token_response.data.access_token}`
 		}

@@ -154,10 +154,6 @@ export let AddSelectRow = ({
         setItemToDelete(item.id);
         console.log('context Item: ', item);
         dispatch(setDeleteFile(item))
-        cm.current.props.model[0].command = (e) => {
-          console.log('Deleted: ', item.id);
-        }
-        console.log('context menu: ', cm.current.props.model);
         cm.current.show(e);
       }}
     >

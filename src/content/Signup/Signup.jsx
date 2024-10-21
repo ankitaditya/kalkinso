@@ -41,17 +41,21 @@ import { register, sendVerification, verifyOtp, setVerified, setOpenOtpModal, se
 import { setAlert } from "../../actions/alert";
 import { connect, useDispatch, useSelector } from "react-redux";
 import NoDataIllustration from "./assets/NoDataIllustration";
+import OtpInput from 'react-otp-input';
 
 const SignUp = (props) => {
   const blockClass = `${pkg.prefix}--create-full-page`;
   const dispatch = useDispatch();
 
   const [information, setInformation] = useState({
+    step0: {
+      category: ""
+    },
     step1: {
       first_name: "",
       last_name: "",
       email: "",
-      mobile: "+91",
+      mobile: "+91 ",
       password: "",
       confirm_password: "",
       adhar: "",
@@ -167,7 +171,7 @@ const SignUp = (props) => {
       props.sendVerification({mobile: information.step1.mobile});
       setTimeout(() => setOpen(true), 5000);
     } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
-      props.sendVerification({adhar: information.step1.adhar});
+      props.sendVerification({adhar: information.step1.adhar.replace(' ', '')});
       setTimeout(() => setOpen(true), 5000);
     } else if(label === "UPI ID" && isInvalid.upi === false){
       props.sendVerification({upi: information.step1.upi});
@@ -213,7 +217,17 @@ const SignUp = (props) => {
   </Toggletip>
   {/* <Modal open={open} onRequestClose={() => { setOpen(false); setIsClicked(true); }}  closeButtonLabel="close" passiveModal modalHeading="You have been successfully signed out" /> */}
   <Modal open={open} onRequestClose={() => setOpen(false)} onRequestSubmit={()=>handleSubmit()} modalHeading={`Verify otp for your ${label}`} modalLabel="Two Step Verification" primaryButtonText="Verify">
-          <InputOtp value={token} onChange={(e) => setToken(e.value)} mask integerOnly length={6} marginBottom/> <Button style={{marginTop:"1rem"}} disabled={resend} kind="ghost" onClick={()=>ResendOtp()}>{resend?`${timer} s`:"Resend"}</Button>
+          <InputOtp value={token} onChange={(e) => setToken(e.value)} mask integerOnly length={6} marginBottom/> 
+          {/* <OtpInput
+            value={token}
+            onChange={setToken}
+            numInputs={6}
+            // renderSeparator={<span>-</span>}
+            // inputType=""
+            placeholder="------"
+            renderInput={(props) => <TextInput {...props} />}
+          /> */}
+          <Button style={{marginTop:"1rem"}} disabled={resend} kind="ghost" onClick={()=>ResendOtp()}>{resend?`${timer} s`:"Resend"}</Button>
   </Modal>
 </>};
 
@@ -293,7 +307,7 @@ const SignUp = (props) => {
 
   const onSubmit = (e) => {
     console.log("SUBMIT CLICKED:",information.step1, information.step2)
-    props.register({...information.step1, ...information.step2})
+    props.register({...information.step1, ...information.step2, "user_role": selectedCategory});
   }
 
   return (
@@ -349,9 +363,9 @@ const SignUp = (props) => {
           >
             <RadioTile
               // className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
-              value="professionals"
+              value="Professional"
               id="tile-1"
-              tabIndex={selectedCategory === 'professionals' ? 0 : -1}
+              tabIndex={selectedCategory === 'Professional' ? 0 : -1}
             >
               <NoDataIllustration variant="pro" size="lg" />
               <span
@@ -362,22 +376,23 @@ const SignUp = (props) => {
             </RadioTile>
             <RadioTile
               className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
-              value="entrepreneurs"
+              value="Fresher"
               id="tile-2"
-              tabIndex={selectedCategory === 'entrepreneurs' ? 0 : -1}
+              tabIndex={selectedCategory === 'Fresher' ? 0 : -1}
             >
               <NoDataIllustration variant="ent" size="lg" />
               <span
                 className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile-label`}
               >
-                Entrepreneurs
+                
+                Fresher
               </span>
             </RadioTile>
             <RadioTile
               className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
-              value="administrators"
+              value="Administrator"
               id="tile-3"
-              tabIndex={selectedCategory === 'administrators' ? 0 : -1}
+              tabIndex={selectedCategory === 'Administrator' ? 0 : -1}
             >
               <NoDataIllustration variant="fre" size="lg" />
               <span
@@ -388,15 +403,15 @@ const SignUp = (props) => {
             </RadioTile>
             <RadioTile
               className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile`}
-              value="explore"
+              value="Explorer"
               id="tile-4"
-              tabIndex={selectedCategory === 'explore' ? 0 : -1}
+              tabIndex={selectedCategory === 'Explorer' ? 0 : -1}
             >
               <NoDataIllustration variant="exp" size="lg" />
               <span
                 className={`${pkg.prefix}--tearsheet-create-multi-step--custom-tile-label`}
               >
-                Explore
+                Explorer
               </span>
             </RadioTile>
           </TileGroup>
@@ -532,8 +547,8 @@ const SignUp = (props) => {
                     placeholder="Enter your mobile number"
                     style={{ marginBottom: "15px" }}
                     onChange={e => {
-                      const regex = /^[/+0-9\b]+$/;
-                      if (e.target.value.length < 3 || !regex.test(e.target.value)) {
+                      const regex = /^[\+\s0-9\b]+$/;
+                      if (e.target.value.length < 4 || !regex.test(e.target.value)) {
                         return
                       }
                       setIsInvalid({
@@ -621,7 +636,7 @@ const SignUp = (props) => {
                   />
                   <TextInput
                     id="adhar-card"
-                    labelText={ToggleTip('Adhar Card Number', true, props)}
+                    labelText={ToggleTip('Adhar Card Number', false, props)}
                     placeholder="Enter your Adhar card number"
                     style={{ marginBottom: "15px" }}
                     value={information.step1.adhar}

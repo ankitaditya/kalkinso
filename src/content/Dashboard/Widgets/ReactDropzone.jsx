@@ -8,6 +8,8 @@ import { addFile, getSelectedTasks, save } from '../../../actions/kits';
 import { useDispatch, useSelector } from 'react-redux';
 import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
+import { getObjectById } from '../../../utils/redux-cache';
+import { setAlert } from '../../../actions/alert';
 
 AWS.config.update({
     accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
@@ -30,53 +32,82 @@ function renderTree({ nodes, expanded, withIcons = false }) {
   }
 
 export const ReactDropzone = ({path, data, content, setContent, multiSelection, setMultiSelection, renderTreeFiles, items, item}) => {
-  const {acceptedFiles, getRootProps, getInputProps} = useDropzone();
   const profile = useSelector((state) => state.profile);
+  const { entries } = useSelector((state) => state.kits.selectedTask);
   const [activeState, setActiveState] = useState(false);
   const [ uploadState, setUploadState ] = useState('idle');
   const [ progress, setProgress ] = useState(null);
   const dispatch = useDispatch();
-  const files = buildPathToTree(acceptedFiles.map(file => file.path));
-  let totalSize = acceptedFiles.reduce((acc, file) => acc + file.size, 0);
-  const [component, setComponent] = useState(<></>);
-  let helperText = uploadState==='uploading'&&progress!==null ? `${progress.toFixed(1)}MB of ${totalSize}MB` : 'Uploading assets...';
-  if (progress!==null&&(progress >= totalSize)) {
-    helperText = 'Done';
-    totalSize = 0;
+  const validateExistence = (file) => {
+    if (entries.length>0&&file.path&&path){
+      if (getObjectById(entries[0],`${file.path[0]==='/'?Object.values(path)[0]?.id?.slice(0,-1):Object.values(path)[0]?.id}${file.path}`)){
+        dispatch(setAlert(`File already exists`, 'danger'));
+        return { code: 'file-exists', message: 'File already exists'}
+      } else {
+        return null
+      }
+    }
   }
+  const {acceptedFiles, getRootProps, getInputProps, isDragAccept} = useDropzone({
+    validator: validateExistence,
+    onDropAccepted: (files) => {
+      setActiveState(true);
+      setTotalSize(files.reduce((acc, file) => acc + file.size, 0))
+    }
+  });
+  const files = buildPathToTree(acceptedFiles.map(file => file.path));
+  const [ helpText, setHelpText ] = useState('Uploading assets...');
+  const [ totalSize, setTotalSize ] = useState(acceptedFiles.reduce((acc, file) => acc + file.size, 0));
+  const [component, setComponent] = useState(<></>);
+  useEffect(()=>{
+    if (progress!==null&&(progress >= totalSize)) {
+      setHelpText('done');
+      setUploadState('idle');
+      // setTotalSize(0);
+    } else {
+      setHelpText(`${progress?progress.toFixed(1):0}MB of ${totalSize}MB`);
+    }
+  },[progress, uploadState]);
+  useEffect(() => {
+    console.log('path in dropzone: ', helpText);
+  }, [helpText]);
+  const updateProgress = (prog) => {
+    setProgress(progress?progress+prog.loaded:prog.loaded);
+  };
   const handleUpload = (files, item) => {
     const s3 = new S3({
         params: { Bucket: 'kalkinso.com' },
         region: 'ap-south-1',
     });
     setUploadState('uploading');
+    setProgress(0);
     files.forEach((file) => {
+        if(getObjectById(entries[0],`${file.path[0]==='/'?item?.id?.slice(0,-1):item?.id}${file.path}`)){
+          dispatch(setAlert(`${file.path[0]==='/'?item?.id?.slice(0,-1):item?.id}${file.path}: File already exists`, 'warning'));
+          setProgress(progress+file.size);
+          return { code: 'file-exists', message: 'File already exists'}
+        }
         const params = {
             Bucket: 'kalkinso.com',
             Key: `${file.path[0]==='/'?item.id.slice(0,-1):item.id}${file.path}`,
             Body: file,
+            ContentType: file.type,
           };
-          s3.putObject(params).promise().then((res)=>{
-            console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${res}`);
-            setProgress(progress?progress + file.size:file.size);
-          }).catch((reason)=>{
-            console.log(reason)
-          })
+          s3.upload(params, (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+            if (data) {
+              dispatch(addFile(`${file.path[0]==='/'?item.id.slice(0,-1):item.id}${file.path}`));
+              setTimeout(() => {
+                if(profile?.user){
+                  setActiveState(false);
+                }
+              }, 1000);
+            }
+          }).on('httpUploadProgress', updateProgress);
     });
-    if(profile?.user){
-        dispatch(getSelectedTasks("kalkinso.com",`users/${profile.user}/tasks`, false));
-        setActiveState(false);
-      }
   };
-
-  useEffect(() => {
-    if(acceptedFiles.length>0){
-        setActiveState(true);
-    } else {
-        setActiveState(false);
-    }
-    console.log('acceptedFiles: ', acceptedFiles);
-  }, [acceptedFiles]);
 
   useEffect(() => {
     if(Object.keys(path)[0]?.split('/')?.length>1||data){
@@ -126,7 +157,7 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
                             <p style={{
                                 padding: '20px',
                             }}>
-                                <ProgressBar value={uploadState==='uploading' ? progress : null} max={totalSize} status={progress === totalSize ? 'finished' : 'active'} label="Uploading data" helperText={helperText} />
+                                <ProgressBar value={progress} max={totalSize} status={progress === totalSize ? 'finished' : 'active'} label="Uploading data" helperText={helpText} />
                             </p>
                         )}
               </aside>)}
@@ -136,7 +167,7 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
         setComponent(<></>);
     }
     console.log('path in dropzone: ', path);
-  }, [path, activeState, uploadState]);
+  }, [path, activeState, uploadState, helpText]);
 
   return component;
 }
