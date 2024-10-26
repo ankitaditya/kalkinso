@@ -63,6 +63,7 @@ app.use('/api/chat-session', require('../routes/api/chat_sessions'))
 app.use('/api/tasks', require('../routes/api/tasks'))
 app.use('/api/kalkiai', require('../routes/api/kalkiai'))
 app.use('/api/kits', require('../routes/api/kits'))
+app.use('/api/how-to', require('../routes/api/how_to'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));

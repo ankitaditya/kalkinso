@@ -8,18 +8,19 @@ import {
   Row,
   Column,
   FluidForm,
-  unstable__ChatButton as ChatButton,
+  // unstable__ChatButton as ChatButton,
   TextArea,
   ButtonSet,
   Loading,
   ExpandableTile,
   TileAboveTheFoldContent,
   TileBelowTheFoldContent,
+  IconButton,
 } from '@carbon/react';
+import { Send, Attachment, Image, Gears } from '@carbon/icons-react';
+import { Button as ChatButton, MessageList } from 'react-chat-elements';
 import './ChatScreen.css';
 import { Checkmark, Forum, Maximize } from '@carbon/react/icons';
-import FluidTextInput from '@carbon/react/lib/components/FluidTextInput';
-import { ClickableTile } from 'carbon-components-react';
 import { Cascade, ProductiveCard, SidePanel, pkg } from '@carbon/ibm-products';
 import { useDispatch, useSelector } from 'react-redux';
 import { MultiStepTearsheetWide, TearsheetNarrow, TearsheetWide } from '../../../Kanban/component-playground/components';
@@ -31,7 +32,7 @@ import { pdfExporter } from 'quill-to-pdf';
 import { saveAs } from "file-saver";
 import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
-import { useParams } from 'react-router-dom';
+import { Input } from 'react-chat-elements';
 
 AWS.config.update({
   accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
@@ -510,6 +511,41 @@ const ChatScreen = () => {
         )}
       </>
     )))
+
+  //   setMessagesComponent(<MessageList
+  //     className='message-list'
+  //     lockable={true}
+  //     toBottomHeight={'100%'}
+  //     dataSource={messages.map((message, index) => {
+  //       if(typeof message.content === 'string') {
+  //         if(message?.actions){
+  //           return {
+  //             position: message.role === 'assistant' ? 'left' : 'right',
+  //             type: 'text',
+  //             title: message.role === 'assistant' ? 'Ease Assistant' : user?.first_name+' '+user?.last_name,
+  //             text: <div>
+  //               {message.content} <br />
+  //               <ButtonSet style={{margin:"1rem"}}>
+  //                 {message.actions.map((action, index) => (
+  //                   <Button kind={action.kind} key={index} size='small' onClick={()=>action.onClick(idea)}>{action.label}</Button>
+  //                 ))}
+  //               </ButtonSet>
+  //             </div>,
+  //             date: new Date().toLocaleTimeString(),
+  //           }
+  //         } else {
+  //           return {
+  //             position: message.role === 'assistant' ? 'left' : 'right',
+  //             type: 'text',
+  //             title: message.role === 'assistant' ? 'Ease Assistant' : user?.first_name+' '+user?.last_name,
+  //             text: ReactDOMServer.renderToStaticMarkup(message.content),
+  //             date: new Date().toLocaleTimeString(),
+  //           }
+  //         }
+  //     } 
+      
+  //     })}
+  // />)
   },[messages, idea]);
 
   useEffect(() => {
@@ -656,16 +692,72 @@ const ChatScreen = () => {
     };
   
     return (
-      <FluidForm onSubmit={handleSubmit} className="input-form">
-          <FluidTextInput
-              id="chat-input"
-              labelText=""
-              placeholder="Type something..."
-              value={input}
-              onChange={handleChange}
-          />
-          <Button kind='ghost' type="submit"><Forum size={20}/></Button>
-      </FluidForm>
+      <div style={{ width: '100%', marginTop: '20px', marginBottom: '20px', border: '1px solid #ccc', borderRadius: '4px', padding: '10px', backgroundColor: 'white' }}>
+          <Input
+            id="chat-input"
+            placeholder="Type here..."
+            multiline={true}
+            onChange={handleChange}
+            />
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            float: 'left',
+            marginRight: '1rem',
+          }}>
+          <ChatButton
+                type='transparent'
+                title="Send"
+                onClick={()=>{}}
+                color='black'
+                backgroundColor='#161616'
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Attachment />
+                }}/>
+          <ChatButton
+                type='transparent'
+                title="Send"
+                onClick={()=>{}}
+                color='black'
+                backgroundColor='#161616'
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Image />
+                }}/>
+          <ChatButton
+                type='transparent'
+                title="Send"
+                onClick={()=>{}}
+                color='black'
+                backgroundColor='#161616'
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Gears />
+                }}/>  
+          </div>    
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            float: 'right',
+          }}>
+          <ChatButton
+                text={"Send"}
+                onClick={handleSubmit}
+                type='outlined'
+                title="Send"
+                backgroundColor='#161616'
+                style={{marginLeft:"1rem"}}
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Send />
+                }}/>
+            </div>
+      </div>
     );
   };
 

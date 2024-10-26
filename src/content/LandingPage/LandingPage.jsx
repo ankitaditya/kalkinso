@@ -36,7 +36,7 @@ class LandingPage extends Component {
       <Grid className="landing-page" fullWidth>
         <Column lg={16} md={8} sm={4} className="landing-page__banner">
           <HeroSection ButtonComponent={this.props?.auth?.isAuthenticated?<></>:<FluidForm style={{marginTop:"35px"}}>
-            <Button href='/#/register'>Sign Up</Button>
+            {/* <Button href='/#/register'>Sign Up</Button> */}
             <Button kind="secondary" href='/#/login'>Login</Button>
           </FluidForm>}/>
         </Column>
@@ -105,7 +105,7 @@ class LandingPage extends Component {
                     sm={4}
                     className="landing-page__tab-content">
                     <TaskCarousel component={<HeroSection ButtonComponent={<FluidForm style={{marginTop:"35px"}}>
-                                              <Button href='/#/register'>SignUp</Button>
+                                              {/* <Button href='/#/register'>SignUp</Button> */}
                                               <Button kind="secondary" href='/#/login'>Login</Button>
                                             </FluidForm>}/>} />
                   </Column>

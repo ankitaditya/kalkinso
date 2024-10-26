@@ -173,13 +173,13 @@ class UIShell extends React.Component {
                             <Route path="/" element={<LandingPage />} />
                             <Route path="Search" element={<SearchPage />} />
                             <Route path="Login" element={<Login />} />
-                            <Route path="Register" element={<SignUp />} />
+                            {/* <Route path="Register" element={<SignUp />} /> */}
                             <Route path="home">
                                 <Route path="" element={<PrivateRoute Component={DashboardScreen} />} />
                                 <Route path=":taskPath" element={<PrivateRoute Component={Kanban} />} />
                             </Route>
                             <Route path="chat" element={<PrivateRoute Component={ChatScreen} />} />
-                            {/* <Route path="Contact" element={<ContactPage />} /> */}
+                            <Route path="Contact" element={<ComingSoon />} />
                             <Route path="how-to" element={<HowToPage />} />
                             <Route path="test-component" element={<PrivateRoute Component={AIReact} config={AIReactChatConfig} />} />
                             <Route path="test-dashboard" element={<PrivateRoute Component={AIReact} config={AIReactDashboardConfig} />} />

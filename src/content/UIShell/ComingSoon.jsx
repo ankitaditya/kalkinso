@@ -1,63 +1,65 @@
-import React, { useEffect, useState } from 'react';
-// import { Header, HeaderName, HeaderNav, HeaderMenuItem } from "@carbon/react";
-import { Grid, Column } from '@carbon/react';
-import { Timer, Email } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
-import './ComingSoon.css';
+import { Send } from '@carbon/react/icons';
+import React, { useState } from 'react';
+// import { TextInput, Button } from '@carbon/react';
+import { Button, Input, MessageList } from 'react-chat-elements';
+import "react-chat-elements/dist/main.css"
 
-const ComingSoon = () => {
-    const calculateTimeLeft = () => {
-        const difference = +new Date('2024-07-31') - +new Date();
-        let timeLeft = {};
 
-        if (difference > 0) {
-            timeLeft = {
-                days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                minutes: Math.floor((difference / 1000 / 60) % 60),
-                seconds: Math.floor((difference / 1000) % 60),
-            };
-        }
+const ChatComponent = () => {
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
 
-        return timeLeft;
-    };
+  const sendMessage = () => {
+    if (message.trim()) {
+      setMessages([...messages, message]);
+      setMessage('');
+    }
+  };
 
-    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  };
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setTimeLeft(calculateTimeLeft());
-        }, 1000);
-
-        return () => clearTimeout(timer);
-    });
-
-    const timerComponents = [];
-
-    Object.keys(timeLeft).forEach((interval) => {
-        if (!timeLeft[interval]) {
-            return;
-        }
-
-        timerComponents.push(
-            <span key={interval}>
-                {timeLeft[interval]} {interval}{" "}
-            </span>
-        );
-    });
-
-    return (
-        <Grid fullWidth className="coming-soon-content">
-                <Column lg={15} md={8} sm={6} className="center">
-                    <h1>Coming Soon!</h1>
-                    <p>We are working hard to finish the development of this site. Visit us again soon! 
-                        <br /><Email size={12} /> <a href='mailto://info@kalkinso.com'>info@kalkinso.com</a></p>
-                    <div className="timer">
-                        {timerComponents.length ? timerComponents : <span>Time's up!</span>}
-                    </div>
-                </Column>
-        </Grid>
-    );
+  return (
+    <div style={{ width: '50vw', margin: '20px', border: '1px solid #ccc', borderRadius: '4px', padding: '10px', backgroundColor: 'white' }}>
+      
+      <MessageList
+          className='message-list'
+          lockable={true}
+          toBottomHeight={'100%'}
+          dataSource={[
+          {
+            position:"left",
+            type:"text",
+            title:"Kursat",
+            text:"Give me a message list example !",
+          },
+          {
+            position:"right",
+            type:"text",
+            title:"Emre",
+            text:"That's all.",
+          },
+          ]}
+      />
+      <Input
+            placeholder="Type here..."
+            multiline={true}
+            />
+      <Button
+            text={"Send"}
+            onClick={() => alert("Sending...")}
+            type='primary'
+            title="Send"
+            icon ={{
+                float:'left',
+                size:15,
+                component:<Send />
+            }}/>
+      </div>
+  );
 };
 
-export default ComingSoon;
+export default ChatComponent;

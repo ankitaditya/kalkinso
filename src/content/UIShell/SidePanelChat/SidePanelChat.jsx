@@ -1,7 +1,6 @@
-import { EditSidePanel, pkg, UserProfileImage, SidePanel } from "@carbon/ibm-products";
-import { Dropdown, FilterableMultiSelect, TextArea, TextInput, usePrefix } from "@carbon/react";
+import { pkg, SidePanel } from "@carbon/ibm-products";
+import { usePrefix } from "@carbon/react";
 import { useState } from "react";
-import costaPic from '../../SearchPage/component-playground/_story-assets/costa.jpeg';
 import { useSelector } from "react-redux";
 import ChatScreen from "./ChatScreen/ChatScreen";
 
