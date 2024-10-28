@@ -69,7 +69,7 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
     }
   },[progress, uploadState]);
   useEffect(() => {
-    console.log('path in dropzone: ', helpText);
+    // console.log('path in dropzone: ', helpText);
   }, [helpText]);
   const updateProgress = (prog) => {
     setProgress(progress?progress+prog.loaded:prog.loaded);
@@ -95,7 +95,7 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
           };
           s3.upload(params, (err, data) => {
             if (err) {
-              console.log(err);
+              // console.log(err);
             }
             if (data) {
               dispatch(addFile(`${file.path[0]==='/'?item.id.slice(0,-1):item.id}${file.path}`));
@@ -166,7 +166,7 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
     } else {
         setComponent(<></>);
     }
-    console.log('path in dropzone: ', path);
+    // console.log('path in dropzone: ', path);
   }, [path, activeState, uploadState, helpText]);
 
   return component;

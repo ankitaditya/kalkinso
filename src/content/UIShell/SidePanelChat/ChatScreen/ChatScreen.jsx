@@ -147,9 +147,9 @@ const ChatScreen = () => {
     //   pdf.addImage(imgData, 'PNG', 0, 0);
     //   pdf.save("download.pdf");
     // });
-    console.log("This is event: ",event);
+    // console.log("This is event: ",event);
     pdfExporter.generatePdf(event.editor.delta).then((blob) => {
-      console.log("This is blob: ",blob);
+      // console.log("This is blob: ",blob);
       if (path) {
         const s3 = new S3({
             params: { Bucket: 'kalkinso.com' },
@@ -161,9 +161,9 @@ const ChatScreen = () => {
           Body: blob,
         };
         s3.putObject(params).promise().then((res)=>{
-          console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${res}`);
+          // console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${res}`);
         }).catch((reason)=>{
-          console.log(reason)
+          // console.log(reason)
         });
       } else {
         saveAs(blob, "pdf-export.pdf");
@@ -185,11 +185,11 @@ const ChatScreen = () => {
   },[window.location.hash]);
 
   useEffect(() => {
-    console.log("This is task path sidebar chat: ",taskPath);
+    // console.log("This is task path sidebar chat: ",taskPath);
   }, [taskPath]);
 
   useEffect(() => {
-    console.log("This is changed messages: ",messages);
+    // console.log("This is changed messages: ",messages);
     setMessagesComponent(messages.map((message, index) => (
       <>
       <Tile
@@ -597,17 +597,17 @@ const ChatScreen = () => {
               e.on('editor-change', (eventName, ...args) => {
                 if (eventName === 'text-change') {
                   // args[0] will be delta[1]
-                  console.log("This is delta: ",args[1]);
+                  // console.log("This is delta: ",args[1]);
                 } else if (eventName === 'selection-change') {
                   // args[0] will be old range
-                  console.log("This is delta: ",args[0]);
+                  // console.log("This is delta: ",args[0]);
                 }
               });
             }
           }} onTextChange={(e) => {
             setQuillInstance(e.htmlValue);
               // setIdea(e.htmlValue);
-              console.log("This is event when text is changed: ",idea);
+              // console.log("This is event when text is changed: ",idea);
             }
           } />,
           actions: [{label:"Yes",onClick:(event)=>{

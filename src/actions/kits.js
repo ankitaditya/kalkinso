@@ -29,7 +29,7 @@ export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') 
         });
         dispatch(setLoading(false));
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
             payload: { msg: err.response.statusText, status: err.response.status },
@@ -65,7 +65,7 @@ export const startTask = (bucketName="kalkinso.com", task_id=null, user_id=null)
             payload: false,
         });
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
             payload: { msg: err.response.msg, status: 400 },
@@ -94,7 +94,7 @@ export const deleteFile = (bucketName="kalkinso.com", Prefix='', isTask=false) =
         });
         dispatch(setLoading(false));
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
             payload: { msg: err.response.statusText, status: err.response.status },
@@ -120,7 +120,7 @@ export const renameFile = (payload) => async (dispatch) => {
         CopySource : bucketname+'/'+file_id.join('/'), 
         Key : new_file_id.join('/'),
     };
-    console.log(params)
+    // console.log(params)
     try {
         const resp = await s3.copyObject(params).promise();
         await s3.deleteObject({Bucket: bucketname, Key: file_id.join('/')}).promise();
@@ -135,7 +135,7 @@ export const renameFile = (payload) => async (dispatch) => {
             },
         });
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         return dispatch({
             type: actionTypes.TASK_ERROR,
             payload: { msg: err.response.statusText, status: err.response.status },
@@ -208,7 +208,7 @@ export const save = (bucketName="kalkinso.com", Prefix='', content=null) => asyn
         });
         dispatch(setLoading(false));
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
             payload: { msg: err.response.statusText, status: err.response.status },

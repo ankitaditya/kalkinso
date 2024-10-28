@@ -152,7 +152,7 @@ export let AddSelectRow = ({
       aria-expanded={expanded}
       onContextMenu={(e) => {
         setItemToDelete(item.id);
-        console.log('context Item: ', item);
+        // console.log('context Item: ', item);
         dispatch(setDeleteFile(item))
         cm.current.show(e);
       }}

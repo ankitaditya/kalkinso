@@ -26,7 +26,7 @@ export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}
     const fileUploadRef = useRef(null);
     
     const onTemplateSelect = (e) => {
-        console.log(item)
+        // console.log(item)
         let _totalSize = totalSize;
         let files = e.files;
 
@@ -39,7 +39,7 @@ export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}
     
     const onTemplateUpload = (e) => {
         let _totalSize = totalSize;
-        console.log("I am in upload!")
+        // console.log("I am in upload!")
         e.files.forEach((file) => {
             const params = {
                 Bucket: bucket,
@@ -47,14 +47,14 @@ export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}
                 Body: file,
                 ContentType: file.type,
               };
-              console.log(params)
+            //   console.log(params)
               s3.upload(params, (err, data) => {
                 if (err) {
-                  console.log(err);
+                //   console.log(err);
                   toast.current.show({ severity: 'error', summary: 'Error', detail: 'File Upload Error' });
                 }
                 if (data) {
-                  console.log(data);
+                //   console.log(data);
                   toast.current.show({ severity: 'success', summary: 'Success', detail: 'File Uploaded' });
                 }
               }).on('httpUploadProgress', (progress) => {

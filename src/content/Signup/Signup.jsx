@@ -118,7 +118,7 @@ const SignUp = (props) => {
     
 
   const handleSubmit = () => {
-    console.log("submit clicked!");
+    // console.log("submit clicked!");
     let key  = ""
     if(label === "Email" && isInvalid.email === false) {
       key = "email";
@@ -131,7 +131,7 @@ const SignUp = (props) => {
     }
     if (key === "" || isInvalid.mobile===true) {
       props.setAlert("Problem in verifying OTP: "+label, "error");
-      console.log("THIS IS INVALID: ",isInvalid)
+      // console.log("THIS IS INVALID: ",isInvalid)
       return;
     } else {
       props.verifyOtp({[key]: information.step1[key], otp:token})
@@ -163,7 +163,7 @@ const SignUp = (props) => {
   }, [openOtpModal]);
 
   const handleVerifyClick = () => {
-    console.log("Verify clicked!");
+    // console.log("Verify clicked!");
     if(label === "Email" && isInvalid.email === false) {
       props.sendVerification({email: information.step1.email});
       setTimeout(() => setOpen(true), 5000);
@@ -182,7 +182,7 @@ const SignUp = (props) => {
   }
 
   const ResendOtp = () => {
-    console.log("Resend otp clicked!");
+    // console.log("Resend otp clicked!");
     if(label === "Email" && isInvalid.email === false) {
       props.sendVerification({email: information.step1.email});
       props.setAlert(`Verification OTP sent to ${information.step1.email}!`, "info")
@@ -299,14 +299,14 @@ const SignUp = (props) => {
           ...information,
           step2: { ...information.step2, terms_conditions: value }
         });
-        console.log("This is terms conditions", value);
+        // console.log("This is terms conditions", value);
         return value === false;
       }
     }
   };
 
   const onSubmit = (e) => {
-    console.log("SUBMIT CLICKED:",information.step1, information.step2)
+    // console.log("SUBMIT CLICKED:",information.step1, information.step2)
     props.register({...information.step1, ...information.step2, "user_role": selectedCategory});
   }
 
@@ -427,8 +427,8 @@ const SignUp = (props) => {
                 // Example usage of how to prevent the next step if some kind
                 // of error occurred during the `onNext` handler.
                 if (shouldReject) {
-                  console.log("SHOULD REJECT: ",shouldReject)
-                  console.log("IS INVALID: ",isInvalid)
+                  // console.log("SHOULD REJECT: ",shouldReject)
+                  // console.log("IS INVALID: ",isInvalid)
                   setHasSubmitError(true);
                   reject();
                 }
@@ -753,7 +753,7 @@ const SignUp = (props) => {
                 }
                 id="terms-conditions"
                 onChange={e => {
-                  console.log(e.target.checked);
+                  // console.log(e.target.checked);
                   setIsInvalid({
                     ...isInvalid,
                     terms_conditions: validate(

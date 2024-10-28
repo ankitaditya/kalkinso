@@ -53,7 +53,7 @@ const RichTextEditor = () => {
     //   }
     // },[suggestion])
     useEffect(() => {
-      console.log(inputValue);
+      // console.log(inputValue);
     }, [inputValue]);
 
     return (

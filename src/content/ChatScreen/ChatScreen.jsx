@@ -81,9 +81,9 @@ const ChatScreen = () => {
     //   pdf.addImage(imgData, 'PNG', 0, 0);
     //   pdf.save("download.pdf");
     // });
-    console.log("This is event: ",event);
+    // console.log("This is event: ",event);
     pdfExporter.generatePdf(event.editor.delta).then((blob) => {
-      console.log("This is blob: ",blob);
+      // console.log("This is blob: ",blob);
       saveAs(blob, "pdf-export.pdf");
     });
 
@@ -98,12 +98,12 @@ const ChatScreen = () => {
 
   useEffect(() => {
     // setPdf(()=>exportPdf(quillInstance));
-    console.log("This is changed idea: ",idea);
+    // console.log("This is changed idea: ",idea);
     // console.log("This is changed pdf: ",pdf);
   },[idea])
 
   useEffect(() => {
-    console.log("This is changed messages: ",messages);
+    // console.log("This is changed messages: ",messages);
     setMessagesComponent(messages.map((message, index) => (
       <>
       <Tile
@@ -326,17 +326,17 @@ const ChatScreen = () => {
               e.on('editor-change', (eventName, ...args) => {
                 if (eventName === 'text-change') {
                   // args[0] will be delta[1]
-                  console.log("This is delta: ",args[1]);
+                  // console.log("This is delta: ",args[1]);
                 } else if (eventName === 'selection-change') {
                   // args[0] will be old range
-                  console.log("This is delta: ",args[0]);
+                  // console.log("This is delta: ",args[0]);
                 }
               });
             }
           }} onTextChange={(e) => {
             setQuillInstance(e.htmlValue);
               // setIdea(e.htmlValue);
-              console.log("This is event when text is changed: ",idea);
+              // console.log("This is event when text is changed: ",idea);
             }
           } />,
           actions: [{label:"Yes",onClick:()=>{

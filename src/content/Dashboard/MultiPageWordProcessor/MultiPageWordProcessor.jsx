@@ -146,7 +146,7 @@ const getBlockHeight = (block) => {
         if (typeof blocks === "string") {
             blocks = await editor.tryParseMarkdownToBlocks(blocks);
         }
-        console.log(JSON.parse(JSON.stringify(blocks)))
+        // console.log(JSON.parse(JSON.stringify(blocks)))
         paginate(JSON.parse(JSON.stringify(blocks)));
         await setContent(null);
         });
@@ -158,7 +158,7 @@ const getBlockHeight = (block) => {
   // Check and split content when it exceeds one page
   const paginateContent = useCallback(() => {
     const contentBlocks = [].concat(...Object.values(editor).map(data=>JSON.parse(data)))
-    console.log(contentBlocks, editor)
+    // console.log(contentBlocks, editor)
     paginate(contentBlocks);
   }, [editor]);
 
@@ -173,7 +173,7 @@ const getBlockHeight = (block) => {
     <div className="word-processor" ref={editorRef}>
       {pages.length>0&&pages.map((pageContent, index) => {
             if (pageContent){
-                console.log("This is page content: " ,pageContent)
+                // console.log("This is page content: " ,pageContent)
                 return (<div className="page" key={index} style={{ height: PAGE_HEIGHT, width: PAGE_WIDTH }}>
                     <BlockNoteEditor initialContent={pageContent} setContent={(value)=>{
                         if(value){

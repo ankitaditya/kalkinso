@@ -92,11 +92,11 @@ const SocialFeed = () => {
       { index: 10,type: 'pending', label: 'Preparing' },
     ];
       const handleOnSubmit = (selection) => {
-        console.log('Selected Items:', selection);
+        // console.log('Selected Items:', selection);
       };
       
       const handleOnClose = () => {
-        console.log('Tearsheet closed');
+        // console.log('Tearsheet closed');
       };
 
     const globalFilterOpts =
@@ -106,7 +106,7 @@ const SocialFeed = () => {
 
     useEffect(() => {
       if (selectedTask?.entries?.length>0) {
-        console.log('Selected Items:', selectedTask);
+        // console.log('Selected Items:', selectedTask);
         const defaultModifiers =
           true && items.modifiers
             ? items.entries.map((item) => {

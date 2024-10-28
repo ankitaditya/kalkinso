@@ -22,7 +22,7 @@ export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600)
         expiresIn: expiresIn, // URL expiration time in seconds (default: 1 hour)
       });
   
-      console.log("Signed URL:", signedUrl);
+      // console.log("Signed URL:", signedUrl);
       return signedUrl;
     } catch (error) {
       console.error("Error generating signed URL", error);
@@ -183,6 +183,6 @@ export function handleSaveShortcuts(event){
     if ((event.ctrlKey || event.metaKey) && event.key === "s") {
       event.preventDefault(); // Prevent the default browser behavior (saving the webpage)
       // Call your custom function here
-      console.log("ctrl + s pressed")
+      // console.log("ctrl + s pressed")
   }
 }

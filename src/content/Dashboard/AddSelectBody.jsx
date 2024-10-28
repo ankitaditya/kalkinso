@@ -176,7 +176,7 @@ const AddSelectBody = forwardRef(
     useEffect(() => {
       if(path){
         setPathExternal({[path.map((item) => item.title==='Tasks'?profile.username:item.title).join('/')]:path[path.length-1]});
-        console.log('path: ', path.map((item) => item.title==='Tasks'?profile.username:item.title).join('/'));
+        // console.log('path: ', path.map((item) => item.title==='Tasks'?profile.username:item.title).join('/'));
       }
     }, [path]);
 

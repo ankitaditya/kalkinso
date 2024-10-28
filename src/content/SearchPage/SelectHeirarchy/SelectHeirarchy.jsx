@@ -99,7 +99,7 @@ let defaultProps = {
     noSelectionTitle: 'No tasks selected',
     noResultsDescription: 'Try again',
     onCloseButtonText: 'Cancel',
-    onSubmit: (selections) => console.log(selections),
+    // onSubmit: (selections) => console.log(selections),
     onSubmitButtonText: 'Add',
     searchResultsTitle: 'Search results',
     title: 'Add tasks',
@@ -151,7 +151,7 @@ const SelectHeirarchy = ({open, isMulti, task_id , onClose, onSubmit}) => {
       // console.log("This is modified props: ",{...props, items: getHeirarchy(tasks[0]?._id)});
     },[open])
     useEffect(() => {
-      console.log("This is debug props: ",props);
+      // console.log("This is debug props: ",props);
       if(isMulti) {
         let addedProps = {...props}
         if(selectedMultiTask){
@@ -161,7 +161,7 @@ const SelectHeirarchy = ({open, isMulti, task_id , onClose, onSubmit}) => {
           {...addedProps} 
           open={open} 
           onClose={onClose} 
-          onSubmit={(e)=>{console.log("This is selected: ",e)}}
+          // onSubmit={(e)=>{console.log("This is selected: ",e)}}
           />);
       } else {
         setSelected(<SingleAddSelect {...props}  open={open} onClose={onClose} onSubmit={onSubmit} />);
@@ -170,7 +170,7 @@ const SelectHeirarchy = ({open, isMulti, task_id , onClose, onSubmit}) => {
     }, [props, isMulti, open, selectedMultiTask, task_files]);
 
     useEffect(() => {
-      console.log("This is debug selected: ",selected);
+      // console.log("This is debug selected: ",selected);
     }, [selected]);
 
 

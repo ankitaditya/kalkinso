@@ -97,9 +97,9 @@ const App = ({breadcrumb}) => {
     }
   }, [tasks, taskPath]);
   useEffect(() => {
-    console.log('This is cards:', cards);
+    // console.log('This is cards:', cards);
     setCardsComponent(cards.length>0?cards.map((card, index) => {
-      console.log('This is card:', card);
+      // console.log('This is card:', card);
       if(card?.name){
         return (
           <Column
@@ -247,7 +247,7 @@ const App = ({breadcrumb}) => {
   };
 
   useEffect(() => {
-    console.log("This is switch: ",contentSwitch);
+    // console.log("This is switch: ",contentSwitch);
   }, [contentSwitch]);
  
   // useEffect(() => {

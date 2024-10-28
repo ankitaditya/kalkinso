@@ -27,8 +27,8 @@ const Login = () => {
     setTimeout(() => {
       dispatch(login(email, password));
     }, 2000);
-    console.log('Email:', email);
-    console.log('Password:', password);
+    // console.log('Email:', email);
+    // console.log('Password:', password);
   };
 
   return (

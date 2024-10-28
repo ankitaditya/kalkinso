@@ -33,7 +33,7 @@ function renderTree({ nodes, replacer, expanded, withIcons = false }) {
     nodesArray = buildPathToTree(nodes.map((node) => {
       return node.id.replace(replacer, '');
     }));
-    console.log("Node Array: ",nodesArray);
+    // console.log("Node Array: ",nodesArray);
   }
   if (!nodesArray) {
     return;

@@ -40,7 +40,7 @@ export const sendMessage = (message, user, user_id) => async (dispatch) => {
       }),
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     dispatch(setAlert('Error sending message', 'error'));
     dispatch({
       type: actionTypes.MESSAGE_ERROR,

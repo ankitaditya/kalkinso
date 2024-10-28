@@ -31,7 +31,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 }
 
 export const register = ({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, confirm_password, user_role }) => async (dispatch) => {
-	console.log('register is clicked!')
+	// console.log('register is clicked!')
 	setAuthToken(null)
 	const config = {
 		headers: {
@@ -41,7 +41,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 	const body = JSON.stringify({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, user_role })
 	try {
 		const res = await axios.post('/api/users', body, config)
-		console.log('RESULT: ', res)
+		// console.log('RESULT: ', res)
 		dispatch({
 			type: actionTypes.REGISTER_SUCCESS,
 			payload: res,
@@ -75,7 +75,7 @@ export const login = (email, password) => async (dispatch) => {
 	try {
 		const res = await axios.post('/api/auth/login/email', body, config)
 		dispatch(setLoading(true))
-		console.log('RESULT: ', res)
+		// console.log('RESULT: ', res)
 		window.location.href = `${window.location.origin}/#/home/create`
 		dispatch(setAlert(`Welcome ${res?.data?.first_name} ${res?.data?.last_name}!`, 'success'))
 		dispatch({
@@ -180,7 +180,7 @@ export const verifyOtp = ({email=null, mobile=null, adhar=null, upi=null, otp=nu
 			type: actionTypes.OTP_VERIFICATION,
 			payload: {[verifyType]:res.data},
 		});
-		console.log("THIS IS VERIFY OTP: ",mobile,otp,verifyType,bodyJson)
+		// console.log("THIS IS VERIFY OTP: ",mobile,otp,verifyType,bodyJson)
 		dispatch(setAlert('OTP Verified!', 'success'));
 		dispatch(setOpenOtpModal(false));
 		dispatch(setVerified({[verifyType]:true}));

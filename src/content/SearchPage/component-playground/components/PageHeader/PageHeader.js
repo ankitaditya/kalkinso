@@ -26,11 +26,11 @@ const PageHeader = (props) => {
   const [tagInput, setTagInput] = useState('');
   const dispatch = useDispatch();
   const filterButtonTag = { type: 'purple', label: 'Filter +', id: "input-tag", onClick: () => editTagHandler("add") };
-  const filterInputTag = { type: 'outline', label: <input style={{border:"none"}} onChange={(e)=>{console.log(e.target.value);setTagInput(e.target.value)}} onKeyDown={(event)=>addTagHandler(event)} />, id: "input-tag", filter: true, onClose: () => editTagHandler("close") };
+  const filterInputTag = { type: 'outline', label: <input style={{border:"none"}} onChange={(e)=>{setTagInput(e.target.value)}} onKeyDown={(event)=>addTagHandler(event)} />, id: "input-tag", filter: true, onClose: () => editTagHandler("close") };
   const [ tags, setTags ] = useState([filterButtonTag]);
 const editTagHandler = (addOrClose) => {
   if (addOrClose === "add") {
-    console.log("This is updated Tags after ADD: ",[filterInputTag, ...tags.slice(1)]);
+    // console.log("This is updated Tags after ADD: ",[filterInputTag, ...tags.slice(1)]);
     setTags([filterInputTag, ...tags.slice(1)]);
   } else if (addOrClose === "close") {
     setTags([filterButtonTag, ...tags.slice(1)]);
@@ -53,8 +53,8 @@ const addTagHandler = (event) => {
 }
 
 useEffect(() => {
-  console.log("This is updated Tags: ",[filterInputTag, ...tags.slice(1)]);
-  console.log("This is the text: ",tagInput);
+  // console.log("This is updated Tags: ",[filterInputTag, ...tags.slice(1)]);
+  // console.log("This is the text: ",tagInput);
 }, [tags, tagInput]);
   const content = (
     <div style={{ display: 'flex' }}>
@@ -91,7 +91,7 @@ useEffect(() => {
   }));
 
   const handleSearch = (ev) => {
-    console.log("This is Cards Value: ", ev.value)
+    // console.log("This is Cards Value: ", ev.value)
     props.actions.setSearch(ev.value);
     if(ev.value){
       dispatch(setLoading(true));
@@ -144,7 +144,7 @@ useEffect(() => {
       // subtitle={}
       // tags={tags}
     >
-      {<><Gallery handleSearch={handleSearch} /><ConditionBuilder inputConfig={inputData} variant={"tree"} startConditionLabel="Add Condition" popOverSearchThreshold={4} getConditionState={(rootState) => console.log(rootState)} /></>}
+      {<><Gallery handleSearch={handleSearch} /><ConditionBuilder inputConfig={inputData} variant={"tree"} startConditionLabel="Add Condition" popOverSearchThreshold={4} /></>}
     </CCPageHeader>
   );
 };

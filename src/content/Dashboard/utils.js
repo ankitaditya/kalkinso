@@ -313,7 +313,7 @@ const handleMedia = (pdf, block, type) => {
 
 // Main function to convert blocks to PDF
 export const exportToPDF = async (config, fileName) => {
-  console.log(config);
+  // console.log(config);
   const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: "a4" });
 
   for (const block of config) {

@@ -12,7 +12,7 @@ const Loader = () => {
 	const { isAuthenticated, loading } = auth;
 	useEffect(() => {
 		if(isAuthenticated) {
-            console.log("Redirecting to search page");
+            // console.log("Redirecting to search page");
             // dispatch(setLoading(false));
 			// window.location.href =  window.location.origin + '/#/home/search'
 		}

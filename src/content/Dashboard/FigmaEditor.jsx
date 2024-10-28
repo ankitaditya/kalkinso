@@ -84,7 +84,7 @@ export default class ImageEditorWorkbench extends React.Component {
   handleSave = () => {
     const editorInstance = this.getInstance();
     const dataURL = editorInstance.toDataURL(); // Get the edited image as a Data URL
-    console.log(dataURL); // Save or use the image
+    // console.log(dataURL); // Save or use the image
   };
 
   render() {

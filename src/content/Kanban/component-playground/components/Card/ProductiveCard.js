@@ -93,7 +93,7 @@ const ProductiveCard = (props) => {
       onClick: () => {
         props.actions.setSidePanelOpen(true);
         props.actions.setCardToEdit(props.index);
-        console.log('Task Index:', props.index);
+        // console.log('Task Index:', props.index);
       },
       iconDescription: 'Edit',
     },

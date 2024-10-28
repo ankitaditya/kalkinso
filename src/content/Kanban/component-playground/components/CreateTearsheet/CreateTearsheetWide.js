@@ -17,30 +17,19 @@ import {
   DatePicker,
   DatePickerInput,
   Dropdown,
-  FileUploader,
-  IconButton,
-  //Dropdown,
-  //Form,
-  //FormGroup,
   NumberInput,
   RadioButton,
   RadioButtonGroup,
   Row,
-  //Tabs,
-  //Tab,
   TextInput,
-  //Toggle,
-  unstable__Slug as Slug,
-  unstable__SlugContent as SlugContent
 } from '@carbon/react';
 import { useDispatch, useSelector } from 'react-redux';
 import FileUploaderDragAndDrop from './FileUploaderDragAndDrop';
 import { Button, FilterableMultiSelect, TextArea } from 'carbon-components-react';
 import { skills } from './constants';
-import { Add, Folder, FolderOpen, Folders, View } from '@carbon/react/icons';
+import { Add } from '@carbon/react/icons';
 import StartPaymentModal from './StartPaymentModal';
-import { addTask, setTasks, setTasksState } from '../../../../../actions/task';
-import RichTextEditor from '../../../../Dashboard/RichTextEditor';
+import { addTask } from '../../../../../actions/task';
 import { useParams } from 'react-router-dom';
 import AISlug from '../../../../AISlug/AISlug';
 
@@ -50,7 +39,6 @@ const MultiStepTearsheetWide = (props) => {
   const [openPayment, setOpenPayment] = useState(false);
   const [ isCustmTime, setIsCustmTime ] = useState(true);
   const { taskPath } = useParams();
-  const { tasks } = useSelector((state) => state.task);
   const profile = useSelector((state) => state.profile);
   const users = [
     {
@@ -117,7 +105,7 @@ const MultiStepTearsheetWide = (props) => {
   });
 
   useEffect(() => {
-    console.log('createValues', createValues);
+    // console.log('createValues', createValues);
   }, [createValues]);
 
   useEffect(() => {
@@ -163,17 +151,12 @@ const MultiStepTearsheetWide = (props) => {
       open={props.isOpen}
       onClose={() => props.setIsOpen(false)}
       onRequestSubmit={() => {
-        // let tmpCards = Array.from(tasks);
-        // tmpCards.unshift(createValues);
         if(taskPath && taskPath!=='create') {
           dispatch(addTask(createValues, taskPath.split('&&').slice(-1)[0], taskPath));
         }else{
           dispatch(addTask(createValues));
         }
-        // dispatch(setTasksState(tmpCards));
         setCreateValues({});
-        // props.actions.setCards(tmpCards);
-        // console.log('creation value card', tmpCards);
       }}
     >
       <StartPaymentModal openPayment={openPayment} actions={{ setOpenPayment: setOpenPayment }} />
@@ -204,8 +187,6 @@ const MultiStepTearsheetWide = (props) => {
                   ...createValues,
                   [event.target.name]: event.target.value
                 });
-                //   if (event.target.value.length) setIsInvalid(false);
-                //   setStepOneTextInputValue(event.target.value);
               }}
               name="name"
               slug={aiLabel(setCreateValues, 'name', createValues)}
@@ -216,7 +197,6 @@ const MultiStepTearsheetWide = (props) => {
               labelText="Short Description"
               id="tearsheet-multi-step-story-text-input-multi-step-1-input-2-1"
               rows={4}
-              //value={topicDescriptionValue}
               value={createValues ? createValues.short_description : ''}
               placeholder="Enter task short description"
               name="short_description"
@@ -284,7 +264,6 @@ const MultiStepTearsheetWide = (props) => {
                     id="create-side-panel-kit-a" 
                     titleText="Priority"
                     label="Assign a priority" 
-                    // selectionFeedback="top-after-reopen"
                     className={`form-item`} 
                     placeholder="Assign a priority" 
                     initialSelectedItem={createValues?.priority} 
@@ -321,14 +300,6 @@ const MultiStepTearsheetWide = (props) => {
                 }
               />
             </DatePicker>
-            {/* {hasSubmitError && (
-                <InlineNotification
-                  kind="error"
-                  title="Error"
-                  subtitle="Resolve errors to continue"
-                  onClose={() => setHasSubmitError(false)}
-                />
-              )} */}
           </Column>
         </Row>
       </CreateTearsheetStep>
@@ -377,10 +348,8 @@ const MultiStepTearsheetWide = (props) => {
         subtitle="Pre Select some Members If you want to for your tasks."
         description="Members can be assigned to the task to help complete it. You can assign multiple members to a task."
         fieldsetLegendText="Members"
-        //disableSubmit={!stepThreeTextInputValue}
         onNext={() => {
           Promise.resolve();
-          //setCreateValues({...createValues, "retention"  : document.getElementsById('retention').value})
         }}
       >
         <Row>
@@ -446,44 +415,6 @@ const MultiStepTearsheetWide = (props) => {
           </Column>
         </Row>
       </CreateTearsheetStep>
-
-      {/* <CreateTearsheetStep
-        title="Replicas"
-        description="The partitions of each topic can be replicated across a configurable number of brokers"
-        fieldsetLegendText=""
-        //disableSubmit={!stepThreeTextInputValue}
-        onNext={() => Promise.resolve()}
-      >
-        <Row>
-          <Column xlg={8} lg={8} md={8} sm={8}>
-            <RadioButtonGroup
-              legendText="Replicas"
-              name="replicas"
-              defaultSelected="factor-1"
-              onChange={(event) =>
-                setCreateValues({ ...createValues, replicas: event })
-              }
-              orientation="vertical"
-            >
-              <RadioButton
-                labelText="Replication factor: 1"
-                value="factor-1"
-                id="factor-1"
-              />
-              <RadioButton
-                labelText="Replication factor: 2"
-                value="factor-2"
-                id="factor-2"
-              />
-              <RadioButton
-                labelText="Replication factor: 3"
-                value="factor-3"
-                id="factor-3"
-              />
-            </RadioButtonGroup>
-          </Column>
-        </Row>
-      </CreateTearsheetStep> */}
     </CreateTearsheet>
   );
 };

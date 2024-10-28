@@ -25,7 +25,7 @@ const HeaderGlobal = () => {
     const auth = useSelector((state) => state.auth);
 
     useEffect(() => {
-        console.log('isAuthenticated:', auth);
+        // console.log('isAuthenticated:', auth);
         if(!isAuthenticated&&localStorage.getItem('token')) {
             if(
                 (window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))
@@ -74,11 +74,11 @@ const HeaderGlobal = () => {
             open={state.activeTab === 1}
             onClickOutside={() => {}}
             data={state.notificationsData}
-            onDoNotDisturbChange={(event) =>
-                console.log('Toggled do not disturb', event)
-            }
-            onViewAllClick={() => console.log('Clicked view all button')}
-            onSettingsClick={() => console.log('Clicked settings gear button')}
+            // onDoNotDisturbChange={(event) =>
+                // console.log('Toggled do not disturb', event)
+            // }
+            // onViewAllClick={() => console.log('Clicked view all button')}
+            // onSettingsClick={() => console.log('Clicked settings gear button')}
             onDismissAllNotifications={() => setNotificationsData([])}
             onDismissSingleNotification={({ id }) => {
                 let tempData = [...state.notificationsData];

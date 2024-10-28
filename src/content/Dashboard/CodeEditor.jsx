@@ -78,7 +78,7 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
               defaultValue={res.data}
               theme="vs-light"
               onChange={(value, event) => {
-                console.log("Change is being made");
+                // console.log("Change is being made");
                 setContent(value);
                 onKeyDown();
                 if(setIsChanged){

@@ -17,7 +17,7 @@ const KanbanBoard = () => {
     }
   },[])
   useEffect(() => {
-    console.log('Task path:', taskPath);
+    // console.log('Task path:', taskPath);
     const numberCheck = new RegExp(`^create$`);
     if (taskPath&&!numberCheck.test(taskPath)&&tasks.length) {
       let tempBreadcrumb = [];
@@ -49,7 +49,7 @@ const KanbanBoard = () => {
         }
       ]);
     }
-    console.log('Breadcrumb:', breadcrumb);
+    // console.log('Breadcrumb:', breadcrumb);
   }, [taskPath]);
   return (
     <ComponentPlayground breadcrumb={breadcrumb} />

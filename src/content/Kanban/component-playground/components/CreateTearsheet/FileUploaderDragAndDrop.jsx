@@ -37,7 +37,7 @@ const FileUploaderDragAndDrop = (props) => {
   const profile = useSelector((state) => state.profile);
   useEffect(() => {
     if(files.length>0){
-        console.log("This is files in setattachments: ",files);
+        // console.log("This is files in setattachments: ",files);
         props.setattachments(files);
     }
   }, [files]);
@@ -76,7 +76,7 @@ const FileUploaderDragAndDrop = (props) => {
 
   const uploadFile = async (fileToUpload, addedFile) => {
     // file size validation
-    console.log("This is file to upload: ",fileToUpload);
+    // console.log("This is file to upload: ",fileToUpload);
     if (fileToUpload.filesize > (1024*1024*5)) {
       const updatedFile = {
         ...fileToUpload,
@@ -129,7 +129,7 @@ const FileUploaderDragAndDrop = (props) => {
         Body: addedFile,
       };
       s3.putObject(params).promise().then((data) => {
-        console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${data}`);
+        // console.log(`Successfully uploaded data to ${params.Bucket}/${params.Key}: ${data}`);
         const updatedFile = {
           ...fileToUpload,
           status: 'complete',
@@ -142,7 +142,7 @@ const FileUploaderDragAndDrop = (props) => {
         );
         setFiles([...files, {Bucket: params.Bucket, Key: params.Key}]);
       }).catch((err) => {
-        console.log(err, err.stack);
+        // console.log(err, err.stack);
         const updatedFile = {
           ...fileToUpload,
           status: 'edit',
@@ -193,8 +193,8 @@ const FileUploaderDragAndDrop = (props) => {
       //   console.log(err, err.stack);
       // });
       // props.setattachments(addedFiles);
-      console.log("This is added files: ",file.files[0]);
-      console.log("This is added events: ",file.value);
+      // console.log("This is added files: ",file.files[0]);
+      // console.log("This is added events: ",file.value);
       const newFiles = addedFiles.map((file) => ({
         uuid: uid(),
         name: file.name,
@@ -221,7 +221,7 @@ const FileUploaderDragAndDrop = (props) => {
   const handleFileUploaderItemClick = useCallback(
     (_, { uuid: clickedUuid }) => {
       uploaderButton.current.focus();
-      console.log("This is clicked uuid: ",uploaderButton);
+      // console.log("This is clicked uuid: ",uploaderButton);
       return setTempFiles(tempFiles.filter(({ uuid }) => clickedUuid !== uuid));
     },
     [tempFiles]

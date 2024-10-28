@@ -67,7 +67,7 @@ const AISlug = (contextFunc, name, context) => {
             if(content){
               suggestBetterText(content.map((block)=>Array.isArray(block.content)?block.content.map(val=>val.text).join(' '):null).join(' '),
             `Give suggestions for task ${name}`).then((res)=>{
-                console.log(res);
+                // console.log(res);
                 setContextComponent(<></>);
                 setInitialContent([
                   {type: "paragraph", content: res}
@@ -77,7 +77,7 @@ const AISlug = (contextFunc, name, context) => {
                   [name]: res
                 });
               }).catch((err)=>{
-                console.log(err);
+                // console.log(err);
               });
             }
           }

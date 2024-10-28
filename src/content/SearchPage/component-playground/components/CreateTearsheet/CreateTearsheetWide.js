@@ -40,7 +40,7 @@ const MultiStepTearsheetWide = (props) => {
         tmpCards.unshift(createValues);
         props.actions.setCards(tmpCards);
         setCreateValues({});
-        console.log('creation value card', tmpCards);
+        // console.log('creation value card', tmpCards);
       }}
     >
       <CreateTearsheetStep
