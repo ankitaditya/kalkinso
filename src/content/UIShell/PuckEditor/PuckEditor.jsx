@@ -78,11 +78,13 @@ const Editor = () => {
   };
 
   return (
-    <Puck
-      data={pageData}
-      onPublish={handlePageDataChange}
-      config={componentConfigs}
-    />
+    <div style={{marginTop: "3rem"}}>
+      <Puck
+        data={pageData}
+        onPublish={handlePageDataChange}
+        config={componentConfigs}
+      />
+    </div>
   );
 };
 

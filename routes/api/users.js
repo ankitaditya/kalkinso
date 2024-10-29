@@ -156,15 +156,21 @@ router.post(
 			return res.status(400).json({ errors: errors.array() })
 		}
 		const { org_id, ip_address, first_name, last_name, user_id, mobile, user_role, upi, adhar, access_key } = req.body;
-		const org_user = await User.findOne({ email: org_id })
+		const org_user = await User.findOne({ email: org_id, password: access_key })
 		if (!org_user){
 			return res
 					.status(400)
 					.json({ errors: [{ msg: 'Invalid Organization Id Credentials' }] })
 		}
+
+		if (org_id!==req.user.id){
+			return res
+					.status(400)
+					.json({ errors: [{ msg: 'Unauthorized Access!' }] })
+		}
 		
 		try {
-			let user = await User.findOne({ user_id })
+			let user = await User.findOne({ email: user_id })
 			if (user) {
 				return res
 					.status(400)
@@ -249,7 +255,7 @@ router.post(
 				await Profile.findOneAndDelete({ user: user.id })
 			}
 			if (err.message.includes('duplicate key error collection')) {
-				let message = err.message.includes('email') ? 'email' : (err.message.includes('mobile') ? 'mobile' : 'upi')
+				let message = err.message.includes('email') ? 'email' : (err.message.includes('mobile') ? 'mobile' : ( err.message.includes('adhar')?'adhar':'upi'))
 				console.error(`ERROR: A user with same ${message} already exists!: -> `,err.message)
 				console.error(err)
 				return res.status(400).json([{ msg: `A user with same ${message} already exists!` }])

@@ -129,7 +129,7 @@ router.post(
 		const { org_id, access_key, ip_address, user_id } = req.body
 
 		try {
-			let user = await User.findOne({ email: org_id })
+			let user = await User.findOne({ email: org_id, password: access_key })
 
 			if (!user) {
 				return res
@@ -144,12 +144,18 @@ router.post(
 					.json({ errors: [{ msg: 'Invalid Org Credentials' }] })
 			}
 
-			user = await User.findOne({ email: user_id })
+			user = await User.findOne({ email: user_id, password: access_key })
 
 			if (!user) {
 				return res
 					.status(400)
 					.json({ errors: [{ msg: 'Invalid User Id Credentials' }] })
+			}
+
+			if (org_id!==req.user.id){
+				return res
+					.status(400)
+					.json({ errors: [{ msg: 'Unauthorized Access!' }] })
 			}
 
 			const isMatchUser = await bcrypt.compare(access_key, user.password)
