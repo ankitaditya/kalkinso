@@ -127,9 +127,9 @@ router.post(
 		}
 
 		const { org_id, access_key, ip_address, user_id } = req.body
-
+		
 		try {
-			let user = await User.findOne({ email: org_id, password: access_key })
+			let user = await User.findOne({ email: org_id })
 
 			if (!user) {
 				return res
@@ -144,7 +144,7 @@ router.post(
 					.json({ errors: [{ msg: 'Invalid Org Credentials' }] })
 			}
 
-			user = await User.findOne({ email: user_id, password: access_key })
+			user = await User.findOne({ email: user_id, password: check_password })
 
 			if (!user) {
 				return res
