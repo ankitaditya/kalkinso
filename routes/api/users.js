@@ -163,9 +163,8 @@ router.post(
 					.status(400)
 					.json({ errors: [{ msg: 'Invalid Organization Id Credentials' }] })
 		}
-
-		if (org_user._id!==req.user.id){
-			console.log(org_user._id, "===", req.user.id)
+		const isMatched = org_user._id.toString() === req.user.id
+		if (!isMatched) {
 			return res
 					.status(400)
 					.json({ errors: [{ msg: 'Unauthorized Access!' }] })
