@@ -164,6 +164,7 @@ router.post(
 					.json({ errors: [{ msg: 'Invalid Organization Id Credentials' }] })
 		}
 		const isMatched = org_user._id.toString() === req.user.id
+		console.log('isMatched:', isMatched, org_user._id.toString(), "===" ,req.user.id)
 		if (!isMatched) {
 			return res
 					.status(400)
