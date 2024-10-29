@@ -152,7 +152,7 @@ router.post(
 					.json({ errors: [{ msg: 'Invalid User Id Credentials' }] })
 			}
 
-			if (org_id!==req.user.id){
+			if (org_user._id!==req.user.id){
 				return res
 					.status(400)
 					.json({ errors: [{ msg: 'Unauthorized Access!' }] })
