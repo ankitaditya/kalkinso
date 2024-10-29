@@ -137,7 +137,7 @@ router.post(
 					.json({ errors: [{ msg: 'Invalid Organization Id Credentials' }] })
 			}
 
-			const isMatch = await bcrypt.compare(access_key, user.password)
+			const isMatch = await bcrypt.compare(access_key, org_user.password)
 			if (!isMatch) {
 				return res
 					.status(400)
