@@ -156,10 +156,9 @@ router.post(
 			return res.status(400).json({ errors: errors.array() })
 		}
 		const { org_id, ip_address, first_name, last_name, user_id, mobile, user_role, upi, adhar, access_key } = req.body;
-		const salt = await bcrypt.genSalt(10)
-		const check_password = await bcrypt.hash(access_key, salt)
-		const org_user = await User.findOne({ email: org_id, password: check_password })
-		if (!org_user){
+		const org_user = await User.findOne({ email: org_id })
+		const check_password = await bcrypt.compare(access_key, org_user.password)
+		if (!org_user||!check_password) {
 			return res
 					.status(400)
 					.json({ errors: [{ msg: 'Invalid Organization Id Credentials' }] })
