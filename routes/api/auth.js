@@ -144,9 +144,10 @@ router.post(
 					.json({ errors: [{ msg: 'Invalid Org Credentials' }] })
 			}
 
-			user = await User.findOne({ email: user_id, password: check_password })
+			user = await User.findOne({ email: user_id })
+			const user_match = await bcrypt.compare(access_key, user.password)
 
-			if (!user) {
+			if (!user || !user_match) {
 				return res
 					.status(400)
 					.json({ errors: [{ msg: 'Invalid User Id Credentials' }] })
