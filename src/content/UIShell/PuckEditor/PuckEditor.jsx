@@ -2,90 +2,52 @@ import React, { useState } from "react";
 import { Puck } from "@measured/puck";
 import { Heading, Text, Button } from "./components"; // Custom components
 import "@measured/puck/puck.css";
-
-
-// Define configurations for each component in the editor
-const componentConfigs = {
-  components:{
-    heading: {
-      label: "Heading",
+import "./PuckEditor.css";
+ 
+// Create Puck component config
+const config = {
+  components: {
+    HeadingBlock: {
       fields: {
-        text: { type: "textarea", default: "Heading Text" },
-        size: {
-          type: "select",
-          options: ["small", "medium", "large"],
-          default: "medium",
-        },
-        align: {
-          type: "radio",
-          options: ["left", "center", "right"],
-          default: "left",
+        children: {
+          type: "text",
         },
       },
-      render: ({ text, size, align }) => (
-        <Heading text={text} size={size} align={align} />
-      ),
-    },
-    text: {
-      label: "Text",
-      fields: {
-        text: { type: "textarea", default: "Some text content" },
-        size: {
-          type: "select",
-          options: ["small", "medium", "large"],
-          default: "medium",
-        },
-        color: {
-          type: "select",
-          options: ["default", "muted"],
-          default: "default",
-        },
+      render: ({ children }) => {
+        return <h1 style={{
+          textAlign: 'center',
+          padding: '10px',
+          margin: '10px',
+        }}>{children}</h1>;
       },
-      render: ({ text, size, color }) => <Text text={text} size={size} color={color} />,
-    },
-    button: {
-      label: "Button",
-      fields: {
-        label: { type: "text", default: "Click Me" },
-        url: { type: "text", default: "#" },
-        variant: {
-          type: "select",
-          options: ["primary", "secondary"],
-          default: "primary",
-        },
+      defaultProps: {
+        children: "Kalkinso",
       },
-      render: ({ label, url, variant }) => <Button label={label} url={url} variant={variant} />,
     },
-  }
+  },
 };
-
-// Sample data for the page content
-const samplePageData = {
-  content: [
-    { type: "heading", props: { text: "Welcome to Puck Editor!", size: "large", align: "center" } },
-    { type: "text", props: { text: "This is a sample text component.", size: "medium", color: "default" } },
-    { type: "button", props: { label: "Get Started", url: "#", variant: "primary" } },
+ 
+// Describe the initial data
+const initialData = {
+  "content": [
+    {
+      "type": "HeadingBlock",
+      "props": {
+        "id": "HeadingBlock-1234",
+        "title": "Hello, world"
+      }
+    }
   ],
-  root: { "props": { "title": "Puck Example" } },
-  zones: {}
+  "root": { "props": { "title": "Puck Example" } },
+  "zones": {}
 };
-
+ 
+// Save the data to your database
+const save = (data) => {};
+ 
+// Render Puck editor
 const Editor = () => {
-  const [pageData, setPageData] = useState(samplePageData);
-
-  const handlePageDataChange = (newData) => {
-    setPageData(newData);
-  };
-
-  return (
-    <div style={{marginTop: "3rem"}}>
-      <Puck
-        data={pageData}
-        onPublish={handlePageDataChange}
-        config={componentConfigs}
-      />
-    </div>
-  );
-};
+  return <Puck config={config} data={initialData} onPublish={save} />;
+}
 
 export default Editor;

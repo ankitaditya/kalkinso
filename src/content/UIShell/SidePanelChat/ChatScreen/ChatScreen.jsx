@@ -33,6 +33,7 @@ import { saveAs } from "file-saver";
 import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
 import { Input } from 'react-chat-elements';
+import 'react-chat-elements/dist/main.css';
 
 AWS.config.update({
   accessKeyId: "AKIA6GBMDGBC6SGUYGUC",

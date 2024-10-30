@@ -67,8 +67,8 @@ const App = () => {
   };
  
   useEffect(() => {
-    setCards(tasks.filter((task) => task.user._id !== profile.user));
-    setFilteredCards(tasks.filter((task) => task.user._id !== profile.user));
+    setCards(tasks.filter((task) => task?.user?._id !== profile?.user));
+    setFilteredCards(tasks.filter((task) => task?.user?._id !== profile?.user));
     if(loading) {
       dispatch(setLoading(false));
     }
