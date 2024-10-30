@@ -13,8 +13,10 @@ const config = {
           type: "text",
         },
       },
-      render: ({ children }) => {
-        return <h1 style={{
+      render: ({ id,children }) => {
+        return <h1 
+        id={id}
+        style={{
           textAlign: 'center',
           padding: '10px',
           margin: '10px',
@@ -23,6 +25,11 @@ const config = {
       defaultProps: {
         children: "Kalkinso",
       },
+    },
+  },
+  root: {
+    render: ({ children, puck }) => {
+      return children;
     },
   },
 };
@@ -34,7 +41,7 @@ const initialData = {
       "type": "HeadingBlock",
       "props": {
         "id": "HeadingBlock-1234",
-        "title": "Hello, world"
+        "children": "Hello, world"
       }
     }
   ],
