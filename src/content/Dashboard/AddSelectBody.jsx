@@ -277,8 +277,8 @@ const AddSelectBody = forwardRef(
       
     // main content
     const body = normalizedItems&&(
-      <Grid>
-        <Column sm={2} md={2} lg={4} xlg={4}>
+      <Grid style={{padding: '0px'}}>
+        <Column sm={1} md={1} lg={3} xlg={3} style={{margin:'0px', marginRight:"1rem"}}>
         <ContextMenu model={contextMenuItems.slice(0,-1)} ref={cm} breakpoint="767px" />
         <ContextMenu model={deleteMenuItems} ref={cm2} breakpoint="767px" />
         <div id="add-select" className={`${blockClass}__header`}>
@@ -377,7 +377,7 @@ const AddSelectBody = forwardRef(
           </div>
         )}
         </Column>
-        <Column sm={2} md={6} lg={12} xlg={12}>
+        <Column sm={3} md={7} lg={13} xlg={13} style={{margin:"0px", marginLeft:"1rem"}}>
             <AddSelectSidebar {...sidebarProps} />
         </Column>
       </Grid>

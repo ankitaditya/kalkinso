@@ -75,7 +75,7 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
             <Editor
               height="90vh"
               defaultLanguage={modelConfig[ext]?.language || modelConfig.default.language}
-              defaultValue={res.data}
+              defaultValue={typeof res.data==='string'?res.data:JSON.stringify(res.data,null,2)}
               theme="vs-light"
               onChange={(value, event) => {
                 // console.log("Change is being made");

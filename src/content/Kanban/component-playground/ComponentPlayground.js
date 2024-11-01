@@ -20,7 +20,7 @@ import {
 import { Accordion, AccordionItem, ButtonSet, ClickableTile, Column, ContentSwitcher, FileUploader, IconButton, IconSwitch, InlineLoading, Switch, TextArea, Tile, Tooltip } from '@carbon/react';
 import './ComponentPlayground.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { Add, Attachment, Chat, Delete, Edit, FaceActivated, FileStorage, Folder, FolderOpen, Image, Send, TableOfContents, TrashCan, User } from '@carbon/react/icons';
+import { Add, Attachment, Chat, Delete, Edit, FaceActivated, FileStorage, Folder, FolderOpen, Gears, Image, Send, TableOfContents, TrashCan, User } from '@carbon/react/icons';
 import { Editor } from 'primereact/editor';
 import { Markup } from 'interweave';
 import costaPic from './_story-assets/costa.jpeg';
@@ -28,6 +28,8 @@ import FileUploaderDragAndDrop from './components/CreateTearsheet/FileUploaderDr
 import { useParams } from 'react-router-dom';
 import { setLoading } from '../../../actions/auth';
 import { getSubTasks } from '../../../actions/task';
+import { Input, Button as ChatButton } from 'react-chat-elements';
+import Comments from './components/Comments/Comments';
 pkg.component.ProductiveCard = true;
 pkg.component.Cascade = true;
 pkg.component.NotFoundEmptyState = true;
@@ -55,6 +57,7 @@ const App = ({breadcrumb}) => {
     }}
     />
     </Column>);
+  const [ data, setData ] = useState([])
   const [cards, setCards] = useState(tasks);
   const [contentSwitch, setContentSwitch] = useState({index: 0, name: 'one', text: 'Table of Contents'});
   const [sendComment, setSendComment] = useState({isSubmitting: false, success: false, failed: false});
@@ -246,6 +249,89 @@ const App = ({breadcrumb}) => {
     setCardToEdit,
   };
 
+  const UserInputForm = ({ onSendMessage }) => {
+    const [input, setInput] = useState('');
+  
+    const handleChange = (event) => {
+      setInput(event.target.value);
+    };
+  
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      onSendMessage(input);
+      setInput('');
+    };
+  
+    return (
+      <div style={{ width: '100%', maxWidth: "55vw", paddingBottom: '6vh', border: '1px solid #ccc', borderRadius: '4px', padding: '10px', backgroundColor: 'white' }}>
+          <Input
+            id="chat-input"
+            placeholder="Type here..."
+            multiline={true}
+            onChange={handleChange}
+            />
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            float: 'left',
+            marginRight: '1rem',
+          }}>
+          <ChatButton
+                type='transparent'
+                title="Send"
+                onClick={()=>{}}
+                color='black'
+                backgroundColor='#161616'
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Attachment />
+                }}/>
+          <ChatButton
+                type='transparent'
+                title="Send"
+                onClick={()=>{}}
+                color='black'
+                backgroundColor='#161616'
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Image />
+                }}/>
+          <ChatButton
+                type='transparent'
+                title="Send"
+                onClick={()=>{}}
+                color='black'
+                backgroundColor='#161616'
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Gears />
+                }}/>  
+          </div>    
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            float: 'right',
+          }}>
+          <ChatButton
+                text={"Send"}
+                onClick={handleSubmit}
+                type='outlined'
+                title="Send"
+                backgroundColor='#161616'
+                style={{marginLeft:"1rem"}}
+                icon ={{
+                    float:'right',
+                    size:15,
+                    component:<Send />
+                }}/>
+            </div>
+      </div>
+    );
+  };
+
   useEffect(() => {
     // console.log("This is switch: ",contentSwitch);
   }, [contentSwitch]);
@@ -310,7 +396,7 @@ const App = ({breadcrumb}) => {
               <Chat />
             </IconSwitch> */}
             <Switch name="one" text="Table of Contents" />
-            <Switch name="two" text="Comments" />
+            <Switch name="two" text={`Comments (${data.length})`} />
           </ContentSwitcher>):<></>}
         </Column>
       </Cascade>
@@ -320,85 +406,80 @@ const App = ({breadcrumb}) => {
         {cardsComponent}
       </Cascade>)}
       {contentSwitch?.name==='two'&&(
-        <Cascade grid>
-          <Column key={`comments-input-box`} lg={16} md={8} sm={4} style={{
-            // stylelint-disable-next-line carbon/layout-token-use
-            marginTop: '1rem'
-            }}>
-              <ExpressiveCard style={{maxWidth: "55vw", margin:"auto"}} 
-              label={<IconButton onClick={()=>setEditor(!editor)} style={{marginLeft:"40vw"}} size='sm' kind='ghost' label=''>
-                        <Edit />
-                      </IconButton>} 
-              title={editor?<Editor value={text} onTextChange={(e) => setText(e.htmlValue)} />:<TextArea value={text} onChange={(e)=>setText(e.target.value)} rows={4}/>} mediaPosition='left' 
-              description={
-                <FileUploaderDragAndDrop
-                    {...{
-                      labelText: 'Drag and drop files here or click to upload',
-                      name: '',
-                      multiple: true,
-                      accept: ['.jpg', '.png','.pdf','.mp4','.doc','.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.csv'],
-                      disabled: false,
-                      tabIndex: 0,
-                      attachments: attachments,
-                      setattachments: (files) => setAttachments(files),
-                      disableTextLabel: true,
-                    }} />} 
-              key={"30"} 
-              media={<UserProfileImage
-                  size="xl"
-                  backgroundColor="light-cyan"
-                  theme="light"
-                  style={{ margin: '1rem' }}
-                  initials="AA"
-                  tooltipText={'Ankit Aditya'}
-                  imageDescription="blank"
-                  image={costaPic}
-                />} 
-                // secondaryButtonText={}
-                // secondaryButtonKind='ghost'
-                primaryButtonText={sendComment.isSubmitting||sendComment.success||sendComment.failed?<InlineLoading style={{
-                  marginLeft: '1rem'
-                }} description={""} status={sendComment.success ? 'finished' : 'active'} aria-live={''} />:<Send size={20} />}
-                primaryButtonKind='ghost'
-                onPrimaryButtonClick={()=>actionIcons().slice(-1)[0].onClick()}
-                />
-            </Column>
-          {comments.map((item, index) => (
-          <Column key={`comments-box-${index}`} lg={16} md={8} sm={4} style={{
-            // stylelint-disable-next-line carbon/layout-token-use
-            marginTop: '1rem'
-            }}>
-              <ExpressiveCard actionIcons={actionIcons(item.id).slice(0,actionIcons(item.id).length-1)} style={{maxWidth: "55vw", margin:"auto"}} label={item.time} title={item.author} mediaPosition='left' description={item.content} key={"30"} 
-              media={<UserProfileImage
-                  size="xl"
-                  backgroundColor="light-cyan"
-                  theme="light"
-                  style={{ margin: '1rem' }}
-                  initials="CC"
-                  tooltipText={'Ankit Aditya'}
-                  imageDescription="blank"
-                  image={costaPic}
-                />} />
-                {item?.attachments?.length>0?(<ExpressiveCard key={`attachment-${index}`} style={{maxWidth: "55vw", margin:"auto", padding: "1px"}} label={""} title={""} mediaPosition='left' 
-                    description={
-                      <Cascade grid>
-                      {item.attachments.map((attachment, index) => {
-                        return (
-                          <Column key={`attachment-${index}`} lg={1} md={8} sm={4}>
-                            <Tooltip align='top' label={attachment.name}>
-                              <ClickableTile key={`attachment-${index}`} onClick={()=>{}}>
-                                  <Image size={20} />
-                              </ClickableTile>
-                            </Tooltip>
-                          </Column>
-                        );
-                      })}
-                      </Cascade>
-                    } 
-                    media={<Attachment style={{margin:"1rem"}}/>}/>):<></>}
-          </Column>
-          ))}
-        </Cascade>
+        // <Cascade grid>
+        //   <Column key={`comments-input-box`} lg={16} md={8} sm={4} style={{
+        //     // stylelint-disable-next-line carbon/layout-token-use
+        //     marginTop: '1rem'
+        //     }}>
+        //       {/* <ExpressiveCard style={{maxWidth: "55vw", margin:"auto"}} 
+        //       label={<IconButton onClick={()=>{}} style={{marginLeft:"40vw"}} size='sm' kind='ghost' label=''>
+        //                 <Edit />
+        //               </IconButton>} 
+        //       // title={} 
+        //       mediaPosition='left' 
+        //       description={
+        //         <UserInputForm onSendMessage={(params) => console.log(params)} />} 
+        //       key={"30"} 
+        //       media={<UserProfileImage
+        //           size="xl"
+        //           backgroundColor="light-cyan"
+        //           theme="light"
+        //           style={{ margin: '1rem' }}
+        //           initials="AA"
+        //           tooltipText={'Ankit Aditya'}
+        //           imageDescription="blank"
+        //           image={costaPic}
+        //         />} 
+        //         // secondaryButtonText={}
+        //         // secondaryButtonKind='ghost'
+        //         // primaryButtonText={sendComment.isSubmitting||sendComment.success||sendComment.failed?<InlineLoading style={{
+        //         //   marginLeft: '1rem'
+        //         // }} description={""} status={sendComment.success ? 'finished' : 'active'} aria-live={''} />:<Send size={20} />}
+        //         // primaryButtonKind='ghost'
+        //         // onPrimaryButtonClick={()=>actionIcons().slice(-1)[0].onClick()}
+        //         /> */}
+        //         <center>
+        //           <UserInputForm onSendMessage={(params) => console.log(params)} />
+        //         </center>
+                
+        //     </Column>
+        //   {comments.map((item, index) => (
+        //   <Column key={`comments-box-${index}`} lg={16} md={8} sm={4} style={{
+        //     // stylelint-disable-next-line carbon/layout-token-use
+        //     marginTop: '1rem'
+        //     }}>
+        //       <ExpressiveCard actionIcons={actionIcons(item.id).slice(0,actionIcons(item.id).length-1)} style={{maxWidth: "55vw", margin:"auto"}} label={item.time} title={item.author} mediaPosition='left' description={item.content} key={"30"} 
+        //       media={<UserProfileImage
+        //           size="xl"
+        //           backgroundColor="light-cyan"
+        //           theme="light"
+        //           style={{ margin: '1rem' }}
+        //           initials="CC"
+        //           tooltipText={'Ankit Aditya'}
+        //           imageDescription="blank"
+        //           image={costaPic}
+        //         />} />
+        //         {item?.attachments?.length>0?(<ExpressiveCard key={`attachment-${index}`} style={{maxWidth: "55vw", margin:"auto", padding: "1px"}} label={""} title={""} mediaPosition='left' 
+        //             description={
+        //               <Cascade grid>
+        //               {item.attachments.map((attachment, index) => {
+        //                 return (
+        //                   <Column key={`attachment-${index}`} lg={1} md={8} sm={4}>
+        //                     <Tooltip align='top' label={attachment.name}>
+        //                       <ClickableTile key={`attachment-${index}`} onClick={()=>{}}>
+        //                           <Image size={20} />
+        //                       </ClickableTile>
+        //                     </Tooltip>
+        //                   </Column>
+        //                 );
+        //               })}
+        //               </Cascade>
+        //             } 
+        //             media={<Attachment style={{margin:"1rem"}}/>}/>):<></>}
+        //   </Column>
+        //   ))}
+        // </Cascade>
+        <Comments data={data} setData={setData} />
       )}
     </div>
   );

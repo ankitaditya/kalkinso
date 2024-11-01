@@ -22,6 +22,7 @@ import { ButtonSet } from 'carbon-components-react';
 import "./MultiPageWordProcessor/MultiPageWordProcessor.css";
 import PhotoEditor from './PhotoEditor';
 import { setDeleteFile } from '../../actions/task';
+import TranscriptEditor from '@bbc/react-transcript-editor';
 
 
 const blockClass = `home--add-select__sidebar`;
@@ -185,6 +186,13 @@ const AddSelectSidebar = ({
     if(!item?.signedUrl){
       return <></>;
     }
+
+    if ([ 'mp4', 'webm', 'ogg', 'mov', 'avi', 'flv', 'wmv', 'mkv', 'mpg', 'mpeg', '3gp', '3g2', 'm4v', 'f4v', 'f4p', 'f4a', 'f4b', 'mp3', 'wav' ].includes(item.fileType)) {
+      return <TranscriptEditor    
+                mediaUrl={item.signedUrl}
+              />;
+    }
+
     if (item.fileType === 'txt' || (item.fileType === 'pdf'&&!item.title.includes("view.pdf"))) {
       // const provider = new WebrtcProvider(item.id, doc); // setup a yjs provider (explained below)
       return <div className='word-processor'>
@@ -231,7 +239,7 @@ const AddSelectSidebar = ({
                 onKeyDown = {()=>dispatch(setDeleteFile(item))}
                 item_id={item.id}
                 className="page" 
-                style={{height: "80vh", width: "100%", marginTop:"2rem", marginBottom: "2rem"}} 
+                style={{height: "80vh", width: "96%", marginTop:"2rem", marginBottom: "2rem"}} 
               />;
     } else {
       return <div className='page'>
@@ -335,7 +343,7 @@ const AddSelectSidebar = ({
           ))}
         </Accordion>
       ) : (
-        <div className={`${blockClass}-body`}>
+        <div className={`${blockClass}-body`} style={{width: "100%"}}>
           <ReactDropzone data={false} path={pathExternal} />
         </div>
       )}

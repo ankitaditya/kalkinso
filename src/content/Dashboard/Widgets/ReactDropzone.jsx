@@ -12,8 +12,8 @@ import { getObjectById } from '../../../utils/redux-cache';
 import { setAlert } from '../../../actions/alert';
 
 AWS.config.update({
-    accessKeyId: "AKIA6GBMDGBC6SGUYGUC",
-    secretAccessKey: "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",
+    accessKeyId: "AKIA6GBMDGBCUSP2OAAD",
+    secretAccessKey: "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",
 });
 
 function renderTree({ nodes, expanded, withIcons = false }) {
