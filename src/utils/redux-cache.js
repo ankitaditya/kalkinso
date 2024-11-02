@@ -4,11 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 // Function to generate a signed URL
 export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600) {
     const client = new S3Client({
-        region:'ap-south-1',
-        credentials: {
-            accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
-            secretAccessKey: "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",
-        }
+        region:'ap-south-1'
     });
     try {
       // Create a GetObjectCommand with the bucket and object key

@@ -13,10 +13,6 @@ import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primeicons/primeicons.css";
 
 export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}) {
-    AWS.config.update({
-        accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
-        secretAccessKey: "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",
-    });
     const s3 = new S3({
         params: { Bucket: bucket },
         region: 'ap-south-1',

@@ -115,10 +115,6 @@ const FileUploaderDragAndDrop = (props) => {
     // simulate network request time
     
     const rand = Math.random() * 1000;
-      AWS.config.update({
-        accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
-        secretAccessKey: "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",
-      });
       const s3 = new S3({
         params: { Bucket: 'kalkinso.com' },
         region: 'ap-south-1',
@@ -173,10 +169,6 @@ const FileUploaderDragAndDrop = (props) => {
   const onAddFiles = useCallback(
     (evt, { addedFiles }) => {
       evt.stopPropagation();
-      // AWS.config.update({
-      //   accessKeyId: "AKIA6GBMDGBC5LFG7IUW",
-      //   secretAccessKey: "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",
-      // });
       // const s3 = new S3({
       //   params: { Bucket: 'kalkinso.com' },
       //   region: 'ap-south-1',

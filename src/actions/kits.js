@@ -5,10 +5,6 @@ import { setLoading } from './auth';
 import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
 import { cache, generateSignedUrl } from '../utils/redux-cache';
-AWS.config.update({
-    accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
-    secretAccessKey: "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",
-});
 
 export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') => async (dispatch) => {
     try {
@@ -162,10 +158,6 @@ export const addFile = (id) => async (dispatch) => {
 };
 
 export const save = (bucketName="kalkinso.com", Prefix='', content=null) => async (dispatch) => {
-    AWS.config.update({
-        accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
-        secretAccessKey: "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",
-    });
     if (!bucketName){
         dispatch({
             type: actionTypes.TASK_ERROR,

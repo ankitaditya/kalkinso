@@ -35,11 +35,6 @@ import S3 from 'aws-sdk/clients/s3';
 import { Input } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 
-AWS.config.update({
-  accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
-  secretAccessKey: "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",
-});
-
 pkg.component.ProductiveCard = true;
 pkg.component.SidePanel = true;
 pkg.component.Cascade = true;

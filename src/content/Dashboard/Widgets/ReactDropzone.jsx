@@ -11,11 +11,6 @@ import S3 from 'aws-sdk/clients/s3';
 import { getObjectById } from '../../../utils/redux-cache';
 import { setAlert } from '../../../actions/alert';
 
-AWS.config.update({
-    accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
-    secretAccessKey: "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",
-});
-
 function renderTree({ nodes, expanded, withIcons = false }) {
     if (!nodes) {
       return;
