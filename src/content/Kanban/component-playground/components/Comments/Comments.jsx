@@ -19,7 +19,7 @@ import {
     FormTextArea,
     ButtonOr,
     ButtonGroup } from 'semantic-ui-react';
-// import 'semantic-ui-css/semantic.min.css';
+import 'semantic-ui-css/semantic.min.css';
 import { useSelector } from 'react-redux';
 import { v4 as uuid4 } from 'uuid';
 

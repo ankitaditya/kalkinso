@@ -14,8 +14,8 @@ import "primeicons/primeicons.css";
 
 export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}) {
     AWS.config.update({
-        accessKeyId: "AKIA6GBMDGBCUSP2OAAD",
-        secretAccessKey: "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",
+        accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
+        secretAccessKey: "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",
     });
     const s3 = new S3({
         params: { Bucket: bucket },

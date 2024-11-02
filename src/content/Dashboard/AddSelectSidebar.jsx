@@ -238,7 +238,7 @@ const AddSelectSidebar = ({
                 setIsChanged={setIsChanged}
                 onKeyDown = {()=>dispatch(setDeleteFile(item))}
                 item_id={item.id}
-                className="page" 
+                className="page-monaco" 
                 style={{height: "80vh", width: "96%", marginTop:"2rem", marginBottom: "2rem"}} 
               />;
     } else {

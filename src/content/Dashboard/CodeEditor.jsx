@@ -72,8 +72,16 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
         axios.get(fileObj.value).then((res)=>{
           const ext = fileObj.filename.split('.').pop();
           setEditorComponent(
+            <div
+              style={{
+                width: "96%",
+                height: "90vh",
+                margin: "auto",
+              }}
+            >
             <Editor
               height="90vh"
+              width="96%"
               defaultLanguage={modelConfig[ext]?.language || modelConfig.default.language}
               defaultValue={typeof res.data==='string'?res.data:JSON.stringify(res.data,null,2)}
               theme="vs-light"
@@ -87,6 +95,7 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
               }}
               {...rest}
             />
+            </div>
           );
           setCode({
             value: res.data,

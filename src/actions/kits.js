@@ -6,8 +6,8 @@ import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
 import { cache, generateSignedUrl } from '../utils/redux-cache';
 AWS.config.update({
-    accessKeyId: "AKIA6GBMDGBCUSP2OAAD",
-    secretAccessKey: "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",
+    accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
+    secretAccessKey: "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",
 });
 
 export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') => async (dispatch) => {
@@ -163,8 +163,8 @@ export const addFile = (id) => async (dispatch) => {
 
 export const save = (bucketName="kalkinso.com", Prefix='', content=null) => async (dispatch) => {
     AWS.config.update({
-        accessKeyId: "AKIA6GBMDGBCUSP2OAAD",
-        secretAccessKey: "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",
+        accessKeyId: "AKIA6GBMDGBCTGQYXXGH",
+        secretAccessKey: "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",
     });
     if (!bucketName){
         dispatch({

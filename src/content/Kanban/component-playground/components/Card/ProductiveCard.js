@@ -49,24 +49,24 @@ const ProductiveCard = (props) => {
 
   const handleTaskOpen = (isMulti) => {
     if(isMulti==='multi') {
-      if(task_files[props.data._id]){
+      if(task_files[props.data?._id]){
         dispatch(setIsMulti(true));
-        dispatch(setOpenTask(props.data._id));
+        dispatch(setOpenTask(props.data?._id));
       } else {
         dispatch(setLoading(true));
         dispatch(startTask(
           'kalkinso.com',
-          props.data._id,
-          props.data.user._id
+          props.data?._id,
+          props.data.user?._id
         ))
       }
     } else {
       dispatch(setIsMulti(false));
-      dispatch(setOpenTask(props.data._id));
+      dispatch(setOpenTask(props.data?._id));
     }
   };
   const profile = useSelector((state) => state.profile);
-  const actionIcons = props.data.user._id===profile.user?[
+  const actionIcons = props.data.user?._id===profile.user?[
     {
       id: '1',
       icon: () => (
@@ -84,7 +84,7 @@ const ProductiveCard = (props) => {
       icon: (props) => <TrashCan size={16} {...props} />,
       iconDescription: 'Delete',
       onClick: () => {
-        dispatch(deleteTask(props.data._id));
+        dispatch(deleteTask(props.data?._id));
       },
     },
     {
@@ -121,11 +121,11 @@ const ProductiveCard = (props) => {
       // overflowActions={}
       onPrimaryButtonClick={()=>{
         if(taskPath&&taskPath==='create'){
-        window.location.href = `${window.location.pathname}#/home/${props.data._id}`
+        window.location.href = `${window.location.pathname}#/home/${props.data?._id}`
         } else if (taskPath){
-          window.location.href = `${window.location.pathname}#/home/${taskPath}&&${props.data._id}`
+          window.location.href = `${window.location.pathname}#/home/${taskPath}&&${props.data?._id}`
         } else {
-          window.location.href = `${window.location.pathname}#/home/${props.data._id}`
+          window.location.href = `${window.location.pathname}#/home/${props.data?._id}`
         }
       }}
       primaryButtonText={"View"}
