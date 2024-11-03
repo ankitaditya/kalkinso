@@ -4,7 +4,7 @@ import AWS from 'aws-sdk';
 
 // Function to generate a signed URL
 export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600) {
-  const ec2MetadataCredentials = new AWS.EC2MetadataCredentials();
+  const ec2MetadataCredentials = new AWS.Credentials();
     const client = new S3Client({
         region:'ap-south-1',
         credentials: ec2MetadataCredentials

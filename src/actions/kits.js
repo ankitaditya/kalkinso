@@ -5,10 +5,10 @@ import { setLoading } from './auth';
 import AWS from 'aws-sdk';
 import { cache, generateSignedUrl } from '../utils/redux-cache';
 
-const ec2MetadataCredentials = new AWS.EC2MetadataCredentials();
-AWS.config.credentials = ec2MetadataCredentials;
-
-AWS.config.update({ region: "ap-south-1" });
+AWS.config.update({
+    region: 'ap-south-1', // Replace with your actual AWS region
+    credentials: new AWS.Credentials() // Use EC2 instance metadata for credentials
+  });
 
 export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') => async (dispatch) => {
     try {

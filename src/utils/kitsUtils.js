@@ -5,7 +5,7 @@ AWS.config.update({
   region: 'ap-south-1', // Replace with your desired region
 });
 
-const ec2MetadataCredentials = new AWS.EC2MetadataCredentials();
+const ec2MetadataCredentials = new AWS.Credentials();
 AWS.config.credentials = ec2MetadataCredentials;
 
 const codecommit = new AWS.CodeCommit();
