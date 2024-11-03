@@ -31,9 +31,10 @@ import Showdown from 'showdown';
 import { pdfExporter } from 'quill-to-pdf';
 import { saveAs } from "file-saver";
 import AWS from 'aws-sdk';
-import S3 from 'aws-sdk/clients/s3';
 import { Input } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
+
+AWS.config.update({ region: "ap-south-1" });
 
 pkg.component.ProductiveCard = true;
 pkg.component.SidePanel = true;
@@ -147,10 +148,7 @@ const ChatScreen = () => {
     pdfExporter.generatePdf(event.editor.delta).then((blob) => {
       // console.log("This is blob: ",blob);
       if (path) {
-        const s3 = new S3({
-            params: { Bucket: 'kalkinso.com' },
-            region: 'ap-south-1',
-        });
+        const s3 = new AWS.S3({ params: { Bucket: 'kalkinso.com' } });
         const params = {
           Bucket: 'kalkinso.com',
           Key: path,

@@ -7,9 +7,10 @@ import { setLoading } from '../../../actions/auth';
 import { addFile, getSelectedTasks, save } from '../../../actions/kits';
 import { useDispatch, useSelector } from 'react-redux';
 import AWS from 'aws-sdk';
-import S3 from 'aws-sdk/clients/s3';
 import { getObjectById } from '../../../utils/redux-cache';
 import { setAlert } from '../../../actions/alert';
+
+AWS.config.update({ region: "ap-south-1" });
 
 function renderTree({ nodes, expanded, withIcons = false }) {
     if (!nodes) {
@@ -70,10 +71,7 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
     setProgress(progress?progress+prog.loaded:prog.loaded);
   };
   const handleUpload = (files, item) => {
-    const s3 = new S3({
-        params: { Bucket: 'kalkinso.com' },
-        region: 'ap-south-1',
-    });
+    const s3 = new AWS.S3({ params: { Bucket: 'kalkinso.com' } });
     setUploadState('uploading');
     setProgress(0);
     files.forEach((file) => {

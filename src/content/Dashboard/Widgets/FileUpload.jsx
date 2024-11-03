@@ -7,16 +7,14 @@ import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 import { Tag } from 'primereact/tag';
 import AWS from 'aws-sdk';
-import S3 from 'aws-sdk/clients/s3';
 import 'primeflex/primeflex.css';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primeicons/primeicons.css";
 
+AWS.config.update({ region: "ap-south-1" });
+
 export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}) {
-    const s3 = new S3({
-        params: { Bucket: bucket },
-        region: 'ap-south-1',
-    });
+    const s3 = new AWS.S3({ params: { Bucket: 'kalkinso.com' } });
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
     const fileUploadRef = useRef(null);
