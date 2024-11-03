@@ -13,6 +13,9 @@ import "primeicons/primeicons.css";
 
 AWS.config.update({ region: "ap-south-1" });
 
+const ec2MetadataCredentials = new AWS.EC2MetadataCredentials();
+AWS.config.credentials = ec2MetadataCredentials;
+
 export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}) {
     const s3 = new AWS.S3({ params: { Bucket: 'kalkinso.com' } });
     const toast = useRef(null);

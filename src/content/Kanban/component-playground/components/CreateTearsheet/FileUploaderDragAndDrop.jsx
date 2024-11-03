@@ -13,6 +13,9 @@ import AWS from 'aws-sdk';
 
 AWS.config.update({ region: "ap-south-1" });
 
+const ec2MetadataCredentials = new AWS.EC2MetadataCredentials();
+AWS.config.credentials = ec2MetadataCredentials;
+
 const prefix = 'cds';
 
 // -- copied from internal/tools/uniqueId.js

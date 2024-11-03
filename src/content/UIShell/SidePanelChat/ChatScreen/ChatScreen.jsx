@@ -36,6 +36,9 @@ import 'react-chat-elements/dist/main.css';
 
 AWS.config.update({ region: "ap-south-1" });
 
+const ec2MetadataCredentials = new AWS.EC2MetadataCredentials();
+AWS.config.credentials = ec2MetadataCredentials;
+
 pkg.component.ProductiveCard = true;
 pkg.component.SidePanel = true;
 pkg.component.Cascade = true;

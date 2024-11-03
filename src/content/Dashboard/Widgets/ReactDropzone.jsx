@@ -12,6 +12,9 @@ import { setAlert } from '../../../actions/alert';
 
 AWS.config.update({ region: "ap-south-1" });
 
+const ec2MetadataCredentials = new AWS.EC2MetadataCredentials();
+AWS.config.credentials = ec2MetadataCredentials;
+
 function renderTree({ nodes, expanded, withIcons = false }) {
     if (!nodes) {
       return;
