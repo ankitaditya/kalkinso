@@ -1,13 +1,12 @@
 const AWS = require('aws-sdk');
 
-// Configure AWS SDK
-AWS.config.update({
-  region: 'ap-south-1', // Replace with your desired region
+AWS.config.update({ 
+  region: "ap-south-1",
+  credentials: {
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+  }
 });
-
-const ec2MetadataCredentials = new AWS.Credentials();
-AWS.config.credentials = ec2MetadataCredentials;
-
 const codecommit = new AWS.CodeCommit();
 
 // Utility function to handle API calls

@@ -1,13 +1,14 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import AWS from 'aws-sdk';
 
 // Function to generate a signed URL
 export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600) {
-  const ec2MetadataCredentials = new AWS.Credentials();
     const client = new S3Client({
         region:'ap-south-1',
-        credentials: ec2MetadataCredentials
+        credentials: {
+          accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+        }
     });
     try {
       // Create a GetObjectCommand with the bucket and object key

@@ -10,10 +10,13 @@ import AWS from 'aws-sdk';
 import { getObjectById } from '../../../utils/redux-cache';
 import { setAlert } from '../../../actions/alert';
 
-AWS.config.update({ region: "ap-south-1" });
-
-const ec2MetadataCredentials = new AWS.Credentials();
-AWS.config.credentials = ec2MetadataCredentials;
+AWS.config.update({ 
+  region: "ap-south-1",
+  credentials: {
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+  }
+});
 
 function renderTree({ nodes, expanded, withIcons = false }) {
     if (!nodes) {

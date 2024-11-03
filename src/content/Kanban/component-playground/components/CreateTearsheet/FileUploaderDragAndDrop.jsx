@@ -11,10 +11,13 @@ import { FormItem, FileUploaderDropContainer, FileUploaderItem } from '@carbon/r
 import { useSelector } from 'react-redux';
 import AWS from 'aws-sdk';
 
-AWS.config.update({ region: "ap-south-1" });
-
-const ec2MetadataCredentials = new AWS.Credentials();
-AWS.config.credentials = ec2MetadataCredentials;
+AWS.config.update({ 
+  region: "ap-south-1",
+  credentials: {
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+  }
+});
 
 const prefix = 'cds';
 
