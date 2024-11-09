@@ -21,7 +21,7 @@ const RichTextEditor = () => {
                   },
                   {
                       headers: {
-                          'Authorization': `Bearer sk-svcacct-16C5MqAnAgGhXhWdicxUT3BlbkFJrSevL2eqFeRBmV1lQDN4`,
+                          'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
                           'Content-Type': 'application/json',
                       },
                   }

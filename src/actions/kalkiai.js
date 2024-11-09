@@ -10,7 +10,7 @@ export const sendMessage = (message, user, user_id) => async (dispatch) => {
                 "session_id": user.session._id
             },
             "request": {
-                "api_key": "sk-svcacct-16C5MqAnAgGhXhWdicxUT3BlbkFJrSevL2eqFeRBmV1lQDN4",
+                "api_key": process.env.REACT_APP_OPENAI_API_KEY,
                 "prompt": message,
                 "chat_history": [],
                 "model": "gpt-4o-mini",

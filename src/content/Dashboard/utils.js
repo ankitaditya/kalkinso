@@ -114,7 +114,7 @@ export const buildPathToTree = (paths) => {
 }
 
 export async function formatToMarkdown(text) {
-  const apiKey = 'sk-svcacct-16C5MqAnAgGhXhWdicxUT3BlbkFJrSevL2eqFeRBmV1lQDN4';
+  const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   const messages = [
     {
@@ -159,7 +159,7 @@ export async function suggestBetterText(text, title) {
     return;
   }
 
-  const apiKey = 'sk-svcacct-16C5MqAnAgGhXhWdicxUT3BlbkFJrSevL2eqFeRBmV1lQDN4';
+  const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
 
   const messages = [
     {
