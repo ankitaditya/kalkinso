@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 
 // Configure your S3 bucket details
 AWS.config.update({
@@ -8,7 +9,10 @@ AWS.config.update({
   secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
 });
 
-const s3 = new AWS.S3();
+const s3 = new S3({
+    params: { Bucket: 'kalkinso.com' },
+    region: 'ap-south-1',
+});
 const bucketName = 'kalkinso.com';
 
 export const convertOpenAIResponseToCustomFormat = (openAIResponse) => {

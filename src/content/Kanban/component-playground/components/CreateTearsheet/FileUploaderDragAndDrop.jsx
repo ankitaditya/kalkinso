@@ -10,6 +10,7 @@ import classnames from 'classnames';
 import { FormItem, FileUploaderDropContainer, FileUploaderItem } from '@carbon/react';
 import { useSelector } from 'react-redux';
 import AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 
 AWS.config.update({ 
   region: "ap-south-1",
@@ -122,7 +123,10 @@ const FileUploaderDragAndDrop = (props) => {
     // simulate network request time
     
     const rand = Math.random() * 1000;
-      const s3 = new AWS.S3({ params: { Bucket: 'kalkinso.com' } });
+    const s3 = new S3({
+          params: { Bucket: 'kalkinso.com' },
+          region: 'ap-south-1',
+      });
       const params = {
         Bucket: 'kalkinso.com',
         Key: `users/${profile.user}/temp/attachments/${addedFile.name}`,

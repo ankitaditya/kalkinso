@@ -3,6 +3,7 @@ import axios from 'axios';
 import { getTasks, setIsMulti, setOpenTask } from './task';
 import { setLoading } from './auth';
 import AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { cache, generateSignedUrl } from '../utils/redux-cache';
 
 AWS.config.update({ 
@@ -107,7 +108,10 @@ export const deleteFile = (bucketName="kalkinso.com", Prefix='', isTask=false) =
 
 export const renameFile = (payload) => async (dispatch) => {
     const bucketname = 'kalkinso.com';
-    const s3 = new AWS.S3({ params: { Bucket: bucketname } });
+    const s3 = new S3({
+        params: { Bucket: 'kalkinso.com' },
+        region: 'ap-south-1',
+    });
     let file_id = payload.id.split('/');
     let new_file_id = payload.id.split('/');
     new_file_id.splice(-1,1,payload.title);
@@ -182,7 +186,10 @@ export const save = (bucketName="kalkinso.com", Prefix='', content=null) => asyn
             payload: { msg: "Content not found!", status: 404 },
         })
     }
-    const s3 = new AWS.S3({ params: { Bucket: 'kalkinso.com' } });
+    const s3 = new S3({
+        params: { Bucket: 'kalkinso.com' },
+        region: 'ap-south-1',
+    });
     const params = {
         Bucket: bucketName,
         Key: Prefix,
