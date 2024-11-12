@@ -15185,6 +15185,11 @@ react-filerobot-image-editor@^4.8.1:
     konva "9.3.6"
     prop-types "15.7.2"
 
+react-google-recaptcha-ultimate@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.npmjs.org/react-google-recaptcha-ultimate/-/react-google-recaptcha-ultimate-1.2.2.tgz"
+  integrity sha512-Wm+Nas4VCe1f+hvLfCO6qEw2G2zQWvq/P47kW2/jzrIc6FYbVelL7xNsdIxWV8FiKOovrYOW6gBGhQFWzWlbhw==
+
 react-helmet@^5.2.0:
   version "5.2.1"
   resolved "https://registry.npmjs.org/react-helmet/-/react-helmet-5.2.1.tgz"

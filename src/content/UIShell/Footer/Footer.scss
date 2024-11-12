@@ -1,0 +1,21 @@
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #161616;
+  padding: 10px 0;
+  border-top: 1px solid #000000;
+  text-align: center;
+  margin: auto;
+}
+
+.footer.center.links.a-tag {
+  color: #f4f4f4;
+  margin: 0 15px;
+  text-decoration: none;
+}
+
+.footer.center.links.a-tag:hover {
+  text-decoration: underline;
+}

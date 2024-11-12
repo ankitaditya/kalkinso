@@ -25,7 +25,9 @@ export const loadUser = ({token}) => async (dispatch) => {
 		})
 		dispatch(setLoading(true))
 		window.localStorage.removeItem('__data')
-		window.location.href = `${window.location.origin}/#/login`
+		if (!['login', 'register', 'search', '#', 'privacy-policy', 'terms-n-conditions', 'contact'].includes(window.location.href.split('/').slice(-1)[0])){
+			window.location.href = `${window.location.origin}/#/login`
+		}
 		setTimeout(() => dispatch(setLoading(false)), 1000)
 	}
 }
@@ -38,7 +40,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 			'Content-Type': 'application/json',
 		},
 	}
-	const body = JSON.stringify({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, user_role })
+	const body = JSON.stringify({ first_name, last_name, email, mobile, upi, adhar: adhar.slice(-4), terms_conditions, password, user_role })
 	try {
 		const res = await axios.post('/api/users', body, config)
 		// console.log('RESULT: ', res)
@@ -47,7 +49,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 			payload: res,
 		})
 		dispatch(setAlert(`Welcome ${first_name} ${last_name}, Successfully Registered!`, 'success'))
-		dispatch(loadUser())
+		window.location.href = `${window.location.origin}/#/login`
 		dispatch(setLoading(false))
 	} catch (err) {
 		const errors = err?.response?.data
@@ -106,7 +108,7 @@ export const logout = () => (dispatch) => {
 	})
 }
 
-export const sendVerification = ({email=null, mobile=null, adhar=null, upi=null}) => async (dispatch) => {
+export const sendVerification = ({email=null, mobile=null, adhar=null, upi=null, consent='Y'}) => async (dispatch) => {
 	const config = {
 		headers: {
 			'Content-Type': 'application/json',
@@ -124,10 +126,10 @@ export const sendVerification = ({email=null, mobile=null, adhar=null, upi=null}
 		bodyJson = { mobile }
 		verifyType = 'mobile'
 	} else if (adhar){
-		bodyJson = { adhar:adhar.replace(/ /g, '') }
+		bodyJson = { adhar:adhar.replace(/\s+/g, ''), consent }
 		verifyType = 'adhar'
 	} else if (upi){
-		bodyJson = { upi }
+		bodyJson = { upi, consent }
 		verifyType = 'upi'
 	}
 	const body = JSON.stringify(bodyJson)
@@ -138,7 +140,46 @@ export const sendVerification = ({email=null, mobile=null, adhar=null, upi=null}
 			payload: {[verifyType]:res.data},
 		})
 		dispatch(setOpenOtpModal(true))
-		setTimeout(() => dispatch(setAlert(`OTP is sent to ${Object.values(bodyJson)[0]}!`, 'success')), 1000)
+		if (res?.data?.data?.data?.message||res?.data?.sid){
+			setTimeout(() => dispatch(setAlert(`${res?.data?.data?.data?.message||res?.data?.message||"Successfully sent OTP "}!`, res?.data?.data?.data?.message?.includes('Invalid')?'error':'success')), 1000)
+		} else {
+			setTimeout(() => dispatch(setAlert(`Error sending request!`, 'error')), 1000)
+			// window.location.href = `${window.location.origin}/#/unknown-error`
+		}
+		return true;
+	} catch (err) {
+		const errors = err.response.data
+		if (errors) {
+			errors.forEach((error) => dispatch(setAlert(error.msg, 'error')))
+		}
+	}
+}
+
+export const verifyUpi = ({upi=null, name=null}) => async (dispatch) => {
+	const config = {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	}
+	if (upi === null || name === null) {
+		dispatch(setAlert('Please provide a valid UPI and Name', 'error'))
+		return
+	}
+	const body = JSON.stringify({ upi, name })
+	try {
+		const res = await axios.post('/api/auth/verify-upi', body, config)
+		dispatch({
+			type: actionTypes.OTP_VERIFICATION,
+			payload: {upi:res.data},
+		})
+		dispatch(setOpenOtpModal(true))
+		if (res?.data?.data?.data?.account_exists){
+			setTimeout(() => dispatch(setAlert(`UPI Successfully Verified!`, 'success')), 1000)
+			dispatch(setVerified({upi:true}));
+		} else {
+			setTimeout(() => dispatch(setAlert(`UPI Not Successfully Verified!`, 'error')), 1000)
+			// window.location.href = `${window.location.origin}/#/unknown-error`
+		}
 		return true;
 	} catch (err) {
 		const errors = err.response.data
@@ -160,16 +201,16 @@ export const verifyOtp = ({email=null, mobile=null, adhar=null, upi=null, otp=nu
 		dispatch(setAlert('Please provide a valid OTP', 'error'))
 		return
 	} else if (email){
-		bodyJson = { email, otp}
+		bodyJson = { email:email.replace(/\s+/g, ''), otp}
 		verifyType = 'email'
 	} else if (mobile){
-		bodyJson = { mobile, otp}
+		bodyJson = { mobile:mobile.replace(/\s+/g, ''), otp}
 		verifyType = 'mobile'
 	} else if (adhar){
-		bodyJson = { adhar, otp}
+		bodyJson = { reference_id:adhar.toString(), otp}
 		verifyType = 'adhar'
 	} else if (upi){
-		bodyJson = { upi, otp}
+		bodyJson = { reference_id:upi.toString(), otp}
 		verifyType = 'upi'
 	}
 	const body = JSON.stringify(bodyJson)
@@ -181,10 +222,16 @@ export const verifyOtp = ({email=null, mobile=null, adhar=null, upi=null, otp=nu
 			payload: {[verifyType]:res.data},
 		});
 		// console.log("THIS IS VERIFY OTP: ",mobile,otp,verifyType,bodyJson)
-		dispatch(setAlert('OTP Verified!', 'success'));
+		if (res?.data?.data?.data?.message||res?.data?.message){
+			setTimeout(() => dispatch(setAlert(`${res?.data?.data?.data?.message||res?.data?.message||"OTP Verified "}!`, res?.data?.data?.data?.message?.includes('Invalid')?'error':'success')), 1000)
+			if (!res?.data?.data?.data?.message?.includes('Invalid')) {
+				dispatch(setVerified({[verifyType]:true}));
+			}
+		} else {
+			setTimeout(() => dispatch(setAlert(`Error sending request!`, 'error')), 1000)
+			// window.location.href = `${window.location.origin}/#/unknown-error`
+		}
 		dispatch(setOpenOtpModal(false));
-		dispatch(setVerified({[verifyType]:true}));
-		return true;
 	} catch (err) {
 		const errors = err.response.data;
 		dispatch(setVerified({[verifyType]:null}));

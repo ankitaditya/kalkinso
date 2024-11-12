@@ -9,10 +9,12 @@ import {
   Checkbox,
   Column,
   DefinitionTooltip,
+  FluidForm,
   Form,
   FormGroup,
   Grid,
   InlineNotification,
+  Loading,
   NumberInput,
   PasswordInput,
   RadioButton,
@@ -37,7 +39,7 @@ import { useEffect, useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { createProfile } from "../../actions/profile";
-import { register, sendVerification, verifyOtp, setVerified, setOpenOtpModal, setLoading, loadUser } from "../../actions/auth";
+import { register, sendVerification, verifyOtp, setVerified, setOpenOtpModal, setLoading, loadUser, verifyUpi } from "../../actions/auth";
 import { setAlert } from "../../actions/alert";
 import { connect, useDispatch, useSelector } from "react-redux";
 import NoDataIllustration from "./assets/NoDataIllustration";
@@ -67,8 +69,10 @@ const SignUp = (props) => {
   });
   const carbonPrefix = usePrefix();
   const [hasSubmitError, setHasSubmitError] = useState(false);
+  const { verification } = useSelector(state => state.auth);
   const [ selectedCategory, setSelectedCategory ] = useState('');
   const [shouldReject, setShouldReject] = useState(false);
+  const [ otpOpen, setOtpOpen ] = useState('');
   const [isInvalid, setIsInvalid] = useState({
     first_name: null,
     last_name: null,
@@ -83,6 +87,95 @@ const SignUp = (props) => {
   const { verified, openOtpModal } = useSelector(state => state.auth);
   const [simulatedDelay] = useState(750);
 
+  const [timer, setTimer] = useState(30);
+  const [ token, setToken ] = useState();
+  const [ resend, setResend ] = useState(false);
+  const [ verifyLoader, setVerifyLoader ] = useState(null);
+
+  useEffect(() => {
+    if(verification?.adhar?.data?.data?.message?.includes("Invalid")) {
+      setIsInvalid({...isInvalid, adhar: true});
+      setToken('');
+      setResend(false);
+      setOtpOpen('');
+      setVerifyLoader(null);
+    }
+    if(verification?.upi?.data?.data?.message?.includes("Invalid")) {
+      setIsInvalid({...isInvalid, adhar: true});
+      setToken('');
+      setResend(false);
+      setOtpOpen('');
+      setVerifyLoader(null);
+    }
+  }, [verification]);
+
+  useEffect(() => {
+    let interval = null;
+
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      setResend(false);
+      clearInterval(interval);
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [timer]);
+
+  const ResendOtp = (label) => {
+    // console.log("Resend otp clicked!");
+    if(label === "Email" && isInvalid.email === false) {
+      props.sendVerification({email: information.step1.email});
+      props.setAlert(`Verification OTP sent to ${information.step1.email}!`, "info")
+      setTimer(30);
+      setResend(true);
+    } else if(label === "Mobile Number" && isInvalid.mobile === false){
+      props.sendVerification({mobile: information.step1.mobile});
+      props.setAlert(`Verification OTP sent to ${information.step1.mobile}!`, "info")
+      setTimer(30);
+      setResend(true);
+    } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
+      props.sendVerification({adhar: information.step1.adhar});
+      props.setAlert(`Verification OTP sent to your registered mobile number!`, "info")
+      setTimer(30);
+      setResend(true);
+    } else if(label === "UPI ID" && isInvalid.upi === false){
+      props.verifyUpi({upi: information.step2.upi, name: information.step1.first_name+" "+information.step1.last_name});
+      setToken('');
+      setVerifyLoader(null);
+    }
+  }
+
+  const handleSubmit = (label) => {
+    // console.log("submit clicked!");
+    let key  = ""
+    let value = null
+    if(label === "Email" && isInvalid.email === false) {
+      key = "email";
+    } else if(label === "Mobile Number" && isInvalid.mobile === false){
+      key = "mobile";
+    } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
+      key = "adhar";
+      value = verification?.adhar?.data?.data?.reference_id;
+    } else if(label === "UPI ID" && isInvalid.upi === false){
+      key = "upi";
+      value = verification?.adhar?.data?.data?.reference_id;
+    }
+    if (key === "" || isInvalid.mobile===true) {
+      props.setAlert("Problem in verifying OTP: "+label, "error");
+      // console.log("THIS IS INVALID: ",isInvalid)
+      return;
+    } else {
+      props.verifyOtp({[key]: value?value:information.step1[key], otp:token})
+      setToken('');
+      setVerifyLoader(null);
+    }
+  }
+
   const ToggleTip = (label, isClickedDefault=false, props) => {
     const user = useSelector((state) => state.auth);
     const [ token, setToken ] = useState();
@@ -90,6 +183,7 @@ const SignUp = (props) => {
     const [ open, setOpen ] = useState(false);
     const [ resend, setResend ] = useState(false);
     const [timer, setTimer] = useState(30);
+    const [ keyGlobal, setKeyGlobal ] = useState('');
     const CheckmarkInfo = () => <Tooltip label={`${label} is verified`} align="top-left">
       <Checkmark className="sb-tooltip-trigger" style={{color: 'green'}} size={12} />
   </Tooltip>;
@@ -122,12 +216,16 @@ const SignUp = (props) => {
     let key  = ""
     if(label === "Email" && isInvalid.email === false) {
       key = "email";
+      setKeyGlobal("Email");
     } else if(label === "Mobile Number" && isInvalid.mobile === false){
       key = "mobile";
+      setKeyGlobal("Mobile");
     } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
       key = "adhar";
+      setKeyGlobal("Adhar");
     } else if(label === "UPI ID" && isInvalid.upi === false){
       key = "upi";
+      setKeyGlobal("Upi");
     }
     if (key === "" || isInvalid.mobile===true) {
       props.setAlert("Problem in verifying OTP: "+label, "error");
@@ -164,18 +262,31 @@ const SignUp = (props) => {
 
   const handleVerifyClick = () => {
     // console.log("Verify clicked!");
+    setVerifyLoader(true)
     if(label === "Email" && isInvalid.email === false) {
       props.sendVerification({email: information.step1.email});
-      setTimeout(() => setOpen(true), 5000);
+      setTimeout(() => {
+        setOtpOpen('Email')
+        setVerifyLoader(false)
+      }, 1000);
     } else if(label === "Mobile Number" && isInvalid.mobile === false){
       props.sendVerification({mobile: information.step1.mobile});
-      setTimeout(() => setOpen(true), 5000);
+      setTimeout(() => {
+        setOtpOpen('Mobile')
+        setVerifyLoader(false)
+      }, 1000);
     } else if(label === "Adhar Card Number" && isInvalid.adhar === false){
       props.sendVerification({adhar: information.step1.adhar.replace(' ', '')});
-      setTimeout(() => setOpen(true), 5000);
+      setTimeout(() => {
+        setOtpOpen('Adhar')
+        setVerifyLoader(false)
+      }, 1000);
     } else if(label === "UPI ID" && isInvalid.upi === false){
-      props.sendVerification({upi: information.step1.upi});
-      setTimeout(() => setOpen(true), 5000);
+      props.verifyUpi({upi: information.step2.upi, name: information.step1.first_name+" "+information.step1.last_name});
+      setTimeout(() => {
+        setToken('');
+        setVerifyLoader(null);
+      }, 1000);
     } else {
       props.setAlert("Please enter a valid "+label, "error");
     }
@@ -209,7 +320,7 @@ const SignUp = (props) => {
   <ToggletipLabel>{label}</ToggletipLabel>
   <Toggletip align="top-left">
   {isClicked? <CheckmarkInfo />:<ToggletipButton label={`Verify ${label}`} style={{color: 'red'}} onClick={()=>handleVerifyClick()}>
-       {" verify"}
+       {verifyLoader&&keyGlobal===otpOpen?<Loading withOverlay={true} active={true} small />:verifyLoader===null&&" verify"}
     </ToggletipButton>}
     <ToggletipContent>
       <p>{label} is verified</p>
@@ -217,7 +328,7 @@ const SignUp = (props) => {
   </Toggletip>
   {/* <Modal open={open} onRequestClose={() => { setOpen(false); setIsClicked(true); }}  closeButtonLabel="close" passiveModal modalHeading="You have been successfully signed out" /> */}
   <Modal open={open} onRequestClose={() => setOpen(false)} onRequestSubmit={()=>handleSubmit()} modalHeading={`Verify otp for your ${label}`} modalLabel="Two Step Verification" primaryButtonText="Verify">
-          <InputOtp value={token} onChange={(e) => setToken(e.value)} mask integerOnly length={6} marginBottom/> 
+          <InputOtp value={token} onChange={(e) => setToken(e.value)} integerOnly length={6} marginBottom/> 
           {/* <OtpInput
             value={token}
             onChange={setToken}
@@ -255,9 +366,9 @@ const SignUp = (props) => {
       } else if (name === "mobile") {
         setInformation({
           ...information,
-          step1: { ...information.step1, mobile: value }
+          step1: { ...information.step1, mobile: value.replaceAll(/\s+/gi,'') }
         });
-        return value.length === 0 || value.length < 13 || isNaN(value);
+        return value?.replaceAll(/\s+/gi,'')?.length === 0 || value?.replaceAll(/\s+/gi,'')?.length < 13 || isNaN(value);
       } else if (name === "password") {
         /* Write a good password validation logic */
         const regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_@.#$!%*?&^])[A-Za-z\d_@.#$!%*?&]{8,15}$/;
@@ -516,6 +627,7 @@ const SignUp = (props) => {
                     id="email"
                     labelText={ToggleTip('Email', false, props)}
                     type="email"
+                    disabled={verified.email}
                     placeholder="Enter your email"
                     style={{ marginBottom: "15px" }}
                     onChange={e => {
@@ -539,9 +651,17 @@ const SignUp = (props) => {
                     invalidText="Please enter a valid email address"
                     required
                   />
+                  {otpOpen==='Email'&&!verified?.email&&(<div style={{marginTop:"0.5rem"}}>
+                    <InputOtp value={token} onChange={(e) => setToken(e.value)} integerOnly length={6} marginBottom/>
+                    <FluidForm>
+                      <Button disabled={resend} kind="ghost" onClick={()=>ResendOtp('Email')}>{resend?`${timer} s`:"Resend"}</Button>
+                      <Button disabled={token?.length<6} kind="ghost" onClick={()=>handleSubmit('Email')}>{"Verify"}</Button>
+                    </FluidForm>
+                  </div>)}
                   <TextInput
                     id="mobile-number"
                     labelText={ToggleTip('Mobile Number', false, props)}
+                    disabled={verified.mobile}
                     type="tel"
                     value={information.step1.mobile}
                     placeholder="Enter your mobile number"
@@ -575,6 +695,13 @@ const SignUp = (props) => {
                     invalidText="This is a required field"
                     required
                   />
+                  {otpOpen==='Mobile'&&!verified?.mobile&&(<div style={{marginTop:"0.5rem"}}>
+                    <InputOtp value={token} onChange={(e) => setToken(e.value)} integerOnly length={6} marginBottom/>
+                    <FluidForm>
+                      <Button disabled={resend} kind="ghost" onClick={()=>ResendOtp('Mobile Number')}>{resend?`${timer} s`:"Resend"}</Button>
+                      <Button disabled={token?.length<6} kind="ghost" onClick={()=>handleSubmit('Mobile Number')}>{"Verify"}</Button>
+                    </FluidForm>
+                  </div>)}
                   <PasswordInput
                     id="password"
                     labelText="Password"
@@ -638,6 +765,7 @@ const SignUp = (props) => {
                     id="adhar-card"
                     labelText={ToggleTip('Adhar Card Number', false, props)}
                     placeholder="Enter your Adhar card number"
+                    disabled={verified.adhar}
                     style={{ marginBottom: "15px" }}
                     value={information.step1.adhar}
                     onKeyDown={(e) => {
@@ -675,6 +803,13 @@ const SignUp = (props) => {
                     invalidText="This is a required field"
                     required
                   />
+                  {otpOpen==='Adhar'&&!verified?.adhar&&(<div style={{marginTop:"0.5rem"}}>
+                    <InputOtp value={token} onChange={(e) => setToken(e.value)} integerOnly length={6} marginBottom/>
+                    <FluidForm>
+                      <Button disabled={resend} kind="ghost" onClick={()=>ResendOtp('Adhar Card Number')}>{resend?`${timer} s`:"Resend"}</Button>
+                      <Button disabled={token?.length<6} kind="ghost" onClick={()=>handleSubmit('Adhar Card Number')}>{"Verify"}</Button>
+                    </FluidForm>
+                  </div>)}
                 </FormGroup>
               </Form>
             </Column>
@@ -711,8 +846,9 @@ const SignUp = (props) => {
               <Form>
                 <TextInput
                   id="upi-id"
-                  labelText={ToggleTip('UPI ID', true, props)}
+                  labelText={ToggleTip('UPI ID', false, props)}
                   placeholder="Enter your upi id"
+                  disabled={verified.upi}
                   onChange={e => {
                     setIsInvalid({
                       ...isInvalid,
@@ -729,6 +865,13 @@ const SignUp = (props) => {
                   invalidText="This is a required field"
                   required
                 />
+                {otpOpen==='Upi'&&!verified?.upi&&(<div style={{marginTop:"0.5rem"}}>
+                    <InputOtp value={token} onChange={(e) => setToken(e.value)} integerOnly length={6} marginBottom/>
+                    <FluidForm>
+                      <Button disabled={resend} kind="ghost" onClick={()=>ResendOtp('UPI ID')}>{resend?`${timer} s`:"Resend"}</Button>
+                      <Button disabled={token?.length<6} kind="ghost" onClick={()=>handleSubmit('UPI ID')}>{"Verify"}</Button>
+                    </FluidForm>
+                  </div>)}
               </Form>
             </Column>
           </Grid>
@@ -748,7 +891,7 @@ const SignUp = (props) => {
               <Checkbox
                 labelText={
                   <div>
-                    I agree to the <a>terms and conditions</a>
+                    I agree to the <a href={`${window.location.origin}/#/terms-n-conditions`} target="_blank">terms and conditions</a>
                   </div>
                 }
                 id="terms-conditions"
@@ -789,4 +932,4 @@ const SignUp = (props) => {
 const mapStateToProps = (state) => ({
 })
 
-export default connect(mapStateToProps, { register, sendVerification, verifyOtp, setVerified, setAlert, setOpenOtpModal })(SignUp)
+export default connect(mapStateToProps, { register, sendVerification, verifyOtp, setVerified, setAlert, setOpenOtpModal, verifyUpi })(SignUp)

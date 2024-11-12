@@ -10,7 +10,7 @@ import {
     NumberInput,
     Dropdown,
     TextArea,
-    IconButton
+    IconButton,
 } from '@carbon/react';
 import axios from 'axios';
 import ToastNotification from "../../components/ToastNotification";
@@ -57,6 +57,9 @@ import { AIReactBaseConfig, AIReactChatConfig, AIReactDashboardConfig } from "./
 import HeaderItemExplore from "./Header/HeaderItemExplore";
 import HeaderGlobal from "./Header/HeaderGlobal";
 import Resume from "./Resume";
+import PrivacyPolicy from "./PrivacyPolicy/PrivacyPolicy";
+import TermsNConditions from "./TermsNConditions/TermsNConditions";
+import Footer from "./Footer/Footer";
 // import Notification from '../../components/Notification';
 
 
@@ -172,14 +175,16 @@ class UIShell extends React.Component {
                             {/* <Route path="/" element={<ComingSoon />} /> */}
                             <Route path="/" element={<LandingPage />} />
                             <Route path="Search" element={<SearchPage />} />
+                            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                            <Route path="terms-n-conditions" element={<TermsNConditions />} />
                             <Route path="Login" element={<Login />} />
-                            {/* <Route path="Register" element={<SignUp />} /> */}
+                            <Route path="Register" element={<SignUp />} />
                             <Route path="home">
                                 <Route path="" element={<PrivateRoute Component={DashboardScreen} />} />
                                 <Route path=":taskPath" element={<PrivateRoute Component={Kanban} />} />
                             </Route>
                             <Route path="chat" element={<PrivateRoute Component={ChatScreen} />} />
-                            <Route path="Contact" element={<ComingSoon />} />
+                            <Route path="Contact" element={<ContactPage />} />
                             <Route path="how-to" element={<HowToPage />} />
                             <Route path="test-component" element={<PrivateRoute Component={AIReact} config={AIReactChatConfig} />} />
                             <Route path="test-dashboard" element={<PrivateRoute Component={AIReact} config={AIReactDashboardConfig} />} />
@@ -189,6 +194,13 @@ class UIShell extends React.Component {
                             <Route path="*" element={<PrivateRoute Component={NotFound} />} />
                         </Routes>
                     </Content>
+                    </Theme>
+                    <Theme theme='g100'>
+                        <HeaderContainer render={({isSideNavExpanded, onClickSideNavExpand})=>{
+                                return (
+                                    <Footer />
+                                )
+                            }} />
                     </Theme>
                 </HashRouter>
             </Provider>

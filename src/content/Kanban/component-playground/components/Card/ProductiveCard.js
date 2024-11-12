@@ -144,13 +144,13 @@ const ProductiveCard = (props) => {
       <Grid>
         <Column lg={2}>Number of Users</Column>
         <Column lg={2}>{props?.data?.time?.estimated?.length}</Column>
-        <Column lg={2}>
+        {/* <Column lg={2}>
           <AvatarGroup>
             <Avatar image={props?.data?.user?.avatar} shape='circle' />
             <Avatar image={props?.data?.user?.avatar} shape='circle' />
             <Avatar label='+2' shape='circle' />
           </AvatarGroup>
-        </Column>
+        </Column> */}
       </Grid>
     </CCProductiveCard>
   );

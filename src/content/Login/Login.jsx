@@ -13,6 +13,7 @@ import {
 import { LogoFacebook, LogoLinkedin, LogoGithub } from '@carbon/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser, login, setLoading } from '../../actions/auth';
+import { ButtonGroup, ButtonOr, Button as SemanticButton, Form as SemanticForm } from 'semantic-ui-react';
 // import './Login.css';  // Custom styling
 
 const Login = () => {
@@ -35,7 +36,7 @@ const Login = () => {
     <div className="login-form">
       <Grid>
           <Column sm={4} md={6} lg={8} className="login-container">
-            <Form className='login-form-main' onSubmit={handleSubmit} style={{margin:"15px"}}>
+            <SemanticForm className='login-form-main' onSubmit={handleSubmit} style={{margin:"15px"}}>
               <h2 className='form-item' style={{marginBottom:"15px"}}>Login Form</h2>
               <TextInput
                 id="email"
@@ -53,12 +54,18 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{marginBottom:"15px"}}
+                // style={{marginBottom:"15px"}}
               />
-              <Button type="submit" kind="primary" className="submit-button form-item" style={{marginTop:"15px"}}>
-                Login
-              </Button>
-            </Form>
+              <ButtonGroup style={{marginTop:"15px"}}>
+                <SemanticButton type="submit" className="submit-button form-item" primary>
+                  Login
+                </SemanticButton>
+                <ButtonOr />
+                <SemanticButton className="submit-button form-item" href='/#/register' secondary>
+                  Register
+                </SemanticButton>
+              </ButtonGroup>
+            </SemanticForm>
           </Column>
           {/* <Column md={8} lg={16} className="login-container">
           <div className="divider" style={{margin:"15px", marginBottom:"25px"}}>

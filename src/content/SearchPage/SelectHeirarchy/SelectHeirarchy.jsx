@@ -3,7 +3,8 @@ import { MultiAddSelect, SingleAddSelect } from '@carbon/ibm-products';
 import { Document, Group } from '@carbon/react/icons';
 import { pkg } from '@carbon/ibm-products/lib/settings';
 import image from '../banner.png';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAlert } from '../../../actions/alert';
 
 const blockClass = `${pkg.prefix}--add-select__meta-panel`; // cspell:disable-line
 
@@ -133,6 +134,7 @@ const SelectHeirarchy = ({open, isMulti, task_id , onClose, onSubmit}) => {
     const { tasks, task_files } = useSelector((state) => state.task.kanban);
     const { selectedMultiTask } = useSelector((state) => state.task);
     const [ selected, setSelected ] = useState(<></>);
+    const dispatch = useDispatch();
     const getHeirarchy = (task_id) => {
       let task = tasks;
       if(task?.subTasks?.length>0){
@@ -146,6 +148,26 @@ const SelectHeirarchy = ({open, isMulti, task_id , onClose, onSubmit}) => {
         }
       }
     }
+    const getHeirarchyModified = (key_list, task_files) => {
+      if (task_files?.children?.entries?.length>0){
+        return {
+          ...task_files,
+          children: {
+            sortBy: ['title', 'value'],
+            filterBy: 'fileType',
+            entries: task_files?.children?.entries.map((task)=>{
+              return getHeirarchyModified(key_list, task)
+            })
+          }
+        }
+      } else {
+        let tempObject = {};
+        key_list.forEach((key)=>{
+          tempObject[key] = task_files[key];
+        })
+        return tempObject;
+      }
+    }
     useEffect(()=>{
       // setProps({...props, items: getHeirarchy(tasks[0]?._id)})
       // console.log("This is modified props: ",{...props, items: getHeirarchy(tasks[0]?._id)});
@@ -155,13 +177,13 @@ const SelectHeirarchy = ({open, isMulti, task_id , onClose, onSubmit}) => {
       if(isMulti) {
         let addedProps = {...props}
         if(selectedMultiTask){
-          addedProps = {...props, items: task_files[selectedMultiTask]?task_files[selectedMultiTask]?.entries[0]?.children:[]};
+          addedProps = {...props, items: task_files[selectedMultiTask]?getHeirarchyModified(['id','title', 'value', 'size', 'fileType'], task_files[selectedMultiTask]?.entries[0])?.children:[]};
         }
         setSelected(<MultiAddSelect 
           {...addedProps} 
           open={open} 
           onClose={onClose} 
-          // onSubmit={(e)=>{console.log("This is selected: ",e)}}
+          onSubmit={(e)=>{dispatch(setAlert('Beta Feature Not Available Yet', 'error'))}}
           />);
       } else {
         setSelected(<SingleAddSelect {...props}  open={open} onClose={onClose} onSubmit={onSubmit} />);

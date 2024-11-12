@@ -91,8 +91,8 @@ router.post(
 router.delete('/', auth, async (req, res) => {
 	try {
 		await ChatSession.deleteMany({ user: req.user.id })
-		await Profile.findOneAndRemove({ user: req.user.id })
-		await User.findOneAndRemove({ _id: req.user.id })
+		await Profile.deleteOne({ user: req.user.id })
+		await User.deleteOne({ _id: req.user.id })
 		res.json({ msg: 'User Deleted' })
 	} catch (err) {
 		console.error(err.message)

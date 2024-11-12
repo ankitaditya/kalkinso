@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-ultimate';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 
 
@@ -13,7 +14,12 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <QueryClientProvider client={client}>
-      <App />
+      <GoogleReCaptchaProvider
+          type="v3"
+          siteKey="6LceW3sqAAAAAPrfgykEvRFKkeBmEv73ZKL8Ww6V"
+        >
+          <App />
+        </GoogleReCaptchaProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );
