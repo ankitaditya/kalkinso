@@ -46,7 +46,7 @@ export const generateNarrationAudio = async (text) => {
 };
 
 export const convertOpenAIResponseToCustomFormat = (openAIResponse) => {
-    const { text, segments, words } = openAIResponse;
+    const { text, segments } = openAIResponse;
     const blocks = [];
     const entityMap = {};
     let entityKeyCounter = 0;
@@ -73,8 +73,8 @@ export const convertOpenAIResponseToCustomFormat = (openAIResponse) => {
   
       wordsArray.forEach((word, index) => {
         const wordData = {
-          start: words[entityKeyCounter]?.start, // Adjust this if actual word timings are needed
-          end: words[entityKeyCounter]?.end, // Simulate word end time based on length
+          start: segment.start + offset, // Adjust this if actual word timings are needed
+          end: segment.start + offset + ((segment.end-segment.start)/wordsArray.length), // Simulate word end time based on length
           confidence: 1, // Placeholder; use actual confidence if available
           word: word,
           punct: word, // Assuming punctuation is already part of the word
@@ -204,7 +204,7 @@ export const convertSpeechToText = async ({ audioFile, file_path, mp4=false }) =
     formData.append('file', audioFile, 'audio.mp3'); // Replace 'audio.mp3' with the actual file
     formData.append('model', 'whisper-1'); // Replace with the model name you want to use
     formData.append('response_format', 'verbose_json');
-    formData.append('timestamp_granularities', ['word', 'segment']);
+    formData.append('timestamp_granularities', ['segment']);
   
     try {
       const response = await axios.post('https://api.openai.com/v1/audio/transcriptions', formData, {
