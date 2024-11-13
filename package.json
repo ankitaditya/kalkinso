@@ -16,6 +16,7 @@
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/lang-python": "^6.1.6",
     "@codemirror/theme-one-dark": "^6.1.2",
+    "@ffmpeg/ffmpeg": "^0.12.10",
     "@measured/puck": "^0.16.1",
     "@monaco-editor/react": "^4.6.0",
     "@reduxjs/toolkit": "^2.2.6",
@@ -31,7 +32,6 @@
     "express-validator": "^6.6.0",
     "file-saver": "^2.0.5",
     "formidable": "^1.2.2",
-    "fs": "^0.0.1-security",
     "gravatar": "^1.8.1",
     "greenlock-express": "^4.0.3",
     "helmet": "^7.1.0",
@@ -109,7 +109,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start:dev": "react-scripts start",
+    "start:dev": "export NODE_OPTIONS=--max_old_space_size=4096 && react-scripts start",
     "start": "node server/server.js",
     "build": "export NODE_OPTIONS=--max_old_space_size=4096 && react-scripts build",
     "test": "react-scripts test"

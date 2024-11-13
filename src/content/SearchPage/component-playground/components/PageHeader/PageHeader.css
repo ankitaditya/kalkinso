@@ -5,3 +5,7 @@
 #input-tag:hover {
     font-weight: bold;
 }
+
+.c4p--page-header.c4p--page-header {
+  z-index: 0;
+}

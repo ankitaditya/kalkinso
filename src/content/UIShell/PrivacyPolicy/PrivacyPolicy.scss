@@ -1,4 +1,4 @@
-.container {
+.tnc-container {
     max-width: 800px;
     background-color: #fff;
     padding: 40px;
@@ -33,7 +33,7 @@
 }
 
 @media screen and (max-width: 768px) {
-    .container {
+    .tnc-container {
         padding: 20px;
     }
 }

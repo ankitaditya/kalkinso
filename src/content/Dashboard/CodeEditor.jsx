@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
+import { Toggle } from '@carbon/react';
 
 const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) => {
   const editorRef = useRef(null);
@@ -79,6 +80,15 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
                 margin: "auto",
               }}
             >
+              <Toggle 
+                style={{float:"right"}} 
+                labelText="Label" 
+                labelA="Editor" 
+                labelB="AI" 
+                defaultToggled 
+                id="toggle-1" 
+                onToggle={(e) => console.log(e)}
+              />
             <Editor
               height="90vh"
               width="96%"

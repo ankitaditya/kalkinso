@@ -60,7 +60,7 @@ const Login = () => {
                 <SemanticButton type="submit" className="submit-button form-item" primary>
                   Login
                 </SemanticButton>
-                <ButtonOr />
+                <ButtonOr style={{zIndex: 0}} />
                 <SemanticButton className="submit-button form-item" href='/#/register' secondary>
                   Register
                 </SemanticButton>

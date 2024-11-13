@@ -33,7 +33,9 @@ const HeaderGlobal = () => {
                 localStorage.setItem('token', window.location.pathname.split('/')[1].replace('token=',''))
             }
             dispatch(setLoading(true));
-            dispatch(loadUser({token: localStorage.getItem('token')}))
+            if(localStorage.getItem('token')){
+                dispatch(loadUser({token: localStorage.getItem('token')}));
+            }
         }
     },[])
     return (

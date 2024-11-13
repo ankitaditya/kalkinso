@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Tag, Accordion, AccordionItem, FileUploaderDropContainer, TreeNode, TreeView, IconButton, Column, Grid } from '@carbon/react';
+import { Tag, Accordion, AccordionItem, FileUploaderDropContainer, TreeNode, TreeView, IconButton, Column, Grid, Loading } from '@carbon/react';
 import PropTypes from 'prop-types';
 import { NoDataEmptyState } from '@carbon/ibm-products';
 import { AddSelectMetaPanel } from '@carbon/ibm-products/lib/components/AddSelect/AddSelectMetaPanel';
@@ -12,7 +12,7 @@ import BlockNoteEditor from './BlockNoteEditor';
 import FigmaEditor from './FigmaEditor';
 import { Close, Download, Save } from '@carbon/react/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { save } from '../../actions/kits';
+import { addFile, save } from '../../actions/kits';
 import { setLoading } from '../../actions/auth';
 // import * as Y from "yjs";
 // import { WebrtcProvider } from "y-webrtc";
@@ -23,6 +23,8 @@ import "./MultiPageWordProcessor/MultiPageWordProcessor.css";
 import PhotoEditor from './PhotoEditor';
 import { setDeleteFile } from '../../actions/task';
 import TranscriptEditor from '@bbc/react-transcript-editor';
+import { generateSignedUrl, getObjectById, insertObjectById } from '../../utils/redux-cache';
+import { convertSpeechToText } from '../../utils/openai-utils';
 
 
 const blockClass = `home--add-select__sidebar`;
@@ -133,6 +135,8 @@ const AddSelectSidebar = ({
   const dispatch = useDispatch();
   const [content, setContent] = useState("");
   const { file_context } = useSelector((state)=>state.task.kanban);
+  const { selectedTask } = useSelector((state)=>state.kits);
+  const [transcriptContent, setTranscriptContent] = useState(null);
   const getNewItem = (item) => {
     const { meta, icon, avatar, ...newItem } = item;
     return newItem;
@@ -187,11 +191,44 @@ const AddSelectSidebar = ({
       return <></>;
     }
 
-    if ([ 'mp4', 'webm', 'ogg', 'mov', 'avi', 'flv', 'wmv', 'mkv', 'mpg', 'mpeg', '3gp', '3g2', 'm4v', 'f4v', 'f4p', 'f4a', 'f4b', 'mp3', 'wav' ].includes(item.fileType)) {
-      return <TranscriptEditor    
-                mediaUrl={item.signedUrl}
-              />;
-    }
+    if ([ 'mp4', 'webm', 'ogg', 'mov', 'avi', 'flv', 'wmv', 'mkv', 'mpg', 'mpeg', '3gp', '3g2', 'm4v', 'f4v', 'f4p', 'f4a', 'f4b', 'mp3', 'wav', 'm4a' ].includes(item.fileType)) {
+      let transcriptRef = getObjectById(selectedTask?.entries[0],item.id.replace(/\..+/g,'.json'))
+      if(!transcriptRef&&!transcriptContent){
+        convertSpeechToText({ audioFile: item.signedUrl, file_path: item.id.replace(/\..+/g,'.json') }).then((transcriptData)=>{
+          console.log("Transcript Data: ",transcriptData);
+          generateSignedUrl('kalkinso.com', item.id.replace(/\..+/g,'.json')).then((signedUrl)=>{
+            let transcriptRef = getObjectById(selectedTask?.entries[0],item.id.replace(/\..+/g,'.json'))
+            !transcriptRef&&dispatch(addFile(item.id.replace(/\..+/g,'.json')))
+          })
+          setTranscriptContent(<TranscriptEditor    
+            mediaUrl={item.signedUrl}
+            transcriptData={transcriptData}
+            title={item.title}
+            autoPlay={false}
+            isEditable={true}
+            spellCheck={true}
+            sttJsonType="draftjs"
+          />);
+        })
+      }
+      transcriptRef?.signedUrl&&!transcriptContent&&fetch(transcriptRef.signedUrl).then(res=>res.json()).then((data)=>{
+          const transcriptDataMain = data;
+          console.log(typeof transcriptDataMain);
+          if(typeof transcriptDataMain==="object"&&transcriptDataMain.hasOwnProperty("blocks")){
+          console.log("Transcript Data: ",transcriptDataMain);
+          setTranscriptContent(<TranscriptEditor    
+            mediaUrl={item.signedUrl}
+            transcriptData={transcriptDataMain}
+            title={item.title}
+            autoPlay={false}
+            isEditable={true}
+            spellCheck={true}
+            sttJsonType="draftjs"
+          />);
+          }
+    });
+    return transcriptContent;
+  }
 
     if (item.fileType === 'txt' || (item.fileType === 'pdf'&&!item.title.includes("view.pdf"))) {
       // const provider = new WebrtcProvider(item.id, doc); // setup a yjs provider (explained below)
@@ -335,7 +372,7 @@ const AddSelectSidebar = ({
                     }}>
                       <Close />
                     </IconButton>)}</>)}
-            {item.signedUrl&&renderFile(item)}
+            {item.signedUrl&&(renderFile(item) || <Loading active={!transcriptContent} withOverlay={true} />)}
             {item.id&&(!item?.signedUrl)&&(
               <ReactDropzone data={true} content={content} setContent={setContent} multiSelection={multiSelection} setMultiSelection={setMultiSelection} renderTreeFiles={renderTree} items={items} item={item} path={pathExternal} />
             )}

@@ -5,6 +5,30 @@ import * as actionTypes from './types'
 import setAuthToken from '../utils/setAuthToken'
 import { getCurrentProfile } from './profile'
 
+
+export const keepAlive = () => async (dispatch) => {
+	try {
+		if (localStorage.token) {
+			const res = await axios.get('/api/auth/keep-alive')
+			dispatch(loadUser({token:res?.data?.token}))
+		} else {
+			if (!['login', 'register', 'search', '#', 'privacy-policy', 'terms-n-conditions', 'contact'].includes(window.location.href.split('/').slice(-1)[0])) {
+				window.location.href = `${window.location.origin}/#/login`
+			}
+		}
+	} catch (err) {
+		dispatch({
+			type: actionTypes.AUTH_ERROR,
+		})
+		dispatch(setLoading(true))
+		window.localStorage.removeItem('__data')
+		if (!['login', 'register', 'search', '#', 'privacy-policy', 'terms-n-conditions', 'contact'].includes(window.location.href.split('/').slice(-1)[0])) {
+			window.location.href = `${window.location.origin}/#/login`
+		}
+		setTimeout(() => dispatch(setLoading(false)), 1000)
+	}
+}
+
 export const loadUser = ({token}) => async (dispatch) => {
 	if (token) {
 		setAuthToken(token)

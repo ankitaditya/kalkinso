@@ -119,6 +119,9 @@ useEffect(() => {
 
   return (
     <CCPageHeader
+      style={{
+        zIndex:0
+      }}
       actionBarOverflowAriaLabel="label"
       // breadcrumbs={breadcrumbs}
       breadcrumbOverflowAriaLabel="View breadcrumbs"
@@ -144,7 +147,9 @@ useEffect(() => {
       // subtitle={}
       // tags={tags}
     >
-      {<><Gallery handleSearch={handleSearch} /><ConditionBuilder inputConfig={inputData} variant={"tree"} startConditionLabel="Add Condition" popOverSearchThreshold={4} /></>}
+      {<><Gallery handleSearch={handleSearch} />
+      {/* <ConditionBuilder inputConfig={inputData} variant={"tree"} startConditionLabel="Add Condition" popOverSearchThreshold={4} /> */}
+      </>}
     </CCPageHeader>
   );
 };

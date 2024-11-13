@@ -46,6 +46,53 @@ router.get('/', auth, async (req, res) => {
 	}
 })
 
+router.get('/keep-alive', auth, async (req, res) => {
+	try {
+		let user = await User.findById(req?.user?.id).select('-password')
+		let user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
+		if (!user) {
+			return res.status(404).json({ msg: 'User not found' })
+		}
+		if(!user_session) {
+			return res.status(404).json({ msg: 'Session not created' })
+		}
+		if(user_session.ended_at) {
+			return res.status(404).json({ msg: 'Session ended' })
+		}
+		const payload = {
+			user: {
+				id: user._id,
+			},
+		}
+		let jwt_result = {}
+		jwt.sign(
+			payload,
+			'my-jwt-secret',
+			{ expiresIn: '4 hours' },
+			async (err, token) => {
+				if (err) {
+					throw err
+				}
+				if (!user.sessions) {
+					user.sessions = []
+				}
+				jwt_result['token'] = token
+				user.sessions.push(jwt_result)
+				user = await User.findOneAndUpdate(
+					{ email:user.email },
+					{ $set: user },
+					{ new: true }
+				)
+				const user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
+				res.json({ ...jwt_result, session_id: user_session._id, first_name:user.first_name, last_name:user.last_name })
+			}
+		)
+	} catch (err) {
+		console.error(err)
+		res.status(400).send(err.message)
+	}
+})
+
 router.post(
 	'/login/email',
 	[

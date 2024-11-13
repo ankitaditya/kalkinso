@@ -34,6 +34,8 @@ import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
 import { Input } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
+import { callOpenAIChatCompletion } from '../../../../utils/openai-utils';
+import { generateCallFunctions, generateSystemPrompt } from './ChatFunctions/constants';
 
 AWS.config.update({ 
   region: "ap-south-1",
@@ -47,7 +49,7 @@ pkg.component.ProductiveCard = true;
 pkg.component.SidePanel = true;
 pkg.component.Cascade = true;
 
-const ChatScreen = () => {
+const ChatScreen = ({state}) => {
   const showdown = new Showdown.Converter();
   const { user } = useSelector((state) => state.auth);
   const profile = useSelector((state)=>state.profile);
@@ -106,7 +108,7 @@ const ChatScreen = () => {
     "updatedAt": "2023-10-21T02:32:14.518Z"
   };
   const { currentSession, loading } = useSelector((state) => state.chat);
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState(state.chatState?state.chatState:[
     {role: "assistant", content: "Hello there! I am an assistant for your idea implementation? You can generate tasks, create plans, and much more. How can I help you today?"}
   ]); 
   const [ idea, setIdea ] = useState(false);
@@ -122,6 +124,9 @@ const ChatScreen = () => {
   const [wideTearsheetOpen, setWideTearsheetOpen] = useState(false);
   const [multiStepTearsheetOpen, setMultiStepTearsheetOpen] = useState(false);
   const dispatch = useDispatch();
+  useEffect(() => {
+    state.setChatState(messages);
+  }, [messages]);
   const exportPdf = (event, path=null) => {
     // we pass the delta object to the generatePdf function of the pdfExporter
     // be sure to AWAIT the result, because it returns a Promise
@@ -672,6 +677,12 @@ const ChatScreen = () => {
       let promptMessage = { role: "user", content: inputMessage }
       dispatch(sendMessage(inputMessage, user, profile.user));
       setMessages([...messages, promptMessage]);
+      // const systemPrompt = generateSystemPrompt();
+      // const callFunctions = generateCallFunctions();
+      // const userPrompt = inputMessage.trim();
+      // callOpenAIChatCompletion({ systemPrompt, userPrompt, callFunctions })
+      // .then(response => console.log(response))
+      // .catch(error => console.error(error));
       // Simulate a bot response
       // setTimeout(() => {
       //   setMessages((prevMessages) => [

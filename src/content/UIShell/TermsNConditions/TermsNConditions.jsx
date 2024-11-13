@@ -3,7 +3,7 @@ import "./TermsNConditions.scss";
 
 const TermsNConditions = () => {
     return (
-        <div class="container">
+        <div class="tnc-container">
             <h1>TERMS AND CONDITIONS</h1>
 <p><br /></p>
 <p><strong>Last updated</strong> <p class="last-updated">November 11, 2024</p></p>

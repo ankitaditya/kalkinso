@@ -3,7 +3,7 @@ import './PrivacyPolicy.scss';
 
 const PrivacyPolicy = () => {
     return (
-        <div class="container">
+        <div class="tnc-container">
         <h1>Privacy Policy</h1>
         <p class="last-updated">Last updated: November 11, 2024</p>
 
@@ -82,7 +82,7 @@ const PrivacyPolicy = () => {
         <p>If you have any questions regarding this Privacy Policy, please contact us:</p>
         <ul>
             <li>Email: <a href="mailto:info@kalkinso.com">info@kalkinso.com</a></li>
-            <li>Website: <a href="https://www.kalkinso.com/contact" target="_blank">https://www.kalkinso.com/contact</a></li>
+            <li>Website: <a href="https://www.kalkinso.com/contact" target="_blank" rel="noreferrer">https://www.kalkinso.com/contact</a></li>
             <li>Address: KALKINSO SOFTWARE (OPC) PRIVATE LIMITED, Pratapgarh, Uttar Pradesh, India</li>
         </ul>
     </div>
