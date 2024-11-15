@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Tag, Accordion, AccordionItem, FileUploaderDropContainer, TreeNode, TreeView, IconButton, Column, Grid, Loading } from '@carbon/react';
+import { Tag, Accordion, AccordionItem, FileUploaderDropContainer, TreeNode, TreeView, IconButton, Column, Grid, Loading, SideNav } from '@carbon/react';
 import PropTypes from 'prop-types';
-import { NoDataEmptyState } from '@carbon/ibm-products';
+import { ActionBar, NoDataEmptyState } from '@carbon/ibm-products';
 import { AddSelectMetaPanel } from '@carbon/ibm-products/lib/components/AddSelect/AddSelectMetaPanel';
 import FileViewer from 'react-file-viewer';
 import { CustomErrorComponent } from 'custom-error';
@@ -25,6 +25,7 @@ import { setDeleteFile } from '../../actions/task';
 import TranscriptEditor from '@bbc/react-transcript-editor';
 import { generateSignedUrl, getObjectById, insertObjectById } from '../../utils/redux-cache';
 import { convertSpeechToText } from '../../utils/openai-utils';
+import { DynamicVideo } from './DynamicUI';
 
 
 const blockClass = `home--add-select__sidebar`;
@@ -121,6 +122,8 @@ const AddSelectSidebar = ({
   influencerTitle,
   items,
   metaPanelTitle,
+  openAIEditor,
+  setOpenAIEditor,
   modifiers,
   pathExternal,
   multiSelection,
@@ -134,6 +137,7 @@ const AddSelectSidebar = ({
   const [ isChanged, setIsChanged ] = useState(false);
   const dispatch = useDispatch();
   const [content, setContent] = useState("");
+  const [ aiEditorComponent, setAiEditorComponent ] = useState(<></>);
   const { file_context } = useSelector((state)=>state.task.kanban);
   const { selectedTask } = useSelector((state)=>state.kits);
   const [transcriptContent, setTranscriptContent] = useState(null);
@@ -149,6 +153,14 @@ const AddSelectSidebar = ({
     }
     return getNewItem(items[selectionId]);
   });
+
+  useEffect(() => {
+    if(openAIEditor?.type==="Video"){
+      setAiEditorComponent(
+        <DynamicVideo item_id={openAIEditor.id.split('/').slice(0,-1).join('/')+'/'} fileName={openAIEditor.id.split('/').slice(-1)[0]} />
+      );
+    }
+  }, [openAIEditor]);
 
   const getTitle = (item) => (
     <div className={`${blockClass}-accordion-title`}>
@@ -195,7 +207,6 @@ const AddSelectSidebar = ({
       let transcriptRef = getObjectById(selectedTask?.entries[0],item.id.replace(/\..+/g,'.json'))
       if(!transcriptRef&&!transcriptContent){
         convertSpeechToText({ audioFile: item.signedUrl, file_path: item.id.replace(/\..+/g,'.json') }).then((transcriptData)=>{
-          console.log("Transcript Data: ",transcriptData);
           generateSignedUrl('kalkinso.com', item.id.replace(/\..+/g,'.json')).then((signedUrl)=>{
             let transcriptRef = getObjectById(selectedTask?.entries[0],item.id.replace(/\..+/g,'.json'))
             !transcriptRef&&dispatch(addFile(item.id.replace(/\..+/g,'.json')))
@@ -213,9 +224,7 @@ const AddSelectSidebar = ({
       }
       transcriptRef?.signedUrl&&!transcriptContent&&fetch(transcriptRef.signedUrl).then(res=>res.json()).then((data)=>{
           const transcriptDataMain = data;
-          console.log(typeof transcriptDataMain);
           if(typeof transcriptDataMain==="object"&&transcriptDataMain.hasOwnProperty("blocks")){
-          console.log("Transcript Data: ",transcriptDataMain);
           setTranscriptContent(<TranscriptEditor    
             mediaUrl={item.signedUrl}
             transcriptData={transcriptDataMain}
@@ -275,6 +284,7 @@ const AddSelectSidebar = ({
                 setIsChanged={setIsChanged}
                 onKeyDown = {()=>dispatch(setDeleteFile(item))}
                 item_id={item.id}
+                pathExternal={pathExternal}
                 className="page-monaco" 
                 style={{height: "80vh", width: "96%", marginTop:"2rem", marginBottom: "2rem"}} 
               />;
@@ -330,31 +340,42 @@ const AddSelectSidebar = ({
                 </AccordionItem>
               )
             }
-            {item.signedUrl&&(<>
-            {item?.signedUrl&&!(item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg' || item.fileType === 'webp')&&(<IconButton disabled={!isChanged} kind='ghost' title='save' align='bottom-right' onClick={()=>{
-                  dispatch(setLoading(true));
-                  dispatch(save(
-                    'kalkinso.com',
-                    item.id,
-                    JSON.stringify(content)
-                  ));
-                  setIsChanged(false);
-                  setContent(null);
-                }}>
-                  <Save />
-                </IconButton>)}
-                {item?.signedUrl&&(
-                  <IconButton kind='ghost' title='save' align='bottom-right' onClick={()=>{
+            {item.signedUrl&&(<ActionBar 
+              actions={[
+                {
+                  id: 'save',
+                  key: 'save',
+                  renderIcon: Save,
+                  label: 'Save',
+                  iconDescription: 'Save',
+                  disabled: !isChanged,
+                  onClick: () => {
+                    dispatch(setLoading(true));
+                    dispatch(save('kalkinso.com', item.id, JSON.stringify(content)));
+                    setIsChanged(false);
+                    setContent(null);
+                  }
+                },
+                {
+                  id: 'download',
+                  key: 'download',
+                  renderIcon: Download,
+                  label: 'Download',
+                  iconDescription: 'Download',
+                  onClick: () => {
                     if (item.fileType === 'txt') {
                       dispatch(setLoading(true));
-                      exportToPDF(content, item.title).then(() => {
-                        dispatch(setLoading(false));
-                      }).catch((error) => {
-                        dispatch(setLoading(false));
-                        console.error(error);
-                      }).finally(() => {
-                        dispatch(setLoading(false));
-                      });
+                      exportToPDF(content, item.title)
+                        .then(() => {
+                          dispatch(setLoading(false));
+                        })
+                        .catch((error) => {
+                          dispatch(setLoading(false));
+                          console.error(error);
+                        })
+                        .finally(() => {
+                          dispatch(setLoading(false));
+                        });
                     } else {
                       const aTag = document.createElement("a");
                       aTag.href = item.signedUrl;
@@ -363,15 +384,25 @@ const AddSelectSidebar = ({
                       aTag.click();
                       aTag.remove();
                     }
-                  }}>
-                    <Download />
-                  </IconButton>)}
-                  {!(item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg' || item.fileType === 'webp')&&(
-                    <IconButton kind='ghost' title='close' align='bottom-right' onClick={()=>{
-                      setMultiSelection(multiSelection.filter((item_id)=>item_id!==item.id))
-                    }}>
-                      <Close />
-                    </IconButton>)}</>)}
+                  }
+                },
+                {
+                  id: 'close',
+                  key: 'close',
+                  renderIcon: Close,
+                  label: 'Close',
+                  iconDescription: 'Close',
+                  onClick: () => {
+                    setMultiSelection(multiSelection.filter((item_id) => item_id !== item.id));
+                  }
+                }
+              ]
+              } 
+              rightAlign={true}
+              containerWidth={800}
+              style={{marginRight: "2.5rem", marginLeft: "2.5rem", marginTop: "1rem"}}
+            />)}
+            
             {item.signedUrl&&(renderFile(item) || <Loading active={!transcriptContent} withOverlay={true} />)}
             {item.id&&(!item?.signedUrl)&&(
               <ReactDropzone data={true} content={content} setContent={setContent} multiSelection={multiSelection} setMultiSelection={setMultiSelection} renderTreeFiles={renderTree} items={items} item={item} path={pathExternal} />
@@ -381,7 +412,7 @@ const AddSelectSidebar = ({
         </Accordion>
       ) : (
         <div className={`${blockClass}-body`} style={{width: "100%"}}>
-          <ReactDropzone data={false} path={pathExternal} />
+          {openAIEditor?aiEditorComponent:<ReactDropzone data={false} path={pathExternal} />}
         </div>
       )}
     </div>

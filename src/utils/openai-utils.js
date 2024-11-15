@@ -21,7 +21,7 @@ const bucketName = 'kalkinso.com';
 /**
  * Generate narration audio using OpenAI's Text-to-Speech API.
  */
-export const generateNarrationAudio = async (text) => {
+export const generateNarrationAudio = async (text, filePath) => {
   const OPENAI_API_KEY = process.env.REACT_APP_OPENAI_API_KEY;
   if (!OPENAI_API_KEY) throw new Error('OpenAI API key is missing');
 
@@ -35,18 +35,38 @@ export const generateNarrationAudio = async (text) => {
   const response = await axios.post('https://api.openai.com/v1/audio/speech', payload, {
     headers: {
       'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    }
+      'Content-Type': 'application/json'
+    },
+    responseType: 'blob' // Ensures the response is a Blob for the audio file
   });
 
-  const audio = response.data;
-  
+  // Convert blob to a file-like object
+  const audioBlob = response.data;
+  const audioFile = new File([audioBlob], filePath.replace(/\..+/g,".mp3").split('/').slice(-1)[0], { type: 'audio/mpeg' });
 
-  return await audio.arrayBuffer();
+  // Prepare the S3 upload
+  const uploadParams = {
+    Bucket: bucketName,
+    Key: filePath.replace(/\..+/g,".mp3"),
+    Body: audioFile,
+    ContentType: 'audio/mpeg'
+  };
+
+  // Upload the audio to S3
+  await s3.upload(uploadParams).promise();
+
+  const signedUrl = await s3.getSignedUrlPromise('getObject', {
+    Bucket: bucketName,
+    Key: filePath.replace(/\..+/g,".mp3"),
+    Expires: 3600 // 1 hour
+  });
+
+  return signedUrl;
 };
 
-export const convertOpenAIResponseToCustomFormat = (openAIResponse) => {
-    const { text, segments } = openAIResponse;
+export const convertOpenAIResponseToCustomFormat = (openAIResponseSegment, openAIResponseWord) => {
+    const { text, segments } = openAIResponseSegment;
+    const { words } = openAIResponseWord;
     const blocks = [];
     const entityMap = {};
     let entityKeyCounter = 0;
@@ -73,8 +93,8 @@ export const convertOpenAIResponseToCustomFormat = (openAIResponse) => {
   
       wordsArray.forEach((word, index) => {
         const wordData = {
-          start: segment.start + offset, // Adjust this if actual word timings are needed
-          end: segment.start + offset + ((segment.end-segment.start)/wordsArray.length), // Simulate word end time based on length
+          start: words[entityKeyCounter]?.start, // Adjust this if actual word timings are needed
+          end: words[entityKeyCounter]?.end, // Simulate word end time based on length
           confidence: 1, // Placeholder; use actual confidence if available
           word: word,
           punct: word, // Assuming punctuation is already part of the word
@@ -177,10 +197,16 @@ export const createSpeech = async ({model, input, voice, file_path}) => {
 };
 
 export const convertToMp3 = async (file) => {
+
+  if (!ffmpeg.loaded) {
+    console.log('Loading FFmpeg...');
+    await ffmpeg.load();
+    console.log('FFmpeg loaded successfully.');
+  }
   
-  ffmpeg.FS('writeFile', 'input.mp4', await file.arrayBuffer());
-  await ffmpeg.run('-i', 'input.mp4', 'output.mp3');
-  const data = ffmpeg.FS('readFile', 'output.mp3');
+  ffmpeg.writeFile('input.mp4', await file.arrayBuffer());
+  await ffmpeg.exec(['-i', 'input.mp4', 'output.mp3']);
+  const data = ffmpeg.readFile('output.mp3'); 
 
   // Convert the resulting Uint8Array to a Blob
   return new Blob([data.buffer], { type: 'audio/mp3' });
@@ -204,7 +230,8 @@ export const convertSpeechToText = async ({ audioFile, file_path, mp4=false }) =
     formData.append('file', audioFile, 'audio.mp3'); // Replace 'audio.mp3' with the actual file
     formData.append('model', 'whisper-1'); // Replace with the model name you want to use
     formData.append('response_format', 'verbose_json');
-    formData.append('timestamp_granularities', ['segment']);
+    formData.append('timestamp_granularities[]', 'segment');
+    formData.append('timestamp_granularities[]', 'word');
   
     try {
       const response = await axios.post('https://api.openai.com/v1/audio/transcriptions', formData, {
@@ -215,7 +242,7 @@ export const convertSpeechToText = async ({ audioFile, file_path, mp4=false }) =
       });
   
       
-      const transcript_editor_format = convertOpenAIResponseToCustomFormat(response.data);
+      const transcript_editor_format = convertOpenAIResponseToCustomFormat(response.data, response.data);
   
       // Prepare the S3 upload
       const uploadParams = {
@@ -452,15 +479,16 @@ export const fetchVideosFromPexels = async (params) => {
   const { query, orientation='landscape', size='HD', page = 1, per_page = 5 } = params;
 
   const url = `https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&orientation=${orientation}&size=${size}&page=${page}&per_page=${per_page}`;
+  
 
-  const response = await axios.get(url, {
+  const response = await (await fetch(url, {
     headers: {
-      'Authorization': PEXELS_API_KEY,
+      'Authorization': PEXELS_API_KEY
     }
-  });
+  })).json();
 
   // Extract the HD video URLs
-  return response.data.videos.map(video => video.video_files.find(file => file.quality === 'hd')?.link);
+  return response.videos.map(video => video.video_files.find(file => file.quality === 'hd')?.link);
 };
 
 
@@ -472,7 +500,22 @@ export const downloadVideo = async (url, index) => {
   if (!response.ok) {
     throw new Error('Failed to download video');
   }
-  return await response.arrayBuffer();
+  // Save the video to a s3 bucket as temporary storage
+  const videoBlob = await response.blob();
+  const videoFile = new File([videoBlob], `video_${index}.mp4`, { type: 'video/mp4' });
+  const uploadParams = {
+    Bucket: 'kalkinso.com',
+    Key: `videos-pexel/video_${index}_${url.split('/').slice(-1)[0]}`,
+    Body: videoFile,
+    ContentType: 'video/mp4'
+  };
+  await s3.upload(uploadParams).promise();
+  // Return signed URL for the video
+  return await s3.getSignedUrlPromise('getObject', {
+    Bucket: 'kalkinso.com',
+    Key: `videos-pexel/video_${index}_${url.split('/').slice(-1)[0]}`,
+    Expires: 3600 // 1 hour
+  });
 };
 
 
@@ -480,24 +523,36 @@ export const downloadVideo = async (url, index) => {
  * Merge multiple video files into one using ffmpeg.wasm.
  */
 export const mergeVideos = async (videoPaths) => {
-
   const outputVideo = 'final_video.mp4';
 
-  // Load videos into ffmpeg FS
-  for (let i = 0; i < videoPaths.length; i++) {
-    const fileData = await (await fetch(videoPaths[i])).blob();
-    ffmpeg.FS('writeFile', `input_${i}.mp4`, fileData);
+  // Ensure FFmpeg is loaded
+  if (!ffmpeg.loaded) {
+    console.log('Loading FFmpeg...');
+    await ffmpeg.load();
+    console.log('FFmpeg loaded successfully.');
   }
 
-  // Create a text file listing all input videos
+  // Load videos into ffmpeg's virtual file system (FS)
+  for (let i = 0; i < videoPaths.length; i++) {
+    const fileData = await (await fetch(videoPaths[i])).blob();
+    await ffmpeg.writeFile(`input_${i}.mp4`, await fileData.arrayBuffer());
+  }
+
+  // Create a text file listing all input videos for concatenation
   const fileList = videoPaths.map((_, i) => `file 'input_${i}.mp4'`).join('\n');
-  ffmpeg.FS('writeFile', 'input.txt', new TextEncoder().encode(fileList));
+  console.log("fileList: ",fileList);
+  await ffmpeg.writeFile('input.txt', new TextEncoder().encode(fileList));
 
-  // Merge videos using ffmpeg
-  await ffmpeg.run('-f', 'concat', '-safe', '0', '-i', 'input.txt', '-c', 'copy', outputVideo);
+  // Merge the videos using FFmpeg
+  await ffmpeg.exec(['-f', 'concat', '-safe', '0', '-i', 'input.txt', '-c', 'copy', outputVideo]);
 
-  const data = ffmpeg.FS('readFile', outputVideo);
-  return new Blob([data.buffer], { type: 'video/mp4' });
+  // Read the merged video from FFmpeg's virtual file system
+  const data = await ffmpeg.readFile(outputVideo);
+
+  // Convert the output into a File object
+  const file = new File([data.buffer], 'merged_video.mp4', { type: 'video/mp4' });
+
+  return file;
 };
 
 /**
@@ -512,7 +567,12 @@ export const uploadVideoToS3 = async (videoBlob, filePath) => {
   };
 
   await s3.upload(uploadParams).promise();
-  return `https://${uploadParams.Bucket}.s3.amazonaws.com/${filePath}`;
+  const signedUrl = await s3.getSignedUrlPromise('getObject', {
+    Bucket: 'kalkinso.com',
+    Key: filePath,
+    Expires: 3600 // 1 hour
+  });
+  return signedUrl;
 };
 
 /**
@@ -523,20 +583,22 @@ export const mergeVideoWithAudio = async (videoPath, audioPath) => {
   const outputVideo = 'final_video_with_audio.mp4';
 
   // Load video and audio files into ffmpeg FS
-  ffmpeg.FS('writeFile', 'input.mp4', await (await fetch(videoPath)).blob());
-  ffmpeg.FS('writeFile', 'narration.mp3', await (await fetch(audioPath)).blob());
+  ffmpeg.writeFile('input.mp4', await (await fetch(videoPath)).arrayBuffer());
+  ffmpeg.writeFile('narration.mp3', await (await fetch(audioPath)).arrayBuffer());
 
   // Merge the video with the narration audio
-  await ffmpeg.run(
+  await ffmpeg.exec(
+    [
     '-i', 'input.mp4',
     '-i', 'narration.mp3',
     '-c:v', 'copy',
     '-c:a', 'aac',
     '-shortest',
     outputVideo
+    ]
   );
 
-  const data = ffmpeg.FS('readFile', outputVideo);
+  const data = ffmpeg.readFile(outputVideo);
   return new Blob([data.buffer], { type: 'video/mp4' });
 };
 
@@ -545,7 +607,7 @@ export const mergeVideoWithAudio = async (videoPath, audioPath) => {
  */
 export const createTextToVideo = async (text, filePath) => {
   try {
-    const audioPath = await generateNarrationAudio(text);
+    let audioPath = await generateNarrationAudio(text, filePath);
 
     // Step 1: Generate search queries
     const queries = await generateSearchQueries(text, {
@@ -569,8 +631,10 @@ export const createTextToVideo = async (text, filePath) => {
     // Step 3: Download videos
     const videoPaths = [];
     for (let i = 0; i < videoUrls.length; i++) {
-      const path = await downloadVideo(videoUrls[i], i);
-      videoPaths.push(path);
+      if(videoUrls[i]){
+        const path = await downloadVideo(videoUrls[i], i);
+        videoPaths.push(path);
+      }
     }
 
     // Step 4: Merge downloaded videos into one

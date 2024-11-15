@@ -4,7 +4,16 @@ import { setAlert } from './alert'
 import * as actionTypes from './types'
 import setAuthToken from '../utils/setAuthToken'
 import { getCurrentProfile } from './profile'
+import { getIpInfo } from '../utils/utils'
 
+
+export const saveUserDeviceInfo = () => async (dispatch) => {
+	const deviceInfo = await getIpInfo()
+	dispatch({
+		type: actionTypes.SAVE_USER_DEVICE_INFO,
+		payload: deviceInfo,
+	})
+}
 
 export const keepAlive = () => async (dispatch) => {
 	try {
@@ -59,6 +68,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 export const register = ({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, confirm_password, user_role }) => async (dispatch) => {
 	// console.log('register is clicked!')
 	setAuthToken(null)
+	dispatch(saveUserDeviceInfo())
 	const config = {
 		headers: {
 			'Content-Type': 'application/json',
@@ -92,6 +102,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 }
 
 export const login = (email, password) => async (dispatch) => {
+	dispatch(saveUserDeviceInfo())
 	const config = {
 		headers: {
 			'Content-Type': 'application/json',

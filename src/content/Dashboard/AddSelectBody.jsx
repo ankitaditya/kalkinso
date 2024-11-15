@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { ButtonSet, Grid, IconButton, Tag } from '@carbon/react';
+import { ButtonSet, Grid, IconButton, SideNav, Tag } from '@carbon/react';
 import { Tearsheet, TearsheetNarrow } from '@carbon/ibm-products';
 import { NotFoundEmptyState } from '@carbon/ibm-products';
 import AddSelectSidebar from './AddSelectSidebar';
@@ -197,6 +197,7 @@ const AddSelectBody = forwardRef(
     const dispatch = useDispatch();
     const showBreadsCrumbs = setShowBreadsCrumbs();
     const { file_context } = useSelector((state)=>state.task.kanban);
+    const [ openAIEditor, setOpenAIEditor ] = useState(null);
     const contextMenuItemTemplate = (item) => {
       return (
         <div className="p-d-flex p-ai-center p-jc-between" style={{ width: '250px', margin:"0.5rem", cursor:"pointer" }}>
@@ -206,24 +207,65 @@ const AddSelectBody = forwardRef(
       );
     }
     const contextMenuItems = [
-      { label: 'Add', template: contextMenuItemTemplate, 
-      items: [
-          { label: 'File', command: (e)=>{
-              dispatch(save('kalkinso.com', file_context.slice(-1)[0].id+'New Document.txt', ''));
-              dispatch(addFile(file_context.slice(-1)[0].id+'New Document.txt'));
-          },template: contextMenuItemTemplate, icon: <Document /> },
-          { label: 'Folder', command: (e)=>{
-              alert("Folder clicked");
-          },template: contextMenuItemTemplate, icon: <Folder /> }
-      ],
-      icon: <Add /> },
-      { label: 'Copy', command: (e)=>{
-          alert("Copy clicked");
-      },template: contextMenuItemTemplate, icon: <Copy /> },
-      { label: 'Delete', command: (e)=>{
-        alert("Delete clicked");
-    },template: contextMenuItemTemplate, icon: <TrashCan /> }
-  ];
+      {
+        label: 'Add',
+        template: contextMenuItemTemplate,
+        icon: <Add />,
+        items: [
+          {
+            label: 'Video',
+            command: () => {
+              const newId = file_context.slice(-1)[0].id + 'New Document.mp4';
+              dispatch(save('kalkinso.com', newId, '', true));
+              setOpenAIEditor({ id: newId, type: 'Video' });
+            },
+            disabled: true,
+            template: contextMenuItemTemplate,
+            icon: <Document />
+          },
+          {
+            label: 'Image',
+            command: () => {
+              const newId = file_context.slice(-1)[0].id + 'New Document.jpeg';
+              dispatch(save('kalkinso.com', newId, '', true));
+              setOpenAIEditor({ id: newId, type: 'Image' });
+            },
+            disabled: true,
+            template: contextMenuItemTemplate,
+            icon: <Document />
+          },
+          {
+            label: 'Text',
+            command: () => {
+              const newId = file_context.slice(-1)[0].id + 'New Document.txt';
+              dispatch(save('kalkinso.com', newId, '', true));
+              setOpenAIEditor({ id: newId, type: 'Text' });
+            },
+            template: contextMenuItemTemplate,
+            icon: <Document />
+          },
+          {
+            label: 'JavaScript',
+            command: () => {
+              const newId = file_context.slice(-1)[0].id + 'New Document.js';
+              dispatch(save('kalkinso.com', newId, '', true));
+              setOpenAIEditor({ id: newId, type: 'JavaScript' });
+            },
+            template: contextMenuItemTemplate,
+            icon: <Document />
+          }
+        ]
+      },
+      {
+        label: 'Delete',
+        command: () => {
+          alert('Delete clicked');
+        },
+        template: contextMenuItemTemplate,
+        icon: <TrashCan />
+      }
+    ];
+    
     const showSort = (searchTerm || globalFiltersApplied) && hasResults;
     const showTags = setShowTags();
     const initialMenuItems = Array.from(contextMenuItems);
@@ -259,6 +301,8 @@ const AddSelectBody = forwardRef(
       displayMetalPanel,
       illustrationTheme,
       influencerTitle,
+      openAIEditor,
+      setOpenAIEditor,
       items: useNormalizedItems ? normalizedItems : items?.entries,
       metaPanelTitle,
       modifiers: items?.modifiers,
@@ -277,11 +321,13 @@ const AddSelectBody = forwardRef(
       
     // main content
     const body = normalizedItems&&(
+      <>
       <Grid style={{padding: '0px'}}>
         <Column sm={2} md={3} lg={3} xlg={3} style={{margin:'0px', marginRight:"1rem"}}>
         <ContextMenu model={contextMenuItems.slice(0,-1)} ref={cm} breakpoint="767px" />
         <ContextMenu model={deleteMenuItems} ref={cm2} breakpoint="767px" />
-        <div id="add-select" className={`${blockClass}__header`}>
+        <SideNav expanded={true} isChildOfHeader={true} aria-label="Side navigation" style={{zIndex:0, minWidth:"20vw"}}>
+        <div id="add-select" className={`${blockClass}__header`} style={{marginTop:"2rem", marginLeft:"1rem", marginRight: "1rem"}}>
         <AddSelectFilter
             inputLabel={globalSearchLabel}
             inputPlaceholder={globalSearchPlaceholder}
@@ -376,11 +422,13 @@ const AddSelectBody = forwardRef(
             )}
           </div>
         )}
+        </SideNav>
         </Column>
         <Column sm={2} md={5} lg={13} xlg={13} style={{margin:"0px", marginLeft:"1rem"}}>
             <AddSelectSidebar {...sidebarProps} />
         </Column>
       </Grid>
+      </>
     );
 
     // if (multi) {

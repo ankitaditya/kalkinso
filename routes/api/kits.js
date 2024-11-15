@@ -101,7 +101,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
             icon: 'Folder',
             children: {
                 sortBy: ['title','value'],
-                filterBy: 'fileType',
+                filterBy: ['fileType'],
                 entries: filesList,
             },
         }]};
@@ -189,7 +189,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
         icon: 'Folder',
         children: {
             sortBy: ['title','value'],
-            filterBy: 'fileType',
+            filterBy: ['fileType'],
             entries: filesList,
         },
     }]};

@@ -5,6 +5,7 @@ import { setLoading } from './auth';
 import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
 import { cache, generateSignedUrl } from '../utils/redux-cache';
+import { setAlert } from './alert';
 
 AWS.config.update({ 
     region: "ap-south-1",
@@ -101,7 +102,7 @@ export const deleteFile = (bucketName="kalkinso.com", Prefix='', isTask=false) =
         // console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
-            payload: { msg: err.response.statusText, status: err.response.status },
+            payload: { msg: err.response?.statusText, status: err.response.status },
         });
     }
   };
@@ -142,7 +143,7 @@ export const renameFile = (payload) => async (dispatch) => {
         // console.log(err);
         return dispatch({
             type: actionTypes.TASK_ERROR,
-            payload: { msg: err.response.statusText, status: err.response.status },
+            payload: { msg: err.response?.statusText, status: err.response?.status },
         });
     }
 }
@@ -163,28 +164,20 @@ export const addFile = (id) => async (dispatch) => {
             },
         },
     });
+    dispatch(setAlert('File Added!', 'success'));
 };
 
-export const save = (bucketName="kalkinso.com", Prefix='', content=null) => async (dispatch) => {
+export const save = (bucketName="kalkinso.com", Prefix='', content=null, newFile=false) => async (dispatch) => {
     if (!bucketName){
-        dispatch({
-            type: actionTypes.TASK_ERROR,
-            payload: { msg: "Bucket Name not found!", status: 404 },
-        })
+        dispatch(setAlert('Bucket Name not found!', 'error'));
         return;
     }
     if (!Prefix){
-        dispatch({
-            type: actionTypes.TASK_ERROR,
-            payload: { msg: "Prefix not found!", status: 404 },
-        })
+        dispatch(setAlert('File Path not found!', 'error'));
         return;
     }
     if (!content){
-        dispatch({
-            type: actionTypes.TASK_ERROR,
-            payload: { msg: "Content not found!", status: 404 },
-        })
+        dispatch(setAlert('No content to save!', 'error'));
     }
     const s3 = new S3({
         params: { Bucket: 'kalkinso.com' },
@@ -198,21 +191,22 @@ export const save = (bucketName="kalkinso.com", Prefix='', content=null) => asyn
     try {
         const res = await s3.putObject(params).promise();
         const signedUrl = await generateSignedUrl('kalkinso.com', Prefix);
-        dispatch({
-            type: actionTypes.RENAME_FILE,
-            payload: {
-                file_id: Prefix,
-                new_file_id: Prefix,
-                signedUrl: signedUrl,
-            },
-        });
+        if(newFile){
+            dispatch(addFile(Prefix));
+        } else {
+            dispatch({
+                type: actionTypes.RENAME_FILE,
+                payload: {
+                    file_id: Prefix,
+                    new_file_id: Prefix,
+                    signedUrl: signedUrl,
+                },
+            });
+        }
         dispatch(setLoading(false));
     } catch (err) {
-        // console.log(err);
-        dispatch({
-            type: actionTypes.TASK_ERROR,
-            payload: { msg: err.response.statusText, status: err.response.status },
-        });
+        console.log(err);
+        dispatch(setAlert('File not saved!', 'error'));
         dispatch(setLoading(false));
     }
   };

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import UIShell from './content/UIShell/UIShell';
 import './App.scss';
+import { getIpInfo } from './utils/utils';
 
 class App extends Component {
   componentDidMount() {

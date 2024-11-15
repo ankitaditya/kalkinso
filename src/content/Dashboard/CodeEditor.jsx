@@ -2,8 +2,12 @@ import React, { useRef, useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import { Toggle } from '@carbon/react';
+import { DynamicUI } from './DynamicUI';
+import { OptionsTile, pkg } from '@carbon/ibm-products';
 
-const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) => {
+pkg.component.OptionsTile = true;
+
+const CodeEditor = ({file,setContent,setIsChanged,item_id, pathExternal, onKeyDown,...rest}) => {
   const editorRef = useRef(null);
   const modelConfig = {
     "abap": {"language":"abap"},
@@ -65,9 +69,11 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
     "default": {"language":"plaintext"}
 }
   const [code, setCode] = useState('');
+  const [ toggleValue, setToggleValue ] = useState(false);
   const [editorComponent, setEditorComponent] = useState(<></>);
+
   useEffect(() => {
-    if(file){
+    if(file&&!toggleValue){
       file.map((fileObj)=>{
         const ext = fileObj.filename.split('.').pop();
         axios.get(fileObj.value).then((res)=>{
@@ -80,17 +86,9 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
                 margin: "auto",
               }}
             >
-              <Toggle 
-                style={{float:"right"}} 
-                labelText="Label" 
-                labelA="Editor" 
-                labelB="AI" 
-                defaultToggled 
-                id="toggle-1" 
-                onToggle={(e) => console.log(e)}
-              />
+              <OptionsTile title={"AI Editor"} onToggle={(value) => setToggleValue(value)} enabled={toggleValue} locked={false} />
             <Editor
-              height="90vh"
+              height="70vh"
               width="96%"
               defaultLanguage={modelConfig[ext]?.language || modelConfig.default.language}
               defaultValue={typeof res.data==='string'?res.data:JSON.stringify(res.data,null,2)}
@@ -115,8 +113,21 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, onKeyDown,...rest}) =
         }).catch((err)=>{console.log(err)});
         return {filename:fileObj.filename, value: fileObj.value, ...modelConfig[ext] || modelConfig.default}
       })
+    } else {
+      setEditorComponent(
+        <div
+          style={{
+            width: "96%",
+            height: "90vh",
+            margin: "auto",
+          }}
+        >
+          <OptionsTile title={"AI Editor"} onToggle={(value) => setToggleValue(value)} enabled={toggleValue} locked={false} />
+          <DynamicUI item_id={Object.values(pathExternal)[0].id} />
+        </div>
+      );
     }
-  }, [file]);
+  }, [file, toggleValue]);
 
     return editorComponent
 };

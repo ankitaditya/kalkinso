@@ -4,6 +4,7 @@ const intialState = {
 	token: localStorage.getItem('token'),
 	isAuthenticated: false,
 	loading: false,
+	deviceInfo: null,
 	user: {
 		"first_name": "John",
 		"last_name": "Doe",
@@ -34,6 +35,11 @@ export default function authReducer(state = intialState, action) {
 				...action.payload,
 				isAuthenticated: true,
 				loading: false,
+			}
+		case actionTypes.SAVE_USER_DEVICE_INFO:
+			return {
+				...state,
+				deviceInfo: action.payload
 			}
 		case actionTypes.LOGIN_SUCCESS:
 			localStorage.setItem('token', action.payload.token)
