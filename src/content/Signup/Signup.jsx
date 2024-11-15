@@ -443,9 +443,21 @@ const SignUp = (props) => {
         }}
       >
         <CreateFullPageStep
-          title="Select your path!"
-          subtitle="You can choose from the following paths, based on your interest."
-          description="If you are not sure, you can always choose explore and we will help you find your path."
+          title="Select Your Path"
+          subtitle="Choose the path that aligns with your interests."
+          description={
+            <>
+              If you're unsure, you can select the&nbsp;
+              <strong>"Explore"</strong> option, and we'll guide you through the available options to help you make an informed decision. By continuing, you confirm that you have read and agree to our&nbsp;
+              <a href="https://www.kalkinso.com/#/privacy-policy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a> 
+              &nbsp;and&nbsp;
+              <a href="https://www.kalkinso.com/#/terms-n-conditions" target="_blank" rel="noopener noreferrer">
+                Terms and Conditions
+              </a>.
+            </>
+          }
           onNext={() => {
             return new Promise((resolve, reject) => {
               setTimeout(() => {
@@ -529,9 +541,19 @@ const SignUp = (props) => {
         </CreateFullPageStep>
         <CreateFullPageStep
           title="Personal Details"
-          subtitle="One or more partitions make up a topic. A partition is an ordered list
-        of messages."
-          description=""
+          subtitle="Fill out the form below to get started."
+          description={
+            <>
+              Before submitting, please confirm that you have read and agree to our&nbsp;
+              <a href="https://www.kalkinso.com/#/privacy-policy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a> 
+              &nbsp;and&nbsp;
+              <a href="https://www.kalkinso.com/#/terms-n-conditions" target="_blank" rel="noopener noreferrer">
+                Terms and Conditions
+              </a>. We ensure that your personal data will be securely handled to protect your privacy.
+            </>
+          }          
           onNext={() => {
             return new Promise((resolve, reject) => {
               setTimeout(() => {
@@ -818,8 +840,20 @@ const SignUp = (props) => {
 
         <CreateFullPageStep
           title="Payment Details"
-          subtitle="This is how many copies of a topic will be made for high availability"
-          description="The partitions of each topic can be replicated across a configurable number of brokers."
+          subtitle="Please provide your payment information to proceed."
+          description={
+            <>
+              Your payment details are required to complete this transaction. By proceeding, you confirm that you have read and agree to our&nbsp;
+              <a href="https://www.kalkinso.com/#/privacy-policy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a> 
+              &nbsp;and&nbsp;
+              <a href="https://www.kalkinso.com/#/terms-n-conditions" target="_blank" rel="noopener noreferrer">
+                Terms and Conditions
+              </a>. 
+              Your payment data will be securely processed in accordance with these policies to ensure your privacy and security.
+            </>
+          }
           disableSubmit={
             isInvalid.upi ||
             isInvalid.upi === null ||
