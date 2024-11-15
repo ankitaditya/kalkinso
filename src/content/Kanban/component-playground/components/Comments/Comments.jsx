@@ -43,10 +43,11 @@ const CommentPage = ({data, setData}) => {
     };
 
     const handleAttachmentChange = (e) => {
+        console.log('attachment: ', e.target.files[0]);
         setAttachment(e.target.files[0]);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
         if (newComment || newReply) {
             const newEntry = newComment ?{
                 user_id: user?._id, 
@@ -120,11 +121,12 @@ const CommentPage = ({data, setData}) => {
     };
 
     const AttachmentThumbNail = ({attachment}) => {
-        if (attachment.endsWith('.jpg') || attachment.endsWith('.png')) {
+        console.log('attachment: ', attachment.blob);
+        if (attachment.endsWith('.jpg') || attachment.endsWith('.png') || attachment.endsWith('.jpeg')) {
             return <Image src={attachment} style={{ margin: '10px' }} />;
         } else {
             return (
-                <Image src="https://via.placeholder.com/100?text=File" style={{ margin: '10px' }} />
+                <img src="https://via.placeholder.com/100?text=File" style={{ margin: '10px' }} />
             );
         }
     };
@@ -172,8 +174,8 @@ const CommentPage = ({data, setData}) => {
                         />
                         <Input
                             type="file"
-                            onChange={handleAttachmentChange}
                             style={{ marginBottom: '-10px' }}
+                            onChange={(e) => e?.target?.files?.length>0&&handleAttachmentChange(e)}
                         />
                         <ButtonGroup style={{float: "right"}}>
                             <Button onClick={()=>{ handleReply(null); setNewReply(""); }} secondary>Cancel</Button>
@@ -188,7 +190,7 @@ const CommentPage = ({data, setData}) => {
 
     return (
         <Container fluid={true}>
-            <Form reply onSubmit={handleSubmit}>
+            <Form reply onSubmit={(e)=>handleSubmit(e)}>
                 <FormTextArea
                     placeholder={'Write a comment...'}
                     value={newComment}
@@ -196,10 +198,8 @@ const CommentPage = ({data, setData}) => {
                 />
                 <Input
                     type="file"
-                    iconPosition='left'
-                    icon='file'
-                    onChange={handleAttachmentChange}
-                    style={{ marginBottom: '10px' }}
+                    style={{ marginBottom: '-10px' }}
+                    onChange={(e) => e?.target?.files?.length>0&&handleAttachmentChange(e)}
                 />
                 <Button style={{float:"right"}} icon="send" secondary />
             </Form>
