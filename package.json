@@ -115,7 +115,7 @@
   "scripts": {
     "start:dev": "export NODE_OPTIONS=--max_old_space_size=4096 && react-scripts start",
     "start": "node server/server.js",
-    "build": "export NODE_OPTIONS=--max_old_space_size=4096 && react-scripts build",
+    "build": "export NODE_OPTIONS=--max_old_space_size=4096 && export GENERATE_SOURCEMAP=false && react-scripts build",
     "test": "react-scripts test"
   },
   "eslintConfig": {
