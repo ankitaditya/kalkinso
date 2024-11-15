@@ -11,7 +11,7 @@ module.exports = function (req, res, next) {
 	}
 
 	try {
-		const decoded = jwt.verify(token, 'my-jwt-secret')
+		const decoded = jwt.verify(token, process.env.REACT_APP_JWT_SECRET)
 		req.user = decoded.user
 		next()
 	} catch (err) {

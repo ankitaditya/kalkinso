@@ -1,2 +1,5 @@
 import Login from "./Login";
-export default Login;
+import PasswordReset from "./PasswordReset";
+import VerifyOtp from "./OtpVerify";
+
+export { Login, PasswordReset, VerifyOtp };

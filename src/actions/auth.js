@@ -42,7 +42,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 	if (token) {
 		setAuthToken(token)
 	}
-	if (localStorage.token) {
+	if (!token&&localStorage.token) {
 		setAuthToken(localStorage.token)
 	}
 	try {
@@ -190,6 +190,54 @@ export const sendVerification = ({email=null, mobile=null, adhar=null, upi=null,
 	}
 }
 
+export const sendVerificationLogin = ({email=null, mobile=null, adhar=null, upi=null, consent='Y'}) => async (dispatch) => {
+	const config = {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	}
+	let bodyJson = {}
+	let verifyType = ''
+	if (email === null && mobile === null && adhar === null && upi === null) {
+		dispatch(setAlert('Please provide a valid email or mobile or adhar or upi', 'error'))
+		return
+	} else if (email){
+		bodyJson = { email }
+		verifyType = 'email'
+	} else if (mobile){
+		bodyJson = { mobile }
+		verifyType = 'mobile'
+	} else if (adhar){
+		bodyJson = { adhar:adhar.replace(/\s+/g, ''), consent }
+		verifyType = 'adhar'
+	} else if (upi){
+		bodyJson = { upi, consent }
+		verifyType = 'upi'
+	}
+	const body = JSON.stringify(bodyJson)
+	try {
+		const res = await axios.post(`/api/auth/send-login-${verifyType}-verification`, body, config)
+		dispatch({
+			type: actionTypes.OTP_VERIFICATION,
+			payload: {[verifyType]:res.data},
+		})
+		dispatch(setOpenOtpModal(true))
+		if (res?.data?.data?.data?.message||res?.data?.sid){
+			setTimeout(() => dispatch(setAlert(`${res?.data?.data?.data?.message||res?.data?.message||"Successfully sent OTP "}!`, res?.data?.data?.data?.message?.includes('Invalid')?'error':'success')), 1000)
+			dispatch(setLoading(false))
+		} else {
+			setTimeout(() => dispatch(setAlert(`Error sending request!`, 'error')), 1000)
+			// window.location.href = `${window.location.origin}/#/unknown-error`
+		}
+		return true;
+	} catch (err) {
+		dispatch(setAlert("User not found!", 'error'))
+		dispatch(setLoading(false));
+		window.location.href = `${window.location.origin}/#/login`
+		window.location.reload()
+	}
+}
+
 export const verifyUpi = ({upi=null, name=null}) => async (dispatch) => {
 	const config = {
 		headers: {
@@ -276,6 +324,66 @@ export const verifyOtp = ({email=null, mobile=null, adhar=null, upi=null, otp=nu
 	}
 }
 
+export const otpLogin = ({email=null, mobile=null, adhar=null, upi=null, otp=null}) => async (dispatch) => {
+	const config = {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	}
+	let bodyJson = {}
+	let verifyType = ''
+	if (email === null && mobile === null && adhar === null && upi === null) {
+		dispatch(setAlert('Please provide a valid OTP', 'error'))
+		return
+	} else if (email){
+		bodyJson = { email:email.replace(/\s+/g, ''), otp}
+		verifyType = 'email'
+	} else if (mobile){
+		bodyJson = { mobile:mobile.replace(/\s+/g, ''), otp}
+		verifyType = 'mobile'
+	} else if (adhar){
+		bodyJson = { reference_id:adhar.toString(), otp}
+		verifyType = 'adhar'
+	} else if (upi){
+		bodyJson = { reference_id:upi.toString(), otp}
+		verifyType = 'upi'
+	}
+	const body = JSON.stringify(bodyJson)
+
+	try {
+		const res = await axios.post(`/api/auth/verify-login-${verifyType}-otp`, body, config);
+		dispatch({
+			type: actionTypes.OTP_VERIFICATION,
+			payload: {[verifyType]:res.data},
+		});
+		if(res.data?.token){
+			dispatch(loadUser({token: res.data.token}));
+			dispatch(setAlert("Successfully Logged In!", 'success'));
+			setTimeout(() => {
+				window.location.href = `${window.location.origin}/#/home/create`;
+				dispatch(setLoading(false));
+			}, 1000);
+		}
+		// console.log("THIS IS VERIFY OTP: ",mobile,otp,verifyType,bodyJson)
+		if (res?.data?.data?.data?.message||res?.data?.message){
+			setTimeout(() => dispatch(setAlert(`${res?.data?.data?.data?.message||res?.data?.message||"OTP Verified "}!`, res?.data?.data?.data?.message?.includes('Invalid')?'error':'success')), 1000)
+			if (!res?.data?.data?.data?.message?.includes('Invalid')) {
+				dispatch(setVerified({[verifyType]:true}));
+			}
+		} else {
+			setTimeout(() => dispatch(setAlert(`Error sending request!`, 'error')), 1000)
+			setLoading(false);
+			// window.location.href = `${window.location.origin}/#/unknown-error`
+		}
+	} catch (err) {
+		const errors = err?.msg;
+		if (errors) {
+			errors.forEach((error) => dispatch(setAlert(error.msg, 'error')));
+		}
+		dispatch(setLoading(false));
+	}
+}
+
 export const setVerified = (verifyObj) => async (dispatch) => {
 	dispatch({
 	  type: actionTypes.SET_VERIFIED,
@@ -296,4 +404,30 @@ export const setLoading = (loading) => async (dispatch) => {
 		type: actionTypes.SET_LOADING,
 		payload: loading,
 	})
+}
+
+export const reset = (password, password2) => async (dispatch) => {
+	const config = {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	}
+	const body = JSON.stringify({ password, password2 })
+	try {
+		const res = await axios.post('/api/users/reset-password', body, config)
+		dispatch({
+			type: actionTypes.RESET_SUCCESS,
+			payload: res.data,
+		})
+		dispatch(setAlert('Password Reset Successfully!', 'success'))
+		window.location.href = `${window.location.origin}/#/login`
+	} catch (err) {
+		const errors = err.response.data
+		if (errors) {
+			errors.forEach((error) => dispatch(setAlert(error.msg, 'error')))
+		}
+		dispatch({
+			type: actionTypes.RESET_FAIL,
+		})
+	}
 }

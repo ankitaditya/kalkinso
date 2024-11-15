@@ -67,7 +67,7 @@ router.get('/keep-alive', auth, async (req, res) => {
 		let jwt_result = {}
 		jwt.sign(
 			payload,
-			'my-jwt-secret',
+			process.env.REACT_APP_JWT_SECRET,
 			{ expiresIn: '4 hours' },
 			async (err, token) => {
 				if (err) {
@@ -131,7 +131,7 @@ router.post(
 			let jwt_result = {}
 			jwt.sign(
 				payload,
-				'my-jwt-secret',
+				process.env.REACT_APP_JWT_SECRET,
 				{ expiresIn: '4 hours' },
 				async (err, token) => {
 					if (err) {
@@ -221,7 +221,7 @@ router.post(
 			let jwt_result = {}
 			jwt.sign(
 				payload,
-				'my-jwt-secret',
+				process.env.REACT_APP_JWT_SECRET,
 				{ expiresIn: '4 hours' },
 				async (err, token) => {
 					if (err) {
@@ -321,7 +321,7 @@ router.post(
 			}
 			jwt.sign(
 				payload,
-				'my-jwt-secret',
+				process.env.REACT_APP_JWT_SECRET,
 				{ expiresIn: '5 days' },
 				(err, token) => {
 					if (err) {
@@ -360,6 +360,30 @@ router.post('/send-email-verification', async (req, res) => {
 	  res.status(500).json({ success: false, error: error.message });
 	}
   });
+
+  router.post('/send-login-email-verification', async (req, res) => {
+	const { email } = req.body;
+	
+	try {
+	  // Using Twilio Verify service to generate OTP
+	  const user = await User.findOne({email:email})
+		if (!user) {
+			return res
+				.status(404)
+				.json({ errors: [{ msg: 'User not found!' }] })
+
+		}
+	  const verification = await twilioClient.verify.v2
+		.services(verifyServiceSid)
+		.verifications
+		.create({ to: email, channel: 'email' });
+  
+	  res.json({ success: true, sid: verification.sid });
+	  return true
+	} catch (error) {
+	  res.status(500).json({ success: false, error: error.message });
+	}
+  });
   
 router.post('/verify-email-otp', async (req, res) => {
 	const { email, otp } = req.body;
@@ -373,6 +397,54 @@ router.post('/verify-email-otp', async (req, res) => {
   
 	  if (verificationCheck.status === 'approved') {
 		res.json({ success: true, message: "OTP validated successfully!" });
+		return true
+	  } else {
+		res.status(400).json({ success: false, error: "Invalid OTP" });
+	  }
+	} catch (error) {
+	  res.status(500).json({ success: false, error: error.message });
+	}
+  });
+
+  router.post('/verify-login-email-otp', async (req, res) => {
+	const { email, otp } = req.body;
+	
+	try {
+	  // Verify the OTP using Twilio Verify service
+	  const verificationCheck = await twilioClient.verify.v2
+		.services(verifyServiceSid)
+		.verificationChecks
+		.create({ to: email, code:otp });
+		
+	  if (verificationCheck.status === 'approved') {
+		const user = await User.findOne({email:email});
+		if (!user) {
+			return res
+				.status(403)
+				.json({ errors: [{ msg: 'Unauthorized Access!' }] })
+		}
+		const payload = {
+			user: {
+				id: user._id,
+			},
+		}
+		let jwt_result = {}
+		const token = jwt.sign(
+			payload,
+			process.env.REACT_APP_JWT_SECRET,
+			{ expiresIn: '4 hours' },
+		)
+		if (!user.sessions) {
+			user.sessions = []
+		}
+		jwt_result['token'] = token
+		user.sessions.push(jwt_result)
+		await User.findOneAndUpdate(
+			{ email: email },
+			{ $set: user },
+			{ new: true }
+		)
+		res.json({ success: true, message: "OTP validated successfully!", token: token });
 		return true
 	  } else {
 		res.status(400).json({ success: false, error: "Invalid OTP" });
@@ -406,7 +478,31 @@ router.post('/send-mobile-verification', async (req, res) => {
 	}
   });
 
-router.post('/verify-mobile-otp', async (req, res) => {
+  router.post('/send-login-mobile-verification', async (req, res) => {
+	const { mobile } = req.body;
+	
+	try {
+	  // Using Twilio Verify service to generate OTP
+	  const user = await User.findOne({mobile:mobile})
+		if (!user) {
+			return res
+				.status(404)
+				.json({ errors: [{ msg: 'User not found!' }] })
+
+		}
+	  const verification = await twilioClient.verify.v2
+		.services(verifyServiceSid)
+		.verifications
+		.create({ to: mobile, channel: 'sms' });
+  
+	  res.json({ success: true, sid: verification.sid });
+	  return true
+	} catch (error) {
+	  res.status(500).json({ success: false, error: error.message });
+	}
+  });
+
+  router.post('/verify-mobile-otp', async (req, res) => {
 	const { mobile, otp } = req.body;
 	
 	try {
@@ -418,6 +514,54 @@ router.post('/verify-mobile-otp', async (req, res) => {
   
 	  if (verificationCheck.status === 'approved') {
 		res.json({ success: true, message: "OTP validated successfully!" });
+		return true
+	  } else {
+		res.status(400).json({ success: false, error: "Invalid OTP" });
+	  }
+	} catch (error) {
+	  res.status(500).json({ success: false, error: error.message });
+	}
+  });
+
+  router.post('/verify-login-mobile-otp', async (req, res) => {
+	const { mobile, otp } = req.body;
+	
+	try {
+	  // Verify the OTP using Twilio Verify service
+	  const verificationCheck = await twilioClient.verify.v2
+		.services(verifyServiceSid)
+		.verificationChecks
+		.create({ to: mobile, code:otp });
+  
+	  if (verificationCheck.status === 'approved') {
+		const user = await User.findOne({mobile:mobile});
+		if (!user) {
+			return res
+				.status(403)
+				.json({ errors: [{ msg: 'Unauthorized Access!' }] })
+		}
+		const payload = {
+			user: {
+				id: user._id,
+			},
+		}
+		let jwt_result = {}
+		const token = jwt.sign(
+			payload,
+			process.env.REACT_APP_JWT_SECRET,
+			{ expiresIn: '4 hours' },
+		)
+		if (!user.sessions) {
+			user.sessions = []
+		}
+		jwt_result['token'] = token
+		user.sessions.push(jwt_result)
+		await User.findOneAndUpdate(
+			{ mobile: mobile },
+			{ $set: user },
+			{ new: true }
+		)
+		res.json({ success: true, message: "OTP validated successfully!", token: token });
 		return true
 	  } else {
 		res.status(400).json({ success: false, error: "Invalid OTP" });

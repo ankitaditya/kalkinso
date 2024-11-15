@@ -23,7 +23,7 @@ app.use(cors(
 ))
 const authVerify = (token) => {
   try {
-		const decoded = jwt.verify(token, 'my-jwt-secret')
+		const decoded = jwt.verify(token, process.env.REACT_APP_JWT_SECRET)
     console.log(token)
 		return true
 	} catch (err) {

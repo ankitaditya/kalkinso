@@ -13,7 +13,7 @@ import {
 import { LogoFacebook, LogoLinkedin, LogoGithub } from '@carbon/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser, login, setLoading } from '../../actions/auth';
-import { ButtonGroup, ButtonOr, Button as SemanticButton, Form as SemanticForm } from 'semantic-ui-react';
+import { ButtonGroup, ButtonOr, Divider, Button as SemanticButton, Form as SemanticForm } from 'semantic-ui-react';
 // import './Login.css';  // Custom styling
 
 const Login = () => {
@@ -65,6 +65,14 @@ const Login = () => {
                   Register
                 </SemanticButton>
               </ButtonGroup>
+            </SemanticForm>
+            <Divider style={{margin:"15px", marginBottom:"25px", paddingTop:"25px", paddingBottom:"25px"}}>
+                Or login with
+            </Divider>
+            <SemanticForm className='login-form-main' onSubmit={handleSubmit} style={{margin:"15px"}}>
+                <SemanticButton className="submit-button form-item" href='/#/login/otp' primary>
+                  OTP Login
+                </SemanticButton>
             </SemanticForm>
           </Column>
           {/* <Column md={8} lg={16} className="login-container">

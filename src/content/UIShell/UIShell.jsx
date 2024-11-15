@@ -27,7 +27,7 @@ import {
     FolderOpen,
     Folder
 } from '@carbon/react/icons';
-import { Route, Routes, HashRouter } from 'react-router-dom';
+import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
 import { NotificationsPanel,  } from '@carbon/ibm-products';
 import { sampleData } from './sampleData';
 
@@ -36,7 +36,7 @@ import LandingPage from '../LandingPage';
 import NotFound from '../../components/NotFound';
 import ContactPage from "../ContactPage";
 import SearchPage from "../SearchPage";
-import Login from "../Login";
+import { Login, PasswordReset, VerifyOtp } from "../Login";
 import SignUp from "../Signup";
 // import Kanban from "../Kanban";
 import ChatScreen from "../ChatScreen/ChatScreen";
@@ -177,7 +177,14 @@ class UIShell extends React.Component {
                             <Route path="Search" element={<SearchPage />} />
                             <Route path="privacy-policy" element={<PrivacyPolicy />} />
                             <Route path="terms-n-conditions" element={<TermsNConditions />} />
-                            <Route path="Login" element={<Login />} />
+                            <Route path="Login">
+                                <Route path="" element={<VerifyOtp />} />
+                                {/* <Route path="otp" element={<Login />} /> */}
+                            </Route>
+                            <Route path="reset-password">
+                                <Route path="" element={<Navigate to="/" />} />
+                                <Route path=":token" element={<PasswordReset />} />
+                            </Route>
                             <Route path="Register" element={<SignUp />} />
                             <Route path="home">
                                 <Route path="" element={<PrivateRoute Component={DashboardScreen} />} />
@@ -191,7 +198,7 @@ class UIShell extends React.Component {
                             <Route path="ankit.see" element={
                                     <Resume />
                                 } />
-                            <Route path="*" element={<PrivateRoute Component={NotFound} />} />
+                            <Route path="*" element={<Navigate to="/" />} />
                         </Routes>
                     </Content>
                     </Theme>

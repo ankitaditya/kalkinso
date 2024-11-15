@@ -109,7 +109,7 @@ router.post(
 			}
 			jwt.sign(
 				payload,
-				'my-jwt-secret',
+				process.env.REACT_APP_JWT_SECRET,
 				{ expiresIn: "2000" },
 				(err, token) => {
 					if (err) {
@@ -131,6 +131,51 @@ router.post(
 			} else{
 				res.status(500).json([{ msg: err.message }])
 			}
+		}
+	}
+)
+
+router.post(
+	'/reset-password',
+	auth,
+	[
+		body(
+			'password',
+			'Please enter a password with 8 or more characters'
+		).isLength({ min: 8 }),
+		body(
+			'password2',
+			'Please enter a password with 8 or more characters'
+		).isLength({ min: 8 }),
+	],
+	async (req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() })
+		}
+
+		const { password, password2 } = req.body
+
+		if (password !== password2) {
+			return res
+				.status(400)
+				.json([{ msg: 'Passwords do not match' }])
+		}
+
+		try {
+			const user = await User.findById(req.user.id);
+			if (!user) {
+				return res
+					.status(400)
+					.json([{ msg: 'User not found' }])
+			}
+			const salt = await bcrypt.genSalt(10)
+			user.password = await bcrypt.hash(password, salt)
+			await user.save()
+			res.json({ msg: 'Password updated successfully' })
+		} catch (err) {
+			console.error(err.message)
+			res.status(500).json([{ msg: err.message }])
 		}
 	}
 )
@@ -241,7 +286,7 @@ router.post(
 			}
 			jwt.sign(
 				payload,
-				'my-jwt-secret',
+				process.env.REACT_APP_JWT_SECRET,
 				{ expiresIn: "4 hours" },
 				(err, token) => {
 					if (err) {
