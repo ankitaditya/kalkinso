@@ -199,9 +199,9 @@ export const createSpeech = async ({model, input, voice, file_path}) => {
 export const convertToMp3 = async (file) => {
 
   if (!ffmpeg.loaded) {
-    console.log('Loading FFmpeg...');
+    // console.log('Loading FFmpeg...');
     await ffmpeg.load();
-    console.log('FFmpeg loaded successfully.');
+    // console.log('FFmpeg loaded successfully.');
   }
   
   ffmpeg.writeFile('input.mp4', await file.arrayBuffer());
@@ -527,9 +527,9 @@ export const mergeVideos = async (videoPaths) => {
 
   // Ensure FFmpeg is loaded
   if (!ffmpeg.loaded) {
-    console.log('Loading FFmpeg...');
+    // console.log('Loading FFmpeg...');
     await ffmpeg.load();
-    console.log('FFmpeg loaded successfully.');
+    // console.log('FFmpeg loaded successfully.');
   }
 
   // Load videos into ffmpeg's virtual file system (FS)
@@ -540,7 +540,6 @@ export const mergeVideos = async (videoPaths) => {
 
   // Create a text file listing all input videos for concatenation
   const fileList = videoPaths.map((_, i) => `file 'input_${i}.mp4'`).join('\n');
-  console.log("fileList: ",fileList);
   await ffmpeg.writeFile('input.txt', new TextEncoder().encode(fileList));
 
   // Merge the videos using FFmpeg

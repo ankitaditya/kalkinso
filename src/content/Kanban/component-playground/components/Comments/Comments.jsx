@@ -30,9 +30,9 @@ const CommentPage = ({data, setData}) => {
     const [replyingTo, setReplyingTo] = useState(null);
     const { user }  = useSelector((state) => state.auth);
 
-    useEffect(() => {
-        console.log('comments: ', data);
-    }, [data]);
+    // useEffect(() => {
+    //     console.log('comments: ', data);
+    // }, [data]);
 
     const handleCommentChange = (e) => {
         setNewComment(e.target.value);
@@ -43,7 +43,7 @@ const CommentPage = ({data, setData}) => {
     };
 
     const handleAttachmentChange = (e) => {
-        console.log('attachment: ', e.target.files[0]);
+        // console.log('attachment: ', e.target.files[0]);
         setAttachment(e.target.files[0]);
     };
 
@@ -121,7 +121,7 @@ const CommentPage = ({data, setData}) => {
     };
 
     const AttachmentThumbNail = ({attachment}) => {
-        console.log('attachment: ', attachment.blob);
+        // console.log('attachment: ', attachment.blob);
         if (attachment.endsWith('.jpg') || attachment.endsWith('.png') || attachment.endsWith('.jpeg')) {
             return <Image src={attachment} style={{ margin: '10px' }} />;
         } else {
