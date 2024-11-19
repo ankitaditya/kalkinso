@@ -8,6 +8,7 @@ import { addFile, getSelectedTasks, save } from '../../../actions/kits';
 import { useDispatch, useSelector } from 'react-redux';
 import AWS from 'aws-sdk';
 import S3 from 'aws-sdk/clients/s3';
+import axios from 'axios';
 import { getObjectById } from '../../../utils/redux-cache';
 import { setAlert } from '../../../actions/alert';
 
@@ -91,24 +92,49 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
           return { code: 'file-exists', message: 'File already exists'}
         }
         const params = {
-            Bucket: 'kalkinso.com',
-            Key: `${file.path[0]==='/'?item.id.slice(0,-1):item.id}${file.path}`,
-            Body: file,
-            ContentType: file.type,
-          };
-          s3.upload(params, (err, data) => {
-            if (err) {
-              // console.log(err);
-            }
-            if (data) {
-              dispatch(addFile(`${file.path[0]==='/'?item.id.slice(0,-1):item.id}${file.path}`));
-              setTimeout(() => {
-                if(profile?.user){
-                  setActiveState(false);
-                }
-              }, 1000);
-            }
-          }).on('httpUploadProgress', updateProgress);
+          Bucket: 'kalkinso.com',
+          Key: `${file.path[0] === '/' ? item.id.slice(0, -1) : item.id}${file.path}`,
+          ContentType: file.type,
+      };
+      
+      // Step 1: Generate pre-signed URL
+      s3.getSignedUrlPromise('putObject', params)
+          .then((url) => {
+              // Step 2: Upload the file using Axios
+              axios
+                  .put(url, file, {
+                      headers: {
+                          'Content-Type': file.type,
+                      },
+                      onUploadProgress: (progressEvent) => {
+                          const progress = (progressEvent.loaded / progressEvent.total) * 100;
+                          updateProgress(progressEvent); // Use the provided updateProgress function for UI updates
+                      },
+                  })
+                  .then((response) => {
+                      if (response.status === 200) {
+                          // Dispatch action to add the uploaded file
+                          dispatch(
+                              addFile(`${file.path[0] === '/' ? item.id.slice(0, -1) : item.id}${file.path}`)
+                          );
+      
+                          // Delay state update for UX
+                          setTimeout(() => {
+                              if (profile?.user) {
+                                  setActiveState(false);
+                              }
+                          }, 1000);
+                      } else {
+                          console.error('File upload failed with response:', response);
+                      }
+                  })
+                  .catch((error) => {
+                      console.error('Error during file upload:', error);
+                  });
+          })
+          .catch((error) => {
+              console.error('Error generating pre-signed URL:', error);
+          });
     });
   };
 

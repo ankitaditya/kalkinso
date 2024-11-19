@@ -212,28 +212,28 @@ const AddSelectBody = forwardRef(
         template: contextMenuItemTemplate,
         icon: <Add />,
         items: [
-          {
-            label: 'Video',
-            command: () => {
-              const newId = file_context.slice(-1)[0].id + 'New Document.mp4';
-              dispatch(save('kalkinso.com', newId, '', true));
-              setOpenAIEditor({ id: newId, type: 'Video' });
-            },
-            disabled: true,
-            template: contextMenuItemTemplate,
-            icon: <Document />
-          },
-          {
-            label: 'Image',
-            command: () => {
-              const newId = file_context.slice(-1)[0].id + 'New Document.jpeg';
-              dispatch(save('kalkinso.com', newId, '', true));
-              setOpenAIEditor({ id: newId, type: 'Image' });
-            },
-            disabled: true,
-            template: contextMenuItemTemplate,
-            icon: <Document />
-          },
+          // {
+          //   label: 'Video',
+          //   command: () => {
+          //     const newId = file_context.slice(-1)[0].id + 'New Document.mp4';
+          //     dispatch(save('kalkinso.com', newId, '', true));
+          //     setOpenAIEditor({ id: newId, type: 'Video' });
+          //   },
+          //   disabled: true,
+          //   template: contextMenuItemTemplate,
+          //   icon: <Document />
+          // },
+          // {
+          //   label: 'Image',
+          //   command: () => {
+          //     const newId = file_context.slice(-1)[0].id + 'New Document.jpeg';
+          //     dispatch(save('kalkinso.com', newId, '', true));
+          //     setOpenAIEditor({ id: newId, type: 'Image' });
+          //   },
+          //   disabled: true,
+          //   template: contextMenuItemTemplate,
+          //   icon: <Document />
+          // },
           {
             label: 'Text',
             command: () => {

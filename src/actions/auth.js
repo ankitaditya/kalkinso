@@ -7,6 +7,7 @@ import { getCurrentProfile } from './profile'
 import { getIpInfo } from '../utils/utils'
 
 
+
 export const saveUserDeviceInfo = () => async (dispatch) => {
 	const deviceInfo = await getIpInfo()
 	dispatch({

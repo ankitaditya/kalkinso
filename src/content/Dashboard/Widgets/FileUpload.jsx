@@ -1,5 +1,6 @@
 
 import React, { useRef, useState } from 'react';
+import axios from 'axios';
 import { Toast } from 'primereact/toast';
 import { FileUpload } from 'primereact/fileupload';
 import { ProgressBar } from 'primereact/progressbar';
@@ -11,6 +12,8 @@ import S3 from 'aws-sdk/clients/s3';
 import 'primeflex/primeflex.css';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primeicons/primeicons.css";
+import { useDispatch } from 'react-redux';
+import { setAlert } from '../../../actions/alert';
 
 AWS.config.update({ 
     region: "ap-south-1",
@@ -25,8 +28,10 @@ export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}
         params: { Bucket: 'kalkinso.com' },
         region: 'ap-south-1',
     });
+
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
+    const dispatch = useDispatch();
     const fileUploadRef = useRef(null);
     
     const onTemplateSelect = (e) => {
@@ -48,24 +53,35 @@ export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}
             const params = {
                 Bucket: bucket,
                 Key: `${item.id}${file.name}`,
-                Body: file,
-                ContentType: file.type,
+                Exprires: 60
               };
-            //   console.log(params)
-              s3.upload(params, (err, data) => {
-                if (err) {
-                //   console.log(err);
-                  toast.current.show({ severity: 'error', summary: 'Error', detail: 'File Upload Error' });
-                }
-                if (data) {
-                //   console.log(data);
-                  toast.current.show({ severity: 'success', summary: 'Success', detail: 'File Uploaded' });
-                }
-              }).on('httpUploadProgress', (progress) => {
-                const value = progress.loaded / progress.total * file.size;
-                setTotalSize(_totalSize-value);
-                toast.current.show({ severity: 'info', summary: 'Info', detail: `${value}% Uploaded` });
-              });
+              s3.getSignedUrlPromise('putObject', params)
+                        .then((url) => {
+                            // Upload the file using Axios
+                            axios
+                                .put(url, file, {
+                                    headers: {
+                                        'Content-Type': file.type,
+                                    },
+                                    onUploadProgress: (progressEvent) => {
+                                        const progress = (progressEvent.loaded / progressEvent.total) * 100;
+                                        setTotalSize(_totalSize-progress);
+                                    },
+                                })
+                                .then((response) => {
+                                    if (response.status === 200) {
+                                        dispatch(setAlert('File Uploaded!', 'success'));
+                                    } else {
+                                        dispatch(setAlert('File Not Uploaded!', 'error'));
+                                    }
+                                })
+                                .catch((error) => {
+                                    dispatch(setAlert('File Upload Failed!', 'error'));
+                                });
+                        })
+                        .catch((error) => {
+                            dispatch(setAlert('Failed to generate upload URL!', 'error'));
+                        });
         });
         e.files = []
         setTotalSize(_totalSize>0?_totalSize:0);
