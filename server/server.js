@@ -64,7 +64,7 @@ app.use('/api/tasks', require('../routes/api/tasks'))
 app.use('/api/kalkiai', require('../routes/api/kalkiai'))
 app.use('/api/kits', require('../routes/api/kits'))
 app.use('/api/how-to', require('../routes/api/how_to'))
-app.use('/api/config', require('../routes/api/config'))
+// app.use('/api/config', require('../routes/api/config'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));
