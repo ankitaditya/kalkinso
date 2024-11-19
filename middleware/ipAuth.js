@@ -7,57 +7,58 @@ module.exports = function (req, res, next) {
 	if (req.headers['sec-fetch-site'] !== 'same-origin') {
         res.status(404).send(`
           <!DOCTYPE html>
-          <html lang="en">
-          <head>
+            <html lang="en">
+            <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>404 Not Found</title>
+            <title>404 - Page Not Found</title>
+            <link rel="stylesheet" href="https://unpkg.com/@carbon/ibm-products/css/index.min.css">
+            <link rel="stylesheet" href="https://unpkg.com/@carbon/ibm-products/css/themes/white/index.min.css">
             <style>
-              body {
-                margin: 0;
-                font-family: Arial, sans-serif;
+                body {
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 height: 100vh;
-                background: #f8f9fa;
-                color: #333;
-                text-align: center;
-              }
-              .container {
-                max-width: 600px;
-              }
-              h1 {
-                font-size: 6rem;
                 margin: 0;
-                color: #333333;
-              }
-              p {
+                background-color: #f4f4f4;
+                }
+                .container {
+                text-align: center;
+                padding: 2rem;
+                }
+                .container h1 {
+                font-size: 5rem;
+                color: #0043ce;
+                margin-bottom: 1rem;
+                }
+                .container p {
                 font-size: 1.25rem;
-                margin: 10px 0 20px;
-              }
-              a {
+                color: #525252;
+                margin-bottom: 2rem;
+                }
+                .container a {
                 text-decoration: none;
-                color: white;
-                background: #333333;
-                padding: 10px 20px;
-                border-radius: 5px;
                 font-size: 1rem;
-                transition: background 0.3s;
-              }
-              a:hover {
-                background: #161616;
-              }
+                color: #ffffff;
+                background-color: #0043ce;
+                padding: 10px 20px;
+                border-radius: 4px;
+                transition: background-color 0.3s ease-in-out;
+                }
+                .container a:hover {
+                background-color: #002d9c;
+                }
             </style>
-          </head>
-          <body>
+            </head>
+            <body>
             <div class="container">
-              <h1>404</h1>
-              <p>Oops! The page you're looking for doesn't exist.</p>
-              <a href="/">Go Back Home</a>
+                <h1>404</h1>
+                <p>We can’t find the page you’re looking for.</p>
+                <a href="/">Go Back to Home</a>
             </div>
-          </body>
-          </html>
+            </body>
+            </html>
         `);
       } else {
         // Continue with the normal flow
