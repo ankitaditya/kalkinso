@@ -12,6 +12,7 @@ module.exports = function (req, res, next) {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>404 - Page Not Found</title>
+            <link rel="icon" href="/kalkinso-favicon.png"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
             <link rel="stylesheet" href="https://unpkg.com/@carbon/ibm-products/css/index.min.css">
             <link rel="stylesheet" href="https://unpkg.com/@carbon/ibm-products/css/themes/white/index.min.css">
             <style>
