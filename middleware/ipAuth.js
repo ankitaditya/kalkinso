@@ -63,6 +63,5 @@ module.exports = function (req, res, next) {
       } else {
         // Continue with the normal flow
         next();
-      }
-      
+      } 
 }

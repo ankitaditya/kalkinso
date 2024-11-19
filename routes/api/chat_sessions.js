@@ -34,7 +34,7 @@ router.post(
 	}
 )
 
-router.get('/', auth, ipAuth, async (req, res) => {
+router.get('/', ipAuth, auth, async (req, res) => {
 	try {
 		const chat_session = await ChatSession.findOne({user:req.user.id}).sort({ date: -1 })
 		return res.json(chat_session)
@@ -44,7 +44,7 @@ router.get('/', auth, ipAuth, async (req, res) => {
 	}
 })
 
-router.delete('/:id', auth, ipAuth, async (req, res) => {
+router.delete('/:id', ipAuth, auth, async (req, res) => {
 	try {
 		const chat_session = await ChatSession.findById(req.params.id)
 		const user = await User.findById(req.user.id)
@@ -65,7 +65,7 @@ router.delete('/:id', auth, ipAuth, async (req, res) => {
 	}
 })
 
-router.put('/:id', auth, ipAuth, async (req, res) => {
+router.put('/:id', ipAuth, auth, async (req, res) => {
 	try {
 		const chat_session = await ChatSession.findById(req.params.id)
 

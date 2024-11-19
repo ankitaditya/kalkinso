@@ -140,7 +140,7 @@ router.post(
 	}
 )
 
-router.post('/subtasks', auth, ipAuth, async (req, res) => {
+router.post('/subtasks', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
 		const { task_id } = req.body;
@@ -213,7 +213,7 @@ router.get('/search/:search', ipAuth, async (req, res) => {
 	}
 })
 
-router.put('/:id', auth, ipAuth, async (req, res) => {
+router.put('/:id', ipAuth, auth, async (req, res) => {
 	const { taskFields } = req.body
 
 	try {
@@ -258,7 +258,7 @@ router.put('/:id', auth, ipAuth, async (req, res) => {
 	}
 })
 
-router.get('/', auth, ipAuth, async (req, res) => {
+router.get('/', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
 		const tasks = await Task.find({ user: req.user.id })
@@ -323,7 +323,7 @@ const deleteTasks = async (req, res) => {
 		await task.deleteOne()
 }
 
-router.delete('/:id', auth, ipAuth, async (req, res) => {
+router.delete('/:id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to delete task */
 		const response = await deleteTasks(req, res)

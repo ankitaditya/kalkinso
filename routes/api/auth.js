@@ -16,7 +16,7 @@ const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_A
 
 const verifyServiceSid = process.env.TWILIO_SERVICE_SID;
 
-router.get('/', [auth, ipAuth], async (req, res) => {
+router.get('/', ipAuth, auth, async (req, res) => {
 	try {
 		const user = await User.findById(req?.user?.id).select('-password')
 		let user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
@@ -47,7 +47,7 @@ router.get('/', [auth, ipAuth], async (req, res) => {
 	}
 })
 
-router.get('/keep-alive', auth, ipAuth, async (req, res) => {
+router.get('/keep-alive', ipAuth, auth, async (req, res) => {
 	try {
 		let user = await User.findById(req?.user?.id).select('-password')
 		let user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]

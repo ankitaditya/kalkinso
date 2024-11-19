@@ -11,7 +11,7 @@ const ipAuth = require('../../middleware/ipAuth')
 
 const router = express.Router()
 
-router.get('/me', auth, ipAuth, async (req, res) => {
+router.get('/me', ipAuth, auth, async (req, res) => {
 	try {
 		const profile = await Profile.findOne({
 			user: req.user.id,
@@ -88,7 +88,7 @@ router.post(
 )
 
 
-router.delete('/', auth, ipAuth, async (req, res) => {
+router.delete('/', ipAuth, auth, async (req, res) => {
 	try {
 		await ChatSession.deleteMany({ user: req.user.id })
 		await Profile.deleteOne({ user: req.user.id })
