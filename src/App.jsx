@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import UIShell from './content/UIShell/UIShell';
 import './App.scss';
 import { getIpInfo } from './utils/utils';
-// import { env } from './utils/env';
+import { env } from './utils/env';
 
 class App extends Component {
   componentDidMount() {
@@ -10,7 +10,7 @@ class App extends Component {
       e.preventDefault();
     });
 
-    // env();
+    env();
     
     document.addEventListener('keydown', function (e) {
       if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
