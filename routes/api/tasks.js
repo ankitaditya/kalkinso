@@ -5,6 +5,7 @@ const auth = require('../../middleware/auth')
 const Task = require('../../models/Tasks')
 const User = require('../../models/User')
 const AWS = require('aws-sdk')
+const ipAuth = require('../../middleware/ipAuth')
 
 const s3 = new AWS.S3();
 
@@ -12,8 +13,9 @@ const router = express.Router()
 
 router.post(
 	'/',
+	auth,
+	ipAuth,
 	[
-		auth,
 		body('task', 'task is required').not().isEmpty(),
 	],
 	async (req, res) => {
@@ -138,9 +140,7 @@ router.post(
 	}
 )
 
-router.post('/subtasks',[
-	auth
-], async (req, res) => {
+router.post('/subtasks', auth, ipAuth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
 		const { task_id } = req.body;
@@ -165,7 +165,7 @@ router.post('/subtasks',[
 	}
 })
 
-router.get('/search/:search', async (req, res) => {
+router.get('/search/:search', ipAuth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
 		let tasks = await Task.aggregate([
@@ -213,7 +213,7 @@ router.get('/search/:search', async (req, res) => {
 	}
 })
 
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, ipAuth, async (req, res) => {
 	const { taskFields } = req.body
 
 	try {
@@ -258,7 +258,7 @@ router.put('/:id', auth, async (req, res) => {
 	}
 })
 
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, ipAuth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
 		const tasks = await Task.find({ user: req.user.id })
@@ -323,7 +323,7 @@ const deleteTasks = async (req, res) => {
 		await task.deleteOne()
 }
 
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, ipAuth, async (req, res) => {
 	try {
 		/* Write the code to delete task */
 		const response = await deleteTasks(req, res)

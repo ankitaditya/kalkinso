@@ -8,14 +8,15 @@ const { body, validationResult } = require('express-validator')
 const axios = require('axios')
 const auth = require('../../middleware/auth')
 
-const User = require('../../models/User')
+const User = require('../../models/User');
+const ipAuth = require('../../middleware/ipAuth');
 
 const router = express.Router()
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 const verifyServiceSid = process.env.TWILIO_SERVICE_SID;
 
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, ipAuth, async (req, res) => {
 	try {
 		const user = await User.findById(req?.user?.id).select('-password')
 		let user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
@@ -46,7 +47,7 @@ router.get('/', auth, async (req, res) => {
 	}
 })
 
-router.get('/keep-alive', auth, async (req, res) => {
+router.get('/keep-alive', auth, ipAuth, async (req, res) => {
 	try {
 		let user = await User.findById(req?.user?.id).select('-password')
 		let user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
@@ -338,7 +339,7 @@ router.post(
 )
 
 
-router.post('/send-email-verification', async (req, res) => {
+router.post('/send-email-verification', ipAuth, async (req, res) => {
 	const { email } = req.body;
 	
 	try {
@@ -361,7 +362,7 @@ router.post('/send-email-verification', async (req, res) => {
 	}
   });
 
-  router.post('/send-login-email-verification', async (req, res) => {
+  router.post('/send-login-email-verification', ipAuth, async (req, res) => {
 	const { email } = req.body;
 	
 	try {
@@ -385,7 +386,7 @@ router.post('/send-email-verification', async (req, res) => {
 	}
   });
   
-router.post('/verify-email-otp', async (req, res) => {
+router.post('/verify-email-otp', ipAuth, async (req, res) => {
 	const { email, otp } = req.body;
 	
 	try {
@@ -406,7 +407,7 @@ router.post('/verify-email-otp', async (req, res) => {
 	}
   });
 
-  router.post('/verify-login-email-otp', async (req, res) => {
+  router.post('/verify-login-email-otp', ipAuth, async (req, res) => {
 	const { email, otp } = req.body;
 	
 	try {
@@ -455,7 +456,7 @@ router.post('/verify-email-otp', async (req, res) => {
   });
 
 
-router.post('/send-mobile-verification', async (req, res) => {
+router.post('/send-mobile-verification', ipAuth, async (req, res) => {
 	const { mobile } = req.body;
 	
 	try {
@@ -478,7 +479,7 @@ router.post('/send-mobile-verification', async (req, res) => {
 	}
   });
 
-  router.post('/send-login-mobile-verification', async (req, res) => {
+  router.post('/send-login-mobile-verification', ipAuth, async (req, res) => {
 	const { mobile } = req.body;
 	
 	try {
@@ -502,7 +503,7 @@ router.post('/send-mobile-verification', async (req, res) => {
 	}
   });
 
-  router.post('/verify-mobile-otp', async (req, res) => {
+  router.post('/verify-mobile-otp', ipAuth, async (req, res) => {
 	const { mobile, otp } = req.body;
 	
 	try {
@@ -523,7 +524,7 @@ router.post('/send-mobile-verification', async (req, res) => {
 	}
   });
 
-  router.post('/verify-login-mobile-otp', async (req, res) => {
+  router.post('/verify-login-mobile-otp', ipAuth, async (req, res) => {
 	const { mobile, otp } = req.body;
 	
 	try {
@@ -571,7 +572,7 @@ router.post('/send-mobile-verification', async (req, res) => {
 	}
   });
 
-  router.post('/send-adhar-verification', async (req, res) => {
+  router.post('/send-adhar-verification', ipAuth, async (req, res) => {
 	const { adhar, consent } = req.body;
 	
 	try {
@@ -612,7 +613,7 @@ router.post('/send-mobile-verification', async (req, res) => {
 	}
   });
 
-router.post('/verify-adhar-otp', async (req, res) => {
+router.post('/verify-adhar-otp', ipAuth, async (req, res) => {
 	const { reference_id, otp } = req.body;
 	
 	try {
@@ -646,7 +647,7 @@ router.post('/verify-adhar-otp', async (req, res) => {
 	}
   });
 
-  router.post('/verify-upi', async (req, res) => {
+  router.post('/verify-upi', ipAuth, async (req, res) => {
 	const { upi, name } = req.body;
 	
 	try {

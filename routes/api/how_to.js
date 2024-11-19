@@ -9,9 +9,10 @@ const router = express.Router();
 
 // Middleware to check authorization
 const auth = require('../../middleware/auth');
+const ipAuth = require('../../middleware/ipAuth');
 
 // GET all HowTo documents
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, ipAuth, async (req, res) => {
     try {
         const howtos = await HowTo.find();
         res.json(howtos);
@@ -22,7 +23,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // GET search for HowTo documents based on keywords
-router.get('/search', auth, async (req, res) => {
+router.get('/search', auth, ipAuth, async (req, res) => {
     const { query } = req.query; // Assume the query is passed as a URL query parameter
 
     if (!query) {
@@ -50,7 +51,7 @@ router.get('/search', auth, async (req, res) => {
 });
 
 // GET a single HowTo document by ID
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', auth, ipAuth, async (req, res) => {
     try {
         const howto = await HowTo.findById(req.params.id);
         if (!howto) return res.status(404).json({ msg: 'HowTo not found' });
@@ -67,7 +68,9 @@ router.get('/:id', auth, async (req, res) => {
 // POST a new HowTo document
 router.post(
     '/',
-    [ auth,
+    auth,
+    ipAuth,
+    [
       body('title', 'Title is required').not().isEmpty(),
       body('description', 'Description is required').not().isEmpty()
     ],
@@ -102,7 +105,7 @@ router.post(
 );
 
 // PUT update a HowTo document
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, ipAuth, async (req, res) => {
     const { title, description, steps, materials, category, tags, estimatedTime, difficulty } = req.body;
 
     // Build a HowTo object
@@ -134,7 +137,7 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // DELETE a HowTo document
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, ipAuth, async (req, res) => {
     try {
         const howto = await HowTo.findById(req.params.id);
         if (!howto) return res.status(404).json({ msg: 'HowTo not found' });

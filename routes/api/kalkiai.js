@@ -7,13 +7,15 @@ const invoke = require("../../models/LambdaInput");
 const User = require("../../models/User");
 const ChatSession = require("../../models/ChatSession");
 const Tasks = require("../../models/Tasks");
+const ipAuth = require("../../middleware/ipAuth");
 
 const router = express.Router();
 
 router.post(
   "/",
-  [ 
-    auth, 
+  auth,
+  ipAuth,
+  [  
     body("payload", "Payload is required").not().isEmpty()
     ],
   async (req, res) => {

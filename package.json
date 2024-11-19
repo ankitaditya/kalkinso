@@ -6,6 +6,11 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.629.0",
     "@aws-sdk/s3-request-presigner": "^3.629.0",
+    "@babel/cli": "^7.25.9",
+    "@babel/core": "^7.26.0",
+    "@babel/node": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.25.9",
     "@babel/standalone": "^7.26.2",
     "@bbc/react-transcript-editor": "^1.4.4",
     "@blocknote/core": "^0.15.6",
@@ -114,7 +119,7 @@
   },
   "scripts": {
     "start:dev": "export NODE_OPTIONS=--max_old_space_size=4096 && react-scripts start",
-    "start": "node server/server.js",
+    "start": "babel-node server/server.js",
     "build": "export NODE_OPTIONS=--max_old_space_size=4096 && export GENERATE_SOURCEMAP=false && react-scripts build",
     "test": "react-scripts test"
   },

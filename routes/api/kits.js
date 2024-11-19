@@ -8,6 +8,7 @@ const Task = require('../../models/Tasks');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const formidable = require('formidable');
+const ipAuth = require('../../middleware/ipAuth');
 
 const router = express.Router();
 const s3 = new AWS.S3();
@@ -196,7 +197,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
 };
   
 
-router.post('/delete', async (req, res) => {
+router.post('/delete', ipAuth, async (req, res) => {
   try {
     const { bucketName, Prefix, isTask } = req.body;
     const params = {
@@ -226,7 +227,7 @@ router.post('/delete', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', ipAuth, async (req, res) => {
   try {
     const result = await getFolderStructure(req.body.bucketName, req.body.Prefix);
     res.json(result);
@@ -236,7 +237,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.post('/upload', async (req, res) => {
+router.post('/upload', ipAuth, async (req, res) => {
   const form = formidable({ multiples: true });
   form.parse(req, (err, fields, files) => {
       console.log('fields: ', fields);

@@ -12,11 +12,13 @@ const auth = require('../../middleware/auth')
 
 const User = require('../../models/User')
 const Profile = require('../../models/Profile')
+const ipAuth = require('../../middleware/ipAuth')
 
 const router = express.Router()
 
 router.post(
 	'/',
+	ipAuth,
 	[
 		body('first_name', 'Name is required').not().isEmpty(),
 		body('last_name', 'Name is required').not().isEmpty(),
@@ -138,6 +140,7 @@ router.post(
 router.post(
 	'/reset-password',
 	auth,
+	ipAuth,
 	[
 		body(
 			'password',
@@ -183,6 +186,7 @@ router.post(
 router.post(
 	'/organizations/add',
 	auth,
+	ipAuth,
 	[
 		body('org_id', 'Org Id is required').isEmail(),
 		body('ip_address', 'IP ADDRESS is required').not().isEmpty(),
@@ -314,7 +318,7 @@ router.post(
 )
 
 // Email OTP Send API
-router.post('/send-email-otp', async (req, res) => {
+router.post('/send-email-otp', ipAuth, async (req, res) => {
     const { email } = req.body;
     try {
         const otp = generateOTP();
@@ -354,7 +358,7 @@ router.post('/send-email-otp', async (req, res) => {
 });
 
 // Email OTP Verify API
-router.post('/verify-email-otp', async (req, res) => {
+router.post('/verify-email-otp', ipAuth, async (req, res) => {
     const { email, otp } = req.body;
     try {
         // Retrieve the OTP stored in the database

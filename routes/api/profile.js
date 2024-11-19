@@ -7,10 +7,11 @@ const Profile = require('../../models/Profile')
 const User = require('../../models/User')
 const auth = require('../../middleware/auth')
 const ChatSession = require('../../models/ChatSession')
+const ipAuth = require('../../middleware/ipAuth')
 
 const router = express.Router()
 
-router.get('/me', auth, async (req, res) => {
+router.get('/me', auth, ipAuth, async (req, res) => {
 	try {
 		const profile = await Profile.findOne({
 			user: req.user.id,
@@ -30,7 +31,7 @@ router.get('/me', auth, async (req, res) => {
 	}
 })
 
-router.get('/user/:user_id', [auth] , async (req, res) => {
+router.get('/user/:user_id', auth , ipAuth, async (req, res) => {
 	try {
 		const profile = await Profile.findOne({
 			user: req.params.user_id,
@@ -52,9 +53,8 @@ router.get('/user/:user_id', [auth] , async (req, res) => {
 
 router.post(
 	'/',
-	[
-		auth,
-	],
+	auth,
+	ipAuth,
 	async (req, res) => {
 		const errors = validationResult(req)
 		if (!errors.isEmpty()) {
@@ -88,7 +88,7 @@ router.post(
 )
 
 
-router.delete('/', auth, async (req, res) => {
+router.delete('/', auth, ipAuth, async (req, res) => {
 	try {
 		await ChatSession.deleteMany({ user: req.user.id })
 		await Profile.deleteOne({ user: req.user.id })
