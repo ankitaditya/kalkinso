@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import UIShell from './content/UIShell/UIShell';
 import './App.scss';
 import { getIpInfo } from './utils/utils';
+// import { env } from './utils/env';
 
 class App extends Component {
   componentDidMount() {
@@ -9,13 +10,7 @@ class App extends Component {
       e.preventDefault();
     });
 
-    fetch('/api/config').then(res => res.json()).then(data => {
-      if (data) {
-        Object.keys(data).forEach(key => {
-          process.env[key] = data[key];
-        });
-      }
-    });
+    // env();
     
     document.addEventListener('keydown', function (e) {
       if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
