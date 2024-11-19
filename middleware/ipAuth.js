@@ -5,7 +5,7 @@ const helmet = require("helmet");
 
 module.exports = function (req, res, next) {
 	if (req.headers['sec-fetch-site'] !== 'same-origin') {
-        res.status(404).send(`
+        return res.status(404).send(`
           <!DOCTYPE html>
             <html lang="en">
             <head>
