@@ -16,7 +16,7 @@ const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_A
 
 const verifyServiceSid = process.env.TWILIO_SERVICE_SID;
 
-router.get('/', auth, ipAuth, async (req, res) => {
+router.get('/', [auth, ipAuth], async (req, res) => {
 	try {
 		const user = await User.findById(req?.user?.id).select('-password')
 		let user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
