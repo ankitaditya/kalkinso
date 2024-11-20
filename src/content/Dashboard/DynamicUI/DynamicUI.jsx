@@ -68,7 +68,6 @@ const PromptEditor = ({ prompt, setPrompt, handleRunCode, isLoading }) => {
 // -------   Code Preview component --------
 
 const CodePreview = ({ code, setResponse }) => {
-
     return (
         <Editor
                 height="100%"
@@ -168,11 +167,28 @@ const PreviewTabs = ({ content, folderPath ,codePreviewContent, componentPreview
 
 
 
-export default function DynamicUI({item_id}) {
+export default function DynamicUI({item_id, codeFile}) {
     // State hooks for managing prompt, response, and loading status
     const [prompt, setPrompt] = useState('');
     const [response, setResponse] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if(codeFile) {
+            axios.post('/api/auth/get-signed-url', JSON.stringify({
+                params: {Bucket: 'kalkinso.com', Key: codeFile, Expires: 120},
+                operation: 'getObject',
+            }), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then((res)=>{
+                axios.get(res.data.url).then((res)=>{
+                    setResponse(res.data);
+                }).catch((err)=>{console.log(err)});
+            }).catch((err)=>{console.log(err)});
+        }
+    }, []);
 
     /* Template function to format the prompt for OpenAI API
 

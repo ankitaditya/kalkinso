@@ -298,4 +298,16 @@ router.post('/copy', ipAuth, auth, async (req, res) => {
 });
 
 
+router.put('/save', ipAuth, auth, async (req, res) => {
+  try {
+    const { params } = req.body;
+    await s3.putObject(params).promise();
+    res.json({ msg: 'File saved successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+
 module.exports = router

@@ -11,6 +11,8 @@ const auth = require('../../middleware/auth')
 const User = require('../../models/User');
 const ipAuth = require('../../middleware/ipAuth');
 const AWS = require('aws-sdk');
+const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const router = express.Router()
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -680,13 +682,28 @@ router.post('/verify-adhar-otp', ipAuth, async (req, res) => {
 
   router.post('/get-signed-url', ipAuth, auth, async (req, res) => {
 	const { params, operation } = req.body;
+	const client = new S3Client({region:'ap-south-1'});
+	const get_command = new GetObjectCommand({
+		Bucket: params.Bucket,
+		Key: params.Key,
+	});
+	const put_command = new PutObjectCommand({
+		Bucket: params.Bucket,
+		Key: params.Key,
+		Body: params.Body,
+	});
 	try {
-		const s3 = new AWS.S3({
-			accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-			secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-		});
-		const url = s3.getSignedUrl(operation, params);
-		res.json({ url });
+		if(operation==='getObject'){
+			const url = await getSignedUrl(client, get_command, { expiresIn: params.Expires });
+			res.json({ success: true, url });
+			return true
+		} else if(operation==='putObject'){
+			const url = await getSignedUrl(client, put_command, { expiresIn: params.Expires });
+			res.json({ success: true, url });
+			return true
+		} else {
+			res.status(400).json({ success: false, error: "Invalid Operation" });
+		}
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ success: false, error: error.message });

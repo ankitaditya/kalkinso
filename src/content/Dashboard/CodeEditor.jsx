@@ -123,7 +123,7 @@ const CodeEditor = ({file,setContent,setIsChanged,item_id, pathExternal, onKeyDo
           }}
         >
           <OptionsTile title={"AI Editor"} onToggle={(value) => setToggleValue(value)} enabled={toggleValue} locked={false} />
-          <DynamicUI item_id={Object.values(pathExternal)[0].id} />
+          <DynamicUI item_id={Object.values(pathExternal)[0].id} codeFile={item_id} />
         </div>
       );
     }

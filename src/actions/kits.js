@@ -2,18 +2,8 @@ import * as actionTypes from '../actions/types';
 import axios from 'axios';
 import { getTasks, setIsMulti, setOpenTask } from './task';
 import { setLoading } from './auth';
-import AWS from 'aws-sdk';
-import S3 from 'aws-sdk/clients/s3';
 import { cache, generateSignedUrl } from '../utils/redux-cache';
 import { setAlert } from './alert';
-
-AWS.config.update({ 
-    region: "ap-south-1",
-    credentials: {
-      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-    }
-  });
 
 export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') => async (dispatch) => {
     try {
@@ -109,10 +99,6 @@ export const deleteFile = (bucketName="kalkinso.com", Prefix='', isTask=false) =
 
 export const renameFile = (payload) => async (dispatch) => {
     const bucketname = 'kalkinso.com';
-    const s3 = new S3({
-        params: { Bucket: 'kalkinso.com' },
-        region: 'ap-south-1',
-    });
     let file_id = payload.id.split('/');
     let new_file_id = payload.id.split('/');
     new_file_id.splice(-1,1,payload.title);
@@ -184,17 +170,17 @@ export const save = (bucketName="kalkinso.com", Prefix='', content=null, newFile
     if (!content){
         dispatch(setAlert('No content to save!', 'error'));
     }
-    const s3 = new S3({
-        params: { Bucket: 'kalkinso.com' },
-        region: 'ap-south-1',
-    });
-    const params = {
+    const params = JSON.stringify({params:{
         Bucket: bucketName,
         Key: Prefix,
         Body: content,
-    };
+    }});
     try {
-        const res = await s3.putObject(params).promise();
+        const res = await axios.put('/api/kits/save', params, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         const signedUrl = await generateSignedUrl('kalkinso.com', Prefix);
         if(newFile){
             dispatch(addFile(Prefix));
