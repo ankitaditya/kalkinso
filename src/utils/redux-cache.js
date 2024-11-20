@@ -1,26 +1,25 @@
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import axios from 'axios';
 
 // Function to generate a signed URL
 export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600) {
-    const client = new S3Client({
-        region:'ap-south-1',
-        credentials: {
-          accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-        }
-    });
     try {
       // Create a GetObjectCommand with the bucket and object key
-      const command = new GetObjectCommand({
-        Bucket: bucketName,
-        Key: objectKey,
-      });
+      const body = JSON.stringify({
+        params: {
+          Bucket: bucketName,
+          Key: objectKey,
+          Expires: expiresIn,
+        },
+        operation: 'getObject',
+      })
+      const config = {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
   
       // Generate a signed URL with an expiration time
-      const signedUrl = await getSignedUrl(client, command, {
-        expiresIn: expiresIn, // URL expiration time in seconds (default: 1 hour)
-      });
+      const signedUrl = (await axios.post('/api/auth/get-signed-url', body, config)).data.url;
   
       // console.log("Signed URL:", signedUrl);
       return signedUrl;

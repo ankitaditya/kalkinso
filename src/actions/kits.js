@@ -125,10 +125,15 @@ export const renameFile = (payload) => async (dispatch) => {
         CopySource : bucketname+'/'+file_id.join('/'), 
         Key : new_file_id.join('/'),
     };
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
     // console.log(params)
     try {
-        const resp = await s3.copyObject(params).promise();
-        await s3.deleteObject({Bucket: bucketname, Key: file_id.join('/')}).promise();
+        const resp = await axios.post('/api/kits/copy', params, config);
+        dispatch(deleteFile(bucketname, file_id.join('/')));
         const signedUrl = await generateSignedUrl('kalkinso.com', new_file_id.join('/'));
         dispatch(setLoading(false));
         dispatch({

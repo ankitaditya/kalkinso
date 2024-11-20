@@ -345,14 +345,16 @@ give to the component
                 Here is my prompt: ${prompt}`
     }
 
+    const [ componentRenderer, setComponentRenderer ] = useState(<ComponentRenderer code={response} />);
+
     // Function to handle the API call to OpenAI
     const handleRunCode = async () => {
         setIsLoading(true); // Set loading to true while fetching data
 
         try {
-            const result = await axios.post(
-                'https://api.openai.com/v1/chat/completions',
-                {
+            const resp = await axios.post(
+                '/api/kalkiai/completions',
+                JSON.stringify({
                     model: 'gpt-4o',
                     messages: [
                         {
@@ -363,18 +365,17 @@ give to the component
                             "role": "user",
                             "content": promptTemplate(prompt)
                         }
-                    ],
-                },
+                    ]
+                }),
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-                    }
+                    },
                 }
             );
 
             // Update response state with the fetched data
-            setResponse(result.data.choices[0].message.content);
+            setResponse(resp.data.result);
         } catch (error) {
             console.error('Error fetching response from OpenAI:', error);
             setResponse('Error fetching response from OpenAI.');
@@ -382,6 +383,10 @@ give to the component
             setIsLoading(false); // Reset loading status
         }
     };
+
+    useEffect(() => {
+        setComponentRenderer(<ComponentRenderer code={response} />);    
+    }, [response]);
 
     return (
         <div style={{height:"70vh"}}>   
@@ -406,7 +411,7 @@ give to the component
                         content={response}
                         folderPath={item_id}
                         codePreviewContent={<CodePreview code={response} setResponse={setResponse} />}
-                        componentPreviewContent={<ComponentRenderer code={response} />}
+                        componentPreviewContent={componentRenderer}
                     />
                     </div>
                 </SplitterPanel>

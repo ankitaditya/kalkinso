@@ -145,6 +145,8 @@ const AddSelectSidebar = ({
     const { meta, icon, avatar, ...newItem } = item;
     return newItem;
   };
+  
+  const transcriptEditor = multiSelection.map((item_id) => item_id).filter((item_id) => transcriptContent[item_id]).length>0
 
   const sidebarItems = multiSelection.map((selectionId) => {
     if (Array.isArray(items)) {
@@ -236,11 +238,12 @@ const AddSelectSidebar = ({
           />, ...transcriptContent});
           }
     });
-    return false;
+    return null;
   }
 
     if (item.fileType === 'txt' || (item.fileType === 'pdf'&&!item.title.includes("view.pdf"))) {
       // const provider = new WebrtcProvider(item.id, doc); // setup a yjs provider (explained below)
+
       return <div className='word-processor'>
       <BlockNoteEditor 
       // provider={provider} 
@@ -269,6 +272,7 @@ const AddSelectSidebar = ({
     }
     if (item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg' || item.fileType === 'webp') {
       // return <FigmaEditor image_uri={item.signedUrl} title={item.title}  usageStatistics={false} style={{width:"auto", marginTop:"2rem", marginBottom: "2rem"}} />;
+
       return <PhotoEditor image_uri={item.signedUrl} title={item.title} closeImgEditor={()=>{
                   setMultiSelection(multiSelection.filter((item_id)=>item_id!==item.id))
                 }}
@@ -276,6 +280,7 @@ const AddSelectSidebar = ({
               usageStatistics={false} className='page' style={{width:"100%", height:"80vh"}} />;
     }
     if (monacoSupportedFileExtensions.hasOwnProperty(item.fileType)) {
+
       return <CodeEditor 
                 file={files} 
                 setContent={
@@ -289,6 +294,7 @@ const AddSelectSidebar = ({
                 style={{height: "80vh", width: "96%", marginTop:"2rem", marginBottom: "2rem"}} 
               />;
     } else {
+
       return <div className='page'>
               <FileViewer
               style={{height: "80vh", width: "100%", maxWidth:"50vw", marginTop:"2rem", marginBottom: "2rem"}}
@@ -404,7 +410,7 @@ const AddSelectSidebar = ({
             />)}
             
             {item.signedUrl&&renderFile(item)}
-            {item.signedUrl&&(transcriptContent[item.id]||<Loading active={!transcriptContent[item.id]} withOverlay={false} />)}
+            {item.signedUrl&&transcriptEditor&&(transcriptContent[item.id]||<Loading active={!transcriptContent[item.id]} withOverlay={false} />)}
             {item.id&&(!item?.signedUrl)&&(
               <ReactDropzone data={true} content={content} setContent={setContent} multiSelection={multiSelection} setMultiSelection={setMultiSelection} renderTreeFiles={renderTree} items={items} item={item} path={pathExternal} />
             )}

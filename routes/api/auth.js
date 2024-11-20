@@ -678,7 +678,7 @@ router.post('/verify-adhar-otp', ipAuth, async (req, res) => {
 	}
   });
 
-  router.post('/get-signed-url', ipAuth, async (req, res) => {
+  router.post('/get-signed-url', ipAuth, auth, async (req, res) => {
 	const { params, operation } = req.body;
 	try {
 		const s3 = new AWS.S3({

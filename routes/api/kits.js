@@ -281,5 +281,21 @@ router.post('/upload', ipAuth, auth, upload.single('file'), (req, res) => {
   });
 });
 
+router.post('/copy', ipAuth, auth, async (req, res) => {
+  try {
+    const { Bucket, CopySource, Key } = req.body;
+    const copyParams = {
+      Bucket: Bucket,
+      CopySource: CopySource,
+      Key: Key,
+    };
+    await s3.copyObject(copyParams).promise();
+    res.json({ msg: 'File copied successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 module.exports = router

@@ -8,6 +8,7 @@ const User = require("../../models/User");
 const ChatSession = require("../../models/ChatSession");
 const Tasks = require("../../models/Tasks");
 const ipAuth = require("../../middleware/ipAuth");
+const axios = require("axios");
 
 const router = express.Router();
 
@@ -161,6 +162,39 @@ router.post(
       }
       new_session.user = user;
       res.json(new_session);
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({ msg: err.message });
+    }
+  }
+);
+
+router.post(
+  "/completions",
+  ipAuth,
+  auth,
+  [
+    body("model", "Model is required").not().isEmpty(),
+    body("messages", "Prompt is required").not().isEmpty(),
+  ],
+  async (req, res) => {
+    try {
+      const { model, messages } = req.body;
+      const payload = {
+        model: model,
+        messages: messages,
+      };
+      const result = await axios.post("https://api.openai.com/v1/chat/completions", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+        },
+      })
+      if(result?.data?.choices[0]?.message?.content){
+        return res.json({ result: result.data.choices[0].message.content });
+      } else {
+        return res.status(500).json({ result: "Something went wrong" });
+      }
     } catch (err) {
       console.error(err.message);
       return res.status(500).json({ msg: err.message });
