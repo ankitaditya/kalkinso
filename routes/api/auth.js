@@ -10,6 +10,7 @@ const auth = require('../../middleware/auth')
 
 const User = require('../../models/User');
 const ipAuth = require('../../middleware/ipAuth');
+const AWS = require('aws-sdk');
 
 const router = express.Router()
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -674,6 +675,21 @@ router.post('/verify-adhar-otp', ipAuth, async (req, res) => {
 	} catch (error) {
 	  console.log(error)
 	  res.status(500).json({ success: false, error: error.message });
+	}
+  });
+
+  router.post('/get-signed-url', ipAuth, async (req, res) => {
+	const { params, operation } = req.body;
+	try {
+		const s3 = new AWS.S3({
+			accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+			secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+		});
+		const url = s3.getSignedUrl(operation, params);
+		res.json({ url });
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ success: false, error: error.message });
 	}
   });
 

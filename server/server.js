@@ -4,10 +4,13 @@ const path = require('path');
 const helmet = require('helmet')
 const jwt = require('jsonwebtoken')
 var cors = require('cors')
+const EventEmitter = require("events");
 
 const connectDB = require('../config/db')
 
+
 const app = express();
+app.set("eventEmitter", new EventEmitter());
 var allowlist = ['http://localhost', 'https://localhost', 'https://localhost:3000', 'https://kalkinso.com', 'http://kalkinso.com', 'https://www.kalkinso.com', 'http://www.kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
@@ -68,6 +71,26 @@ app.use('/api/how-to', require('../routes/api/how_to'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));
+
+app.get("/progress", (req, res) => {
+  const eventEmitter = req.app.get("eventEmitter");
+
+  const onProgress = (data) => {
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  // Send headers for Server-Sent Events (SSE)
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  eventEmitter.on("uploadProgress", onProgress);
+
+  req.on("close", () => {
+    eventEmitter.removeListener("uploadProgress", onProgress);
+    res.end();
+  });
+});
 
 app.get('/health', function (req, res) {
   res.json({ status: 'UP' });

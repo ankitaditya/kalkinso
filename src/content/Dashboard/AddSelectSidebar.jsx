@@ -140,7 +140,7 @@ const AddSelectSidebar = ({
   const [ aiEditorComponent, setAiEditorComponent ] = useState(<></>);
   const { file_context } = useSelector((state)=>state.task.kanban);
   const { selectedTask } = useSelector((state)=>state.kits);
-  const [transcriptContent, setTranscriptContent] = useState(null);
+  const [transcriptContent, setTranscriptContent] = useState({});
   const getNewItem = (item) => {
     const { meta, icon, avatar, ...newItem } = item;
     return newItem;
@@ -205,13 +205,13 @@ const AddSelectSidebar = ({
 
     if ([ 'mp4', 'webm', 'ogg', 'mov', 'avi', 'flv', 'wmv', 'mkv', 'mpg', 'mpeg', '3gp', '3g2', 'm4v', 'f4v', 'f4p', 'f4a', 'f4b', 'mp3', 'wav', 'm4a' ].includes(item.fileType)) {
       let transcriptRef = getObjectById(selectedTask?.entries[0],item.id.replace(/\..+/g,'.json'))
-      if(!transcriptRef&&!transcriptContent){
+      if(!transcriptRef&&!transcriptContent[item.id]){
         convertSpeechToText({ audioFile: item.signedUrl, file_path: item.id.replace(/\..+/g,'.json') }).then((transcriptData)=>{
           generateSignedUrl('kalkinso.com', item.id.replace(/\..+/g,'.json')).then((signedUrl)=>{
             let transcriptRef = getObjectById(selectedTask?.entries[0],item.id.replace(/\..+/g,'.json'))
             !transcriptRef&&dispatch(addFile(item.id.replace(/\..+/g,'.json')))
           })
-          setTranscriptContent(<TranscriptEditor    
+          setTranscriptContent({[item.id]:<TranscriptEditor    
             mediaUrl={item.signedUrl}
             transcriptData={transcriptData}
             title={item.title}
@@ -219,13 +219,13 @@ const AddSelectSidebar = ({
             isEditable={true}
             spellCheck={true}
             sttJsonType="draftjs"
-          />);
+          />, ...transcriptContent});
         })
       }
-      transcriptRef?.signedUrl&&!transcriptContent&&fetch(transcriptRef.signedUrl).then(res=>res.json()).then((data)=>{
+      transcriptRef?.signedUrl&&!transcriptContent[transcriptRef.id]&&fetch(transcriptRef.signedUrl).then(res=>res.json()).then((data)=>{
           const transcriptDataMain = data;
           if(typeof transcriptDataMain==="object"&&transcriptDataMain.hasOwnProperty("blocks")){
-          setTranscriptContent(<TranscriptEditor    
+          setTranscriptContent({[item.id]:<TranscriptEditor    
             mediaUrl={item.signedUrl}
             transcriptData={transcriptDataMain}
             title={item.title}
@@ -233,10 +233,10 @@ const AddSelectSidebar = ({
             isEditable={true}
             spellCheck={true}
             sttJsonType="draftjs"
-          />);
+          />, ...transcriptContent});
           }
     });
-    return transcriptContent;
+    return false;
   }
 
     if (item.fileType === 'txt' || (item.fileType === 'pdf'&&!item.title.includes("view.pdf"))) {
@@ -403,7 +403,8 @@ const AddSelectSidebar = ({
               style={{marginRight: "2.5rem", marginLeft: "2.5rem", marginTop: "1rem"}}
             />)}
             
-            {item.signedUrl&&(renderFile(item) || <Loading active={!transcriptContent} withOverlay={true} />)}
+            {item.signedUrl&&renderFile(item)}
+            {item.signedUrl&&(transcriptContent[item.id]||<Loading active={!transcriptContent[item.id]} withOverlay={false} />)}
             {item.id&&(!item?.signedUrl)&&(
               <ReactDropzone data={true} content={content} setContent={setContent} multiSelection={multiSelection} setMultiSelection={setMultiSelection} renderTreeFiles={renderTree} items={items} item={item} path={pathExternal} />
             )}

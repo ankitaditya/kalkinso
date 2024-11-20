@@ -7,8 +7,11 @@ const auth = require('../../middleware/auth');
 const Task = require('../../models/Tasks');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const multer = require('multer');
+const fs = require('fs');
 const formidable = require('formidable');
 const ipAuth = require('../../middleware/ipAuth');
+const upload = multer({ dest: 'temp/upload/' });
 
 const router = express.Router();
 const s3 = new AWS.S3();
@@ -128,7 +131,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
     if (folders.length > 0) {
       let tempFolders = folders;
         if(task&&task.subTasks?.length>0){
-          taskFolders = task.subTasks.map(subTask=>{
+          let taskFolders = task.subTasks.map(subTask=>{
             return folders.find(folder=>folder.Prefix.includes(subTask))
           });
           tempFolders = [...folders.filter(folder=>!task.subTasks.includes(folder.Prefix.split('/').filter(Boolean).pop())),...taskFolders];
@@ -237,14 +240,46 @@ router.post('/', ipAuth, async (req, res) => {
   }
 });
 
-router.post('/upload', ipAuth, async (req, res) => {
-  const form = formidable({ multiples: true });
-  form.parse(req, (err, fields, files) => {
-      console.log('fields: ', fields);
-      console.log('files: ', files);
+// Upload API
+router.post('/upload', ipAuth, auth, upload.single('file'), (req, res) => {
+  const file = req.file;
+  const params = JSON.parse(req.body.params);
+
+  if (!file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  const fileStream = fs.createReadStream(file.path);
+
+  const uploadParams = {
+    Bucket: params.Bucket, // Replace with your S3 bucket name
+    Key: params.Key, // File path in S3
+    Body: fileStream,
+    ContentType: file.mimetype,
+  };
+
+  console.log('Uploading file to S3:', uploadParams.Bucket, uploadParams.Key);
+
+  const s3Upload = s3.upload(uploadParams);
+
+  // Track progress and send updates via HTTP response
+  s3Upload.on('httpUploadProgress', (progress) => {
+    const percentage = Math.round((progress.loaded / progress.total) * 100);
+    console.log(`Progress: ${percentage}%`);
+    req.app.get("eventEmitter").emit("httpUploadProgress", [progress]);
   });
-  res.send("Uploaded!")
-})
+
+  s3Upload.send((err, data) => {
+    fs.unlinkSync(file.path); // Delete temp file after upload
+    if (err) {
+      console.error('Upload error:', err);
+      res.status(500).json({ error: 'Failed to upload file' });
+    } else {
+      console.log('Upload complete:', data.Location);
+      res.json({ success: true, url: data.Location });
+    }
+  });
+});
 
 
 module.exports = router

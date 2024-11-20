@@ -6,19 +6,9 @@ import { Close, Download, Upload } from '@carbon/react/icons';
 import { setLoading } from '../../../actions/auth';
 import { addFile, getSelectedTasks, save } from '../../../actions/kits';
 import { useDispatch, useSelector } from 'react-redux';
-import AWS from 'aws-sdk';
-import S3 from 'aws-sdk/clients/s3';
 import axios from 'axios';
 import { getObjectById } from '../../../utils/redux-cache';
 import { setAlert } from '../../../actions/alert';
-
-AWS.config.update({ 
-  region: "ap-south-1",
-  credentials: {
-    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-  }
-});
 
 function renderTree({ nodes, expanded, withIcons = false }) {
     if (!nodes) {
@@ -45,7 +35,7 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
   const validateExistence = (file) => {
     if (entries.length>0&&file.path&&path){
       if (getObjectById(entries[0],`${file.path[0]==='/'?Object.values(path)[0]?.id?.slice(0,-1):Object.values(path)[0]?.id}${file.path}`)){
-        dispatch(setAlert(`File already exists`, 'danger'));
+        dispatch(setAlert(`File already exists`, 'error'));
         return { code: 'file-exists', message: 'File already exists'}
       } else {
         return null
@@ -78,11 +68,23 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
   const updateProgress = (prog) => {
     setProgress(progress?progress+prog.loaded:prog.loaded);
   };
+  useEffect(() => {
+    const eventSource = new EventSource("/progress");
+
+    eventSource.onmessage = (event) => {
+      const progress = (event.loaded / event.total) * 100;
+      updateProgress(progress);
+    };
+    eventSource.onerror = () => {
+      console.error("Error receiving SSE updates");
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [uploadState]);
   const handleUpload = (files, item) => {
-    const s3 = new S3({
-        params: { Bucket: 'kalkinso.com' },
-        region: 'ap-south-1',
-    });
     setUploadState('uploading');
     setProgress(0);
     files.forEach((file) => {
@@ -96,46 +98,45 @@ export const ReactDropzone = ({path, data, content, setContent, multiSelection, 
           Key: `${file.path[0] === '/' ? item.id.slice(0, -1) : item.id}${file.path}`,
           ContentType: file.type,
       };
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('params', JSON.stringify(params));
       
-      // Step 1: Generate pre-signed URL
-      s3.getSignedUrlPromise('putObject', params)
-          .then((url) => {
-              // Step 2: Upload the file using Axios
-              axios
-                  .put(url, file, {
-                      headers: {
-                          'Content-Type': file.type,
-                      },
-                      onUploadProgress: (progressEvent) => {
-                          const progress = (progressEvent.loaded / progressEvent.total) * 100;
-                          updateProgress(progressEvent); // Use the provided updateProgress function for UI updates
-                      },
-                  })
-                  .then((response) => {
-                      if (response.status === 200) {
-                          // Dispatch action to add the uploaded file
-                          dispatch(
-                              addFile(`${file.path[0] === '/' ? item.id.slice(0, -1) : item.id}${file.path}`)
-                          );
-      
-                          // Delay state update for UX
-                          setTimeout(() => {
-                              if (profile?.user) {
-                                  setActiveState(false);
-                              }
-                          }, 1000);
-                      } else {
-                          console.error('File upload failed with response:', response);
-                      }
-                  })
-                  .catch((error) => {
-                      console.error('Error during file upload:', error);
-                  });
-          })
-          .catch((error) => {
-              console.error('Error generating pre-signed URL:', error);
-          });
+      axios.post('/api/kits/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          console.log(progressEvent);
+          const progress = (progressEvent.loaded / progressEvent.total) * 100;
+          updateProgress(progress);
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.success) {
+          dispatch(setAlert('File uploaded!', 'success'));
+          dispatch(
+              addFile(`${file.path[0] === '/' ? item.id.slice(0, -1) : item.id}${file.path}`)
+          );
+          // Delay state update for UX
+          setTimeout(() => {
+              if (profile?.user) {
+                  setActiveState(false);
+              }
+          }, 1000);
+        } 
+        else {
+          dispatch(setAlert('File not uploaded!', 'error'));
+        }
+      })
+      .catch((error) => {
+        dispatch(setAlert('File upload failed!', 'error'));
+      });
     });
+    setUploadState('idle');
+    setProgress(null);
   };
 
   useEffect(() => {

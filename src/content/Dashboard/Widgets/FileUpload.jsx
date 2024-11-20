@@ -7,27 +7,13 @@ import { ProgressBar } from 'primereact/progressbar';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 import { Tag } from 'primereact/tag';
-import AWS from 'aws-sdk';
-import S3 from 'aws-sdk/clients/s3';
 import 'primeflex/primeflex.css';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "primeicons/primeicons.css";
 import { useDispatch } from 'react-redux';
 import { setAlert } from '../../../actions/alert';
 
-AWS.config.update({ 
-    region: "ap-south-1",
-    credentials: {
-      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
-    }
-  });
-
 export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}) {
-    const s3 = new S3({
-        params: { Bucket: 'kalkinso.com' },
-        region: 'ap-south-1',
-    });
 
     const toast = useRef(null);
     const [totalSize, setTotalSize] = useState(0);
@@ -55,11 +41,12 @@ export default function FileUploadWidget({emptyStateTemplate, item, key, bucket}
                 Key: `${item.id}${file.name}`,
                 Exprires: 60
               };
-              s3.getSignedUrlPromise('putObject', params)
-                        .then((url) => {
+              axios.post('/api/auth/get-signed-url', { params, operation: 'putObject' })
+                        .then((res) => {
                             // Upload the file using Axios
+                            console.log(res)
                             axios
-                                .put(url, file, {
+                                .put(res?.data?.url, file, {
                                     headers: {
                                         'Content-Type': file.type,
                                     },
