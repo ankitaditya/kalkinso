@@ -72,7 +72,7 @@ app.use('/api/how-to', require('../routes/api/how_to'))
 
 app.use(express.static(path.join(__dirname, '../build')));
 
-app.get("/progress", (req, res) => {
+app.get("/api/progress", (req, res) => {
   const eventEmitter = req.app.get("eventEmitter");
 
   const onProgress = (data) => {

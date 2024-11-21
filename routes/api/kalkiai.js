@@ -8,9 +8,7 @@ const User = require("../../models/User");
 const ChatSession = require("../../models/ChatSession");
 const Tasks = require("../../models/Tasks");
 const ipAuth = require("../../middleware/ipAuth");
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import AWS from 'aws-sdk';
+const AWS = require('aws-sdk');
 const axios = require("axios");
 
 const router = express.Router();
@@ -216,7 +214,6 @@ router.post(
   ],
   async (req, res) => {
     try {
-      const client = new S3Client({region: 'ap-south-1'});
       const { params, key } = req.body;
       const result = await axios.post("https://api.openai.com/v1/images/generations", params, {
         headers: {
