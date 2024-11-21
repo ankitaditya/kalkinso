@@ -1,14 +1,15 @@
 {
-  "name": "Three.js Editor",
-  "short_name": "Three.js",
-  "start_url": ".",
-  "scope": ".",
-  "display": "standalone",
+  "short_name": "carbon-react-ui",
+  "name": "Carbon React UI",
   "icons": [
     {
-      "src": "./images/icon.png",
-      "type": "image/png",
-      "sizes": "144x144"
+      "src": "kalkinso-favicon.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
     }
-  ]
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
 }
