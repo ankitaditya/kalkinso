@@ -8,9 +8,14 @@ const User = require("../../models/User");
 const ChatSession = require("../../models/ChatSession");
 const Tasks = require("../../models/Tasks");
 const ipAuth = require("../../middleware/ipAuth");
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import AWS from 'aws-sdk';
 const axios = require("axios");
 
 const router = express.Router();
+
+const s3 = new AWS.S3();
 
 router.post(
   "/",
@@ -201,5 +206,46 @@ router.post(
     }
   }
 );
+
+router.post(
+  "/images",
+  ipAuth,
+  auth,
+  [
+    body("params", "Model is required").not().isEmpty(),
+  ],
+  async (req, res) => {
+    try {
+      const client = new S3Client({region: 'ap-south-1'});
+      const { params, key } = req.body;
+      const result = await axios.post("https://api.openai.com/v1/images/generations", params, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+        },
+      })
+      // save the results on s3
+      let images = result.data;
+      if(images?.data.length>0){
+        await images.data.map(async ({revised_prompt, url}, index) => {
+          const image = await axios.get(url, {responseType: 'arraybuffer'});
+          const s3_params = {
+            Bucket: 'kalkinso.com',
+            Key: key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`,
+            Body: image.data,
+            ContentType: 'image/jpeg',
+          };
+          await s3.upload(s3_params).promise();
+        });
+        return res.json({ result: images.data });
+      } else {
+        return res.status(500).json({ result: "Something went wrong" });
+      }
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+)
 
 module.exports = router;

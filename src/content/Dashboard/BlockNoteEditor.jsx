@@ -37,6 +37,7 @@ import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { MathCurve } from "@carbon/react/icons";
 import { handleSaveShortcuts } from "../../utils/redux-cache";
+import { OptionsTile } from "@carbon/ibm-products";
 
 // Initialize Turndown to convert HTML to Markdown if needed
 const turndownService = new TurndownService();
@@ -159,6 +160,7 @@ export default function BlockNoteEditor(
     bucket,
     setIsChanged,
     onKeyDown,
+    markdown=false,
     ...rest
     // provider, 
     // doc
@@ -184,7 +186,7 @@ export default function BlockNoteEditor(
   });
   
   useEffect(() => {
-    if(typeof initialContent==='string'){
+    if(typeof initialContent==='string'&&!markdown){
         axios.get(initialContent).then(async (res) => {
           let blocks = res.data;
           if (initialContent.split('?')[0].endsWith('.pdf')&&typeof blocks !== "object") {
@@ -202,6 +204,10 @@ export default function BlockNoteEditor(
             setIsChanged(null);
           }
         });
+    } else if (typeof initialContent==='string'&&markdown){
+      editor.tryParseMarkdownToBlocks(initialContent).then((blocks)=>{
+        editor.replaceBlocks(editor.document, blocks);
+      })
     }
   }, [initialContent]);
 

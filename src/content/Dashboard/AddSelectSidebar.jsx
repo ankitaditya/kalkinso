@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Tag, Accordion, AccordionItem, FileUploaderDropContainer, TreeNode, TreeView, IconButton, Column, Grid, Loading, SideNav } from '@carbon/react';
 import PropTypes from 'prop-types';
-import { ActionBar, NoDataEmptyState } from '@carbon/ibm-products';
+import { ActionBar, NoDataEmptyState, OptionsTile } from '@carbon/ibm-products';
 import { AddSelectMetaPanel } from '@carbon/ibm-products/lib/components/AddSelect/AddSelectMetaPanel';
 import FileViewer from 'react-file-viewer';
 import { CustomErrorComponent } from 'custom-error';
@@ -25,7 +25,7 @@ import { setDeleteFile } from '../../actions/task';
 import TranscriptEditor from '@bbc/react-transcript-editor';
 import { generateSignedUrl, getObjectById, insertObjectById } from '../../utils/redux-cache';
 import { convertSpeechToText } from '../../utils/openai-utils';
-import { DynamicVideo } from './DynamicUI';
+import { DynamicImage, DynamicText, DynamicVideo } from './DynamicUI';
 
 
 const blockClass = `home--add-select__sidebar`;
@@ -141,6 +141,7 @@ const AddSelectSidebar = ({
   const { file_context } = useSelector((state)=>state.task.kanban);
   const { selectedTask } = useSelector((state)=>state.kits);
   const [transcriptContent, setTranscriptContent] = useState({});
+  const [toggleValue, setToggleValue] = useState({});
   const getNewItem = (item) => {
     const { meta, icon, avatar, ...newItem } = item;
     return newItem;
@@ -244,21 +245,43 @@ const AddSelectSidebar = ({
     if (item.fileType === 'txt' || (item.fileType === 'pdf'&&!item.title.includes("view.pdf"))) {
       // const provider = new WebrtcProvider(item.id, doc); // setup a yjs provider (explained below)
 
-      return <div className='word-processor'>
-      <BlockNoteEditor 
-      // provider={provider} 
-      // doc={doc}
-      className="page"
-      setContent={
-        (content)=>setContent(content)} 
-      initialContent={
-        item.signedUrl
-      }
-      setIsChanged={setIsChanged}
-      onKeyDown = {()=>dispatch(setDeleteFile(item))}
-      item_id={item.id}
-      bucket="kalkinso.com" 
-      /></div>;
+      return <div
+      style={{
+        width: "96%",
+        height: "90vh",
+        margin: "auto",
+      }}
+      >
+      <OptionsTile title={"AI Editor"} onToggle={(value) => setToggleValue({...toggleValue, [item.id]:value})} enabled={(toggleValue[item.id]===null || toggleValue[item.id]===undefined)?false:toggleValue[item.id]} locked={false} />
+        {toggleValue[item.id]?<DynamicText 
+                  className="page"
+                  setContent={
+                    (content)=>setContent(content)} 
+                  initialContent={
+                    item.signedUrl
+                  }
+                  setIsChanged={setIsChanged}
+                  onKeyDown = {()=>dispatch(setDeleteFile(item))}
+                  item_id={item.id}
+                  codeFile={item.signedUrl}
+                  bucket="kalkinso.com" 
+        />:<div className='word-processor'>
+          <BlockNoteEditor 
+          // provider={provider} 
+          // doc={doc}
+          className="page"
+          setContent={
+            (content)=>setContent(content)} 
+          initialContent={
+            item.signedUrl
+          }
+          setIsChanged={setIsChanged}
+          onKeyDown = {()=>dispatch(setDeleteFile(item))}
+          item_id={item.id}
+          bucket="kalkinso.com" 
+          />
+        </div>}
+      </div>;
       // return <MultiPageWordProcessor
       //   style={{marginTop:"2rem", marginBottom: "2rem"}} 
       //   setContent={
@@ -273,11 +296,30 @@ const AddSelectSidebar = ({
     if (item.fileType === 'png' || item.fileType === 'jpg' || item.fileType === 'jpeg' || item.fileType === 'webp') {
       // return <FigmaEditor image_uri={item.signedUrl} title={item.title}  usageStatistics={false} style={{width:"auto", marginTop:"2rem", marginBottom: "2rem"}} />;
 
-      return <PhotoEditor image_uri={item.signedUrl} title={item.title} closeImgEditor={()=>{
+      return <div
+      style={{
+        width: "96%",
+        height: "90vh",
+        margin: "auto",
+      }}
+      >
+      <OptionsTile title={"AI Editor"} onToggle={(value) => setToggleValue({...toggleValue, [item.id]:value})} enabled={(toggleValue[item.id]===null || toggleValue[item.id]===undefined)?false:toggleValue[item.id]} locked={false} />
+        {toggleValue[item.id]?<DynamicImage 
+          item_id={item.id}
+          setContent={
+            (content)=>setContent(content)}
+          codeFile={item.signedUrl}
+          title={item.title} closeImgEditor={()=>{
+            setMultiSelection(multiSelection.filter((item_id)=>item_id!==item.id))
+          }}
+          onKeyDown = {()=>dispatch(setDeleteFile(item))}
+          usageStatistics={false}
+        />:<PhotoEditor image_uri={item.signedUrl} title={item.title} closeImgEditor={()=>{
                   setMultiSelection(multiSelection.filter((item_id)=>item_id!==item.id))
                 }}
                 onKeyDown = {()=>dispatch(setDeleteFile(item))}
-              usageStatistics={false} className='page' style={{width:"100%", height:"80vh"}} />;
+              usageStatistics={false} className='page' style={{width:"100%", height:"80vh"}} />}
+              </div>;
     }
     if (monacoSupportedFileExtensions.hasOwnProperty(item.fileType)) {
 

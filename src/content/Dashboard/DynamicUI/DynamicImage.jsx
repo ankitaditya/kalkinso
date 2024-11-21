@@ -21,9 +21,8 @@ import 'primeicons/primeicons.css';
 import { InsertModal } from '../../../components/Modal';
 import { useDispatch } from 'react-redux';
 import { save } from '../../../actions/kits';
-import {Media, Video } from '@vidstack/player-react';
-import { createTextToVideo } from '../../../utils/openai-utils';
-
+import BlockNoteEditor from '../BlockNoteEditor';
+import PhotoEditor from '../PhotoEditor';
 
 
 const PromptEditor = ({ prompt, setPrompt, handleRunCode, isLoading }) => {
@@ -70,22 +69,29 @@ const PromptEditor = ({ prompt, setPrompt, handleRunCode, isLoading }) => {
 
 // -------   Code Preview component --------
 
-const CodePreview = ({ code, setResponse }) => {
-
+const CodePreview = ({ code, setResponse, initialContent, setContent,...rest }) => {
+    const [component, setComponent] = useState(<PhotoEditor image_uri={code} {...rest} className='page' style={{width:"100%", height:"100vh"}} />);
+    useEffect(() => {
+        if(code) {
+            setComponent(<PhotoEditor image_uri={code} {...rest} className='page' style={{width:"100%", height:"100vh"}} />);
+            setContent(code);
+        }
+    }, [code]);
     return (
-        <Editor
-                height="100%"
-                width="100%"
-                defaultLanguage="javascript"
-                defaultValue={code}
-                value={code}
-                options={{
-                    minimap: { enabled: false },
-                    lineNumbers: 'off',
-                    padding: { top: 10, bottom: 10 }
-                }}
-                onChange={(value) => setResponse(value)}
-            />
+        // <Editor
+        //         height="100%"
+        //         width="100%"
+        //         defaultLanguage="javascript"
+        //         defaultValue={code}
+        //         value={code}
+        //         options={{
+        //             minimap: { enabled: false },
+        //             lineNumbers: 'off',
+        //             padding: { top: 10, bottom: 10 }
+        //         }}
+        //         onChange={(value) => setResponse(value)}
+        //     />
+        component
     );
 };
 
@@ -167,22 +173,16 @@ const PreviewTabs = ({ content, folderPath ,codePreviewContent, componentPreview
     );
 };
 
-const PreviewVideo = ({ url }) => {
-    <Media>
-        <Video loading="visible" controls preload="true">
-            <video loading="visible" src={url} preload="none" data-video="0" controls />
-        </Video>
-    </Media>
-};
 
 
 
 
-export default function DynamicVideo({item_id, fileName="temp/video.mp4"}) {
+export default function DynamicImage({codeFile, PromptType='bookWriter', ...rest}) {
     // State hooks for managing prompt, response, and loading status
     const [prompt, setPrompt] = useState('');
-    const [response, setResponse] = useState('');
+    const [response, setResponse] = useState(codeFile);
     const [isLoading, setIsLoading] = useState(false);
+    const [type, setType] = useState(PromptType);
 
     /* Template function to format the prompt for OpenAI API
 
@@ -193,165 +193,107 @@ We need the model to generate this as we wont know what name the model will
 give to the component
 
       */
-    const promptTemplate = (prompt) => {
-        const componentList = `
-        Carbon.Accordion
-        Carbon.AccordionItem
-        Carbon.AspectRatio
-        Carbon.Breadcrumb
-        Carbon.Button
-        Carbon.ButtonSet
-        Carbon.Checkbox
-        Carbon.CheckboxGroup
-        Carbon.ClassPrefix
-        Carbon.CodeSnippet
-        Carbon.ComboBox
-        Carbon.ComboButton
-        Carbon.ComposedModal
-        Carbon.ContainedList
-        Carbon.ContentSwitcher
-        Carbon.ContextMenu
-        Carbon.Copy
-        Carbon.CopyButton
-        Carbon.DangerButton
-        Carbon.DataTable
-        Carbon.DataTableSkeleton
-        Carbon.DatePicker
-        Carbon.DatePickerInput
-        Carbon.Dropdown
-        Carbon.ErrorBoundary
-        Carbon.ExpandableSearch
-        Carbon.FileUploader
-        Carbon.FilterableMultiSelect
-        Carbon.FluidForm
-        Carbon.Form
-        Carbon.FormGroup
-        Carbon.FormItem
-        Carbon.FormLabel
-        Carbon.Grid
-        Carbon.IconSkeleton
-        Carbon.IdPrefix
-        Carbon.InlineLoading
-        Carbon.Link
-        Carbon.ListItem
-        Carbon.Loading
-        Carbon.Menu
-        Carbon.MenuButton
-        Carbon.Modal
-        Carbon.ModalWrapper
-        Carbon.MultiSelect
-        Carbon.Notification
-        Carbon.NumberInput
-        Carbon.OrderedList
-        Carbon.OverflowMenu
-        Carbon.OverflowMenuItem
-        Carbon.Pagination
-        Carbon.PaginationSkeleton
-        Carbon.PaginationNav
-        Carbon.PasswordInput
-        Carbon.PrimaryButton
-        Carbon.ProgressIndicator
-        Carbon.RadioButton
-        Carbon.RadioButtonSkeleton
-        Carbon.RadioButtonGroup
-        Carbon.RadioTile
-        Carbon.Search
-        Carbon.SecondaryButton
-        Carbon.Select
-        Carbon.SelectItem
-        Carbon.SelectItemGroup
-        Carbon.SkeletonIcon
-        Carbon.SkeletonPlaceholder
-        Carbon.SkeletonText
-        Carbon.Slider
-        Carbon.Stack
-        Carbon.StructuredList
-        Carbon.Switch
-        Carbon.Tab
-        Carbon.TabContent
-        Carbon.Tabs
-        Carbon.Tag
-        Carbon.TagSkeleton
-        Carbon.TextArea
-        Carbon.TextInput
-        Carbon.Tile
-        Carbon.TileGroup
-        Carbon.TimePicker
-        Carbon.TimePickerSelect
-        Carbon.Toggle
-        Carbon.ToggleSkeleton
-        Carbon.ToggleSmallSkeleton
-        Carbon.Toggletip
-        Carbon.TreeView
-        Carbon.UIShell
-        Carbon.UnorderedList
-        Carbon.unstable_FeatureFlags
-        Carbon.unstable_useFeatureFlag
-        Carbon.unstable_useFeatureFlags
-        Carbon.unstable__FluidComboBox
-        Carbon.unstable__FluidComboBoxSkeleton
-        Carbon.unstable__FluidDatePicker
-        Carbon.unstable__FluidDatePickerSkeleton
-        Carbon.unstable__FluidDatePickerInput
-        Carbon.unstable__FluidDropdown
-        Carbon.unstable__FluidDropdownSkeleton
-        Carbon.unstable__FluidMultiSelect
-        Carbon.unstable__FluidMultiSelectSkeleton
-        Carbon.unstable__FluidSelect
-        Carbon.unstable__FluidSelectSkeleton
-        Carbon.unstable__FluidTextArea
-        Carbon.unstable__FluidTextAreaSkeleton
-        Carbon.unstable__FluidTextInput
-        Carbon.unstable__FluidTextInputSkeleton
-        Carbon.unstable__FluidTimePicker
-        Carbon.unstable__FluidTimePickerSkeleton
-        Carbon.unstable__FluidTimePickerSelect
-        Carbon.Heading
-        Carbon.IconButton
-        Carbon.Layer
-        Carbon.unstable_Layout
-        Carbon.unstable_LayoutDirection
-        Carbon.unstable_useLayoutDirection
-        Carbon.unstable_OverflowMenuV2
-        Carbon.unstable_PageSelector
-        Carbon.unstable_Pagination
-        Carbon.Popover
-        Carbon.ProgressBar
-        Carbon.unstable__Slug
-        Carbon.unstable__SlugContent
-        Carbon.unstable__SlugActions
-        Carbon.unstable__ChatButton
-        Carbon.unstable__ChatButtonSkeleton
-        Carbon.unstable__AiSkeletonText
-        Carbon.unstable__AiSkeletonIcon
-        Carbon.unstable__AiSkeletonPlaceholder
-        Carbon.Stack
-        Carbon.Tooltip
-        Carbon.unstable_Text
-        Carbon.unstable_TextDirection
-        Carbon.DefinitionTooltip
-        Carbon.Theme
-        `;
-        return `For my prompt, respond with only the plain code in text without any code formatting or markdown and no explanations needed.
-                Assume the following imports are already included at the top of the file:
-                import * as Carbon from '@carbon/react';
-                import * as CarbonIBM from '@carbon/ibm-products';
-                import * as CarbonIcons from '@carbon/icons-react';
-                Use only the components listed below from the Carbon Component List:
-                ${componentList}
-                When generating the code:
-                1. Use a functional React component named 'GeneratedComponent'.
-                2. Utilize only the components available in the provided Carbon Component List. Avoid using any components that are not listed.
-                3. Ensure that all JSX elements are correctly closed, properly nested, and syntactically correct.
-                4. Use props accurately where needed and include default event handlers if applicable.
-                5. If headings are required, use the Carbon.Heading component from the list. For layout and spacing, use Carbon.Grid, Carbon.Column, and Carbon.Stack components as appropriate.
-                6. For links, use the Carbon.Link component. If a divider is needed, use Carbon.Stack for spacing or a simple <hr /> tag.
-                7. Assume that a div with id "output" is present on the page for rendering.
-                8. Do not include any inline styles or custom CSS unless explicitly specified in the prompt.
-                At the end of your response, add these two lines:
-                const root = createRoot(output);
-                root.render(<GeneratedComponent />);
-                Here is my prompt: ${prompt}`
+    const promptTemplate = (prompt, response) => {
+        const promptTemplates = {
+            bookWriter: `
+              For my prompt, generate an image that visually represents the theme, setting, or concept of a book. 
+              When generating the image:
+              1. Ensure the style is detailed and professional, appropriate for use as a book cover or thematic artwork.
+              2. Incorporate elements like characters, landscapes, or symbolic imagery that reflect the book's genre (e.g., fantasy, science fiction, mystery).
+              3. Use a visually engaging color palette and composition.
+              4. If a previous response exists, incorporate its themes into the new image.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            researchPaperWriter: `
+              For my prompt, generate an image that complements an academic research paper. 
+              When generating the image:
+              1. Include diagrams, charts, or visual aids that help explain the paper's main findings or concepts.
+              2. Use a clean, professional, and scholarly style.
+              3. If applicable, incorporate scientific or technical elements relevant to the subject.
+              4. If a previous response exists, integrate its data or themes into the new image.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            taskDescriptionWriter: `
+              For my prompt, generate an image that illustrates or supports a detailed task description. 
+              When generating the image:
+              1. Include clear, step-by-step visual instructions or representations of the task.
+              2. Use icons, diagrams, or illustrations to enhance understanding.
+              3. Ensure the design is clean, modern, and easy to interpret.
+              4. If a previous response exists, align the visual content with the provided instructions.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            sopWriter: `
+              For my prompt, generate an image that complements a Standard Operating Procedure (SOP). 
+              When generating the image:
+              1. Include flowcharts, diagrams, or illustrations that clarify the procedure.
+              2. Use a professional and straightforward design style.
+              3. Incorporate any relevant visual elements that enhance understanding of the steps.
+              4. If a previous response exists, reflect its steps or content in the visual.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            questionPaperWriter: `
+              For my prompt, generate an image that can be used in a professionally formatted question paper. 
+              When generating the image:
+              1. Include educational visuals, diagrams, or illustrations relevant to the subject.
+              2. Use a clean and academic style appropriate for a classroom setting.
+              3. Avoid overly complex visuals that may confuse students.
+              4. If a previous response exists, reflect its context in the new image.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            standardWorkInstructionDocument: `
+              For my prompt, generate an image that supports a Standard Work Instruction (SWI) document. 
+              When generating the image:
+              1. Include step-by-step diagrams, process flowcharts, or illustrations that clarify instructions.
+              2. Use a professional and easy-to-follow visual style.
+              3. Ensure alignment with the document’s content and tone.
+              4. If a previous response exists, integrate its relevant aspects into the new image.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            businessPlanWriter: `
+              For my prompt, generate an image that visually represents a business plan. 
+              When generating the image:
+              1. Include charts, graphs, or conceptual visuals related to market analysis, financial projections, or strategies.
+              2. Use a professional, modern, and visually engaging style.
+              3. Incorporate relevant branding or thematic elements if specified.
+              4. If a previous response exists, use it to inform the visual content.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            pcbComponentList: `
+              For my prompt, generate an image that complements a PCB component list. 
+              When generating the image:
+              1. Include detailed visual representations of the PCB layout, components, or design schematics.
+              2. Use a clean and technical style with appropriate labels.
+              3. Highlight key components or features as described in the prompt.
+              4. If a previous response exists, reflect its details in the new image.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            additionalCategory: `
+              For my prompt, generate an image that matches the provided description or theme. 
+              When generating the image:
+              1. Ensure the visual elements are consistent with the specified category or purpose.
+              2. Use an appropriate style and level of detail as requested.
+              3. If a previous response exists, incorporate its context into the new image.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          };  
+        return promptTemplates[type];
     }
 
     // Function to handle the API call to OpenAI
@@ -359,10 +301,28 @@ give to the component
         setIsLoading(true); // Set loading to true while fetching data
 
         try {
-            const result = await createTextToVideo(prompt, item_id+fileName); // Call the OpenAI API with the formatted prompt
+            const resp = await axios.post(
+                '/api/kalkiai/images',
+                JSON.stringify({
+                    params: {
+                        "model": "dall-e-3",
+                        "prompt": promptTemplate(prompt, response),
+                        "n": 1,
+                        "size": "1024x1024",
+                    },
+                    key: rest?.item_id?.split('.').slice(0,-1)[0]+'.jpeg',
+                }),
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
             // Update response state with the fetched data
-            setResponse(result);
+            const json_response = resp.json();
+            setResponse(json_response?.data[0]?.url);
+            setPrompt(json_response?.data[0]?.revised_prompt)
         } catch (error) {
             console.error('Error fetching response from OpenAI:', error);
             setResponse('Error fetching response from OpenAI.');
@@ -370,6 +330,10 @@ give to the component
             setIsLoading(false); // Reset loading status
         }
     };
+
+    // useEffect(() => {
+    //     setComponentRenderer(<ComponentRenderer code={response} />);    
+    // }, [response]);
 
     return (
         <div style={{height:"70vh"}}>   
@@ -389,8 +353,8 @@ give to the component
                 
                 {/* Tabs Section for Code and Component Preview */}
                 <SplitterPanel size={50} minSize={30}>
-                    <div className="flex flex-col h-full w-full border rounded-lg overflow-hidden bg-gray-50 p-4">
-                        <PreviewVideo url={response} />
+                    <div className="flex flex-col h-full w-full border rounded-lg overflow-auto bg-gray-50 p-4">
+                        <CodePreview code={response} codeFile={codeFile} setResponse={setResponse} {...rest} />
                     </div>
                 </SplitterPanel>
                 </Splitter>
