@@ -208,6 +208,16 @@ We need the model to generate this as we wont know what name the model will
 give to the component
 
       */
+    const promptTemplates = {
+        "Book Writer": "bookWriter",
+        "Research Paper Writer": "researchPaperWriter",
+        "Task Description Writer": "taskDescriptionWriter",
+        "SOP Writer": "sopWriter",
+        "Question Paper Writer": "questionPaperWriter",
+        "Standard Work Instruction Document": "standardWorkInstructionDocument",
+        "Business Plan Writer": "businessPlanWriter",
+        "PCB Component List": "pcbComponentList",
+    }
     const promptTemplate = (prompt, response) => {
         const promptTemplates = {
             bookWriter: `
@@ -305,13 +315,13 @@ give to the component
               Previous Response: ${response}
             `,
           };  
-        return promptTemplates[type];
+        return promptTemplates;
     }
 
     const [ componentRenderer, setComponentRenderer ] = useState(<ComponentRenderer code={response} />);
 
     // Function to handle the API call to OpenAI
-    const handleRunCode = async () => {
+    const handleRunCode = async (type) => {
         setIsLoading(true); // Set loading to true while fetching data
 
         try {
@@ -326,7 +336,7 @@ give to the component
                         },
                         {
                             "role": "user",
-                            "content": promptTemplate(prompt, response)
+                            "content": promptTemplate(prompt, response)[type]
                         }
                     ]
                 }),
@@ -357,11 +367,14 @@ give to the component
                 <Splitter style={{ height: '84vh' }} className="dashboard-splitter">
                 {/* Prompt Editor Section */}
                 <SplitterPanel size={50} minSize={30}>
+                    <center><Carbon.Select style={{margin:"1rem"}} noLabel={true} labelText="Prompt Type" id="prompt-type" defaultValue={type} value={type} onChange={(e) => setType(e.target.value)}>
+                        {Object.keys(promptTemplates).map((key) => <Carbon.SelectItem text={key} value={promptTemplates[key]} />)}
+                    </Carbon.Select></center>
                     <div className="flex flex-col h-full w-full border rounded-lg overflow-hidden bg-gray-50 p-4">
                     <PromptEditor 
                         prompt={prompt} 
                         setPrompt={setPrompt} 
-                        handleRunCode={handleRunCode} 
+                        handleRunCode={()=>handleRunCode(type)} 
                         isLoading={isLoading} 
                     />
                     </div>

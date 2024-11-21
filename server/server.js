@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken')
 var cors = require('cors')
 const EventEmitter = require("events");
 
-const connectDB = require('../config/db')
+const connectDB = require('../config/db');
+const auth = require('../middleware/auth');
 
 
 const app = express();
@@ -43,8 +44,11 @@ const authVerify = (token) => {
 app.use((req, res, next) => {
   // Example condition: apply frameguard only for certain routes
   // console.log(req.path.split('/')[1])
-  if (req.path.startsWith('/token=')||req.path.startsWith('/static')||req.path.startsWith('/api')) {
+  if (req.path.startsWith('/token=')||req.path.startsWith('/static')||req.path.startsWith('/3d/editor')||req.path.startsWith('/api')) {
     // Apply frameguard for this route
+    // if(req.path.startsWith('/3d/editor')){
+    //   auth(req, res, next)
+    // }
     if(req.path.startsWith('/token=')&&!authVerify(req.path.replace('/token=','').slice(0,-1))){
       helmet.frameguard({ action: 'deny' })(req, res, next);
     } else {
@@ -67,7 +71,6 @@ app.use('/api/tasks', require('../routes/api/tasks'))
 app.use('/api/kalkiai', require('../routes/api/kalkiai'))
 app.use('/api/kits', require('../routes/api/kits'))
 app.use('/api/how-to', require('../routes/api/how_to'))
-// app.use('/api/config', require('../routes/api/config'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));
@@ -91,6 +94,11 @@ app.get("/api/progress", (req, res) => {
     res.end();
   });
 });
+
+// app.use('/api/config', require('../routes/api/config'))
+// app.get('/3d/editor', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../build/3d/editor', 'index.html'));
+// })
 
 app.get('/health', function (req, res) {
   res.json({ status: 'UP' });

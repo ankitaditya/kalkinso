@@ -182,7 +182,7 @@ def merge_scenes_with_background_music(scenes, background_music, output_path=Non
     final_video = concatenate_videoclips(processed_scenes, method="compose")
 
     # Load background music
-    bg_music_clip = AudioFileClip(background_music)
+    bg_music_clip = AudioFileClip(background_music).volumex(0.75)
     bg_music_duration = final_video.duration
 
     # Trim or loop background music to match the final video duration
