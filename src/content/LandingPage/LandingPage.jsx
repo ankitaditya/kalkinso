@@ -15,9 +15,10 @@ import {
   FluidForm,
   OrderedList,
   ListItem,
+  IconButton,
 } from '@carbon/react';
 import { InfoSection, InfoCard } from '../../components/Info';
-import { Globe, Application, PersonFavorite } from '@carbon/react/icons';
+import { Globe, Application, PersonFavorite, WatsonHealth3DSoftware } from '@carbon/react/icons';
 import Login from '../Login/Login';
 import HeroSection from './HeroSection';
 import TaskCarousel from './TaskCarousel';
@@ -35,10 +36,20 @@ class LandingPage extends Component {
     return (
       <Grid className="landing-page" fullWidth>
         <Column lg={16} md={8} sm={4} className="landing-page__banner">
-          <HeroSection ButtonComponent={this.props?.auth?.isAuthenticated?<></>:<FluidForm style={{marginTop:"35px"}}>
+          <HeroSection ButtonComponent={this.props?.auth?.isAuthenticated?<FluidForm style={{marginTop:"35px"}}>
+            <IconButton style={{minWidth:"212px"}} href='/#/register' label="3d designer" kind="primary">
+              <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Designer</span>
+            </IconButton>
+          </FluidForm>:<><FluidForm style={{marginTop:"35px"}}>
             <Button href='/#/register'>Sign Up</Button>
             <Button kind="secondary" href='/#/login'>Login</Button>
-          </FluidForm>}/>
+          </FluidForm>
+          <FluidForm style={{marginTop:"35px"}}>
+            <IconButton style={{minWidth:"212px"}} href='/3d/editor' label="3d designer" kind="primary">
+              <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Designer</span>
+            </IconButton>
+          </FluidForm>
+          </>}/>
         </Column>
         <Column lg={16} md={8} sm={4} className="landing-page__r2">
           <Tabs defaultSelectedIndex={0}>
@@ -107,6 +118,9 @@ class LandingPage extends Component {
                     <TaskCarousel component={<HeroSection ButtonComponent={<FluidForm style={{marginTop:"35px"}}>
                                               <Button href='/#/register'>SignUp</Button>
                                               <Button kind="secondary" href='/#/login'>Login</Button>
+                                              <IconButton href='/#/register' kind="secondary">
+                                                <WatsonHealth3DSoftware />
+                                              </IconButton>
                                             </FluidForm>}/>} />
                   </Column>
                 </Grid>
