@@ -9,7 +9,7 @@ import { Dialog } from 'primereact/dialog';
 // Importing Editor component from Monaco Editor
 import Editor from '@monaco-editor/react';
 import { Button } from '@carbon/react';
-import { Loading } from 'carbon-components-react';
+import { Loading, Select } from 'carbon-components-react';
 import * as Carbon from '@carbon/react';
 import * as CarbonIBM from '@carbon/ibm-products';
 import * as CarbonIcons from '@carbon/icons-react';
@@ -23,6 +23,7 @@ import { useDispatch } from 'react-redux';
 import { save } from '../../../actions/kits';
 import BlockNoteEditor from '../BlockNoteEditor';
 import PhotoEditor from '../PhotoEditor';
+import { generateSignedUrl } from '../../../utils/redux-cache';
 
 
 const PromptEditor = ({ prompt, setPrompt, handleRunCode, isLoading }) => {
@@ -78,19 +79,6 @@ const CodePreview = ({ code, setResponse, initialContent, setContent,...rest }) 
         }
     }, [code]);
     return (
-        // <Editor
-        //         height="100%"
-        //         width="100%"
-        //         defaultLanguage="javascript"
-        //         defaultValue={code}
-        //         value={code}
-        //         options={{
-        //             minimap: { enabled: false },
-        //             lineNumbers: 'off',
-        //             padding: { top: 10, bottom: 10 }
-        //         }}
-        //         onChange={(value) => setResponse(value)}
-        //     />
         component
     );
 };
@@ -177,7 +165,7 @@ const PreviewTabs = ({ content, folderPath ,codePreviewContent, componentPreview
 
 
 
-export default function DynamicImage({codeFile, PromptType='bookWriter', ...rest}) {
+export default function DynamicImage({codeFile, PromptType='bookCoverDesigner', ...rest}) {
     // State hooks for managing prompt, response, and loading status
     const [prompt, setPrompt] = useState('');
     const [response, setResponse] = useState(codeFile);
@@ -193,6 +181,18 @@ We need the model to generate this as we wont know what name the model will
 give to the component
 
       */
+    const promptTemplates = {
+        "Book Writer": "bookWriter",    
+        "Book Cover Designer": "bookCoverDesigner",
+        "Research Paper Writer": "researchPaperWriter",
+        "Task Description Writer": "taskDescriptionWriter",
+        "SOP Writer": "sopWriter",
+        "Question Paper Writer": "questionPaperWriter",
+        "Standard Work Instruction Document": "standardWorkInstructionDocument",
+        "Business Plan Writer": "businessPlanWriter",
+        "PCB Component List": "pcbComponentList",
+        "Additional Category": "additionalCategory",
+    }
     const promptTemplate = (prompt, response) => {
         const promptTemplates = {
             bookWriter: `
@@ -202,6 +202,19 @@ give to the component
               2. Incorporate elements like characters, landscapes, or symbolic imagery that reflect the book's genre (e.g., fantasy, science fiction, mystery).
               3. Use a visually engaging color palette and composition.
               4. If a previous response exists, incorporate its themes into the new image.
+              Here is my prompt: ${prompt}
+              Previous Response: ${response}
+            `,
+          
+            bookCoverDesigner: `
+              For my prompt, design an accurate and visually appealing book cover photo.
+              When generating the image:
+              1. Ensure the design aligns with the book's genre, theme, and target audience.
+              2. Include relevant elements such as title placement, typography style, and visual hierarchy.
+              3. Incorporate symbolic imagery, characters, or settings that enhance the book's identity.
+              4. Use a professional, high-quality design approach with balanced color schemes and composition.
+              5. Ensure the design is suitable for digital and print formats, considering standard book cover dimensions.
+              6. If a previous response exists, integrate its context to maintain consistency with the book's content.
               Here is my prompt: ${prompt}
               Previous Response: ${response}
             `,
@@ -292,12 +305,12 @@ give to the component
               Here is my prompt: ${prompt}
               Previous Response: ${response}
             `,
-          };  
-        return promptTemplates[type];
+          };           
+        return promptTemplates;
     }
 
     // Function to handle the API call to OpenAI
-    const handleRunCode = async () => {
+    const handleRunCode = async (type) => {
         setIsLoading(true); // Set loading to true while fetching data
 
         try {
@@ -306,7 +319,7 @@ give to the component
                 JSON.stringify({
                     params: {
                         "model": "dall-e-3",
-                        "prompt": promptTemplate(prompt, response),
+                        "prompt": promptTemplate(prompt, response)[type],
                         "n": 1,
                         "size": "1024x1024",
                     },
@@ -320,9 +333,12 @@ give to the component
             );
 
             // Update response state with the fetched data
-            const json_response = resp.json();
-            setResponse(json_response?.data[0]?.url);
-            setPrompt(json_response?.data[0]?.revised_prompt)
+            const json_response = resp?.data?.result;
+            // setResponse(json_response[0]?.url);
+            // setPrompt(json_response[0]?.revised_prompt)
+            setPrompt(json_response[0]?.revised_prompt);
+            setResponse(await generateSignedUrl('kalkinso.com', rest?.item_id.split('.').slice(0,-1)[0]+'/0.jpeg'));
+            
         } catch (error) {
             console.error('Error fetching response from OpenAI:', error);
             setResponse('Error fetching response from OpenAI.');
@@ -341,11 +357,14 @@ give to the component
                 <Splitter style={{ height: '84vh' }} className="dashboard-splitter">
                 {/* Prompt Editor Section */}
                 <SplitterPanel size={50} minSize={30}>
+                    <center><Carbon.Select style={{margin:"1rem"}} noLabel={true} labelText="Prompt Type" id="prompt-type" defaultValue={type} value={type} onChange={(e) => setType(e.target.value)}>
+                        {Object.keys(promptTemplates).map((key) => <Carbon.SelectItem text={key} value={promptTemplates[key]} />)}
+                    </Carbon.Select></center>
                     <div className="flex flex-col h-full w-full border rounded-lg overflow-hidden bg-gray-50 p-4">
                     <PromptEditor 
                         prompt={prompt} 
                         setPrompt={setPrompt} 
-                        handleRunCode={handleRunCode} 
+                        handleRunCode={()=>handleRunCode(type)} 
                         isLoading={isLoading} 
                     />
                     </div>
