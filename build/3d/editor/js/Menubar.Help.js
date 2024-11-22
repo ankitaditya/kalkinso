@@ -23,7 +23,7 @@ function MenubarHelp( editor ) {
 	option.setTextContent( strings.getKey( 'menubar/help/source_code' ) );
 	option.onClick( function () {
 
-		window.open( 'https://github.com/mrdoob/three.js/tree/master/editor', '_blank' );
+		window.open( 'https://github.com/ankitaditya/three.js-examples', '_blank' );
 
 	} );
 	options.add( option );
@@ -49,7 +49,7 @@ function MenubarHelp( editor ) {
 	option.setTextContent( strings.getKey( 'menubar/help/about' ) );
 	option.onClick( function () {
 
-		window.open( 'https://threejs.org', '_blank' );
+		window.open( 'https://kalkinso.com', '_blank' );
 
 	} );
 	options.add( option );
