@@ -66,7 +66,10 @@ function MenubarFile( editor ) {
 		{ title: 'menubar/file/new/Camera', file: 'camera.app.json' },
 		{ title: 'menubar/file/new/Particles', file: 'particles.app.json' },
 		{ title: 'menubar/file/new/Pong', file: 'pong.app.json' },
-		{ title: 'menubar/file/new/Shaders', file: 'shaders.app.json' }
+		{ title: 'menubar/file/new/Shaders', file: 'shaders.app.json' },
+		{ title: 'menubar/file/new/Pulsar', file: 'pulsering.app.json' },
+		{ title: 'menubar/file/new/Glitch', file: 'glitchbox.app.json' },
+		{ title: 'menubar/file/new/Earth', file: 'earth.app.json' }
 	];
 
 	const loader = new THREE.FileLoader();

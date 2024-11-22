@@ -44,12 +44,12 @@ const authVerify = (token) => {
 app.use((req, res, next) => {
   // Example condition: apply frameguard only for certain routes
   // console.log(req.path.split('/')[1])
-  if (req.path.startsWith('/token=')||req.path.startsWith('/static')||req.path.startsWith('/3d/editor')||req.path.startsWith('/api')) {
+  if (req.path.startsWith('/token=')||req.path.startsWith('/static')||req.path.startsWith('/3d/editor')||req.path.startsWith('/3d/examples')||req.path.startsWith('/3d/files')||req.path.startsWith('/api')) {
     // Apply frameguard for this route
     // if(req.path.startsWith('/3d/editor')){
     //   auth(req, res, next)
     // }
-    if(req.path.startsWith('/token=')&&!authVerify(req.path.replace('/token=','').slice(0,-1))){
+    if(req.path.startsWith('/token=')&&!authVerify(req.path.replace('/token=','').slice(0,-1))&&!req.path.startsWith('/3d')){
       helmet.frameguard({ action: 'deny' })(req, res, next);
     } else {
       // window.localStorage.setItem('token',req.path.split('/')[1].replace('token=',''))
