@@ -5,7 +5,6 @@ const helmet = require('helmet')
 const jwt = require('jsonwebtoken')
 var cors = require('cors')
 const EventEmitter = require("events");
-
 const connectDB = require('../config/db');
 const auth = require('../middleware/auth');
 
@@ -56,6 +55,9 @@ app.use((req, res, next) => {
     // if(req.path.startsWith('/3d/editor')){
     //   auth(req, res, next)
     // }
+    if(!req.hostname.includes('kalkinso.com')){
+      res.redirect('https://www.kalkinso.com')
+    }
     if(req.path.startsWith('/token=')&&!authVerify(req.path.replace('/token=','').slice(0,-1))&&!req.path.startsWith('/3d')&&!req.path.startsWith('/episteme')){
 
       helmet.frameguard({ action: 'deny' })(req, res, next);

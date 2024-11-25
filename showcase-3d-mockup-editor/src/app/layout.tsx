@@ -23,6 +23,7 @@ export default function RootLayout({
         <meta name="keywords" content="Kalkinso Software, AI tools, software solutions, innovative technology, AI-powered software, OPC Private Limited" />
         <meta name="author" content="Kalkinso Software (OPC) Private Limited" />
         <meta property="og:title" content="Kalkinso Software (OPC) Private Limited" />
+        <meta property="og:image" content="%PUBLIC_URL%/logo-new.png" />
         <meta property="og:description" content="Bringing innovative software ideas to life with cutting-edge AI tools and solutions." />
         {`<script>
           window.dataLayer = window.dataLayer || [];
