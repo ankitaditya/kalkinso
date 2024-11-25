@@ -115,8 +115,8 @@ const VerifyOtp = () => {
                   {resend?`Resend OTP ${timer}s`:(sendOtp?"Resend OTP":"Send OTP")}
                 </SemanticButton>
                 <ButtonOr style={{zIndex: 0}} />
-                <SemanticButton type="button" onClick={()=>handleVerify(sendOtp)} className="submit-button form-item" disabled={otp.length!==6} primary>
-                  {sendOtp?"Register":"Verify OTP"}
+                <SemanticButton type="button" onClick={()=>handleVerify(sendOtp)} className="submit-button form-item" disabled={sendOtp?otp.length!==6:false} primary>
+                  {sendOtp?"Verify OTP":"Register"}
                 </SemanticButton>
               </ButtonGroup>
             </SemanticForm>
