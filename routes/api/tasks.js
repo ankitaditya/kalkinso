@@ -285,6 +285,23 @@ router.get('/', ipAuth, auth, async (req, res) => {
 	}
 })
 
+async function checkFileExists(key) {
+    try {
+      await destinationS3
+        .headObject({
+          Bucket: 'kalkinso.com',
+          Key: key,
+        })
+        .promise();
+      return true; // File exists
+    } catch (error) {
+      if (error.code === "NotFound") {
+        return false; // File does not exist
+      }
+      throw error; // Handle other errors
+    }
+  }
+
 router.get('/parent', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
@@ -298,7 +315,12 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 				tasks[i].user = user
 				const client = new S3Client({region:'ap-south-1'});
 				const command = new GetObjectCommand({ Bucket: 'kalkinso.com', Key: `users/${req.user.id}/tasks/${tasks[i]._id.toString()}/cover.jpg` });
-				tasks[i].thumbnail = await getSignedUrl(client, command, { expiresIn: 3600*4 });
+				const FileExists = await checkFileExists(`users/${req.user.id}/tasks/${tasks[i]._id.toString()}/cover.jpg`)
+				if(FileExists){
+					tasks[i].thumbnail = await getSignedUrl(client, command, { expiresIn: 3600*4 });
+				} else {
+					tasks[i].thumbnail = null;
+				}
 				if(tasks[i].assigned.length>0){
 					console.log("Users: ",tasks[i].assigned.map(each=>each.user))
 					tasks[i].assigned = await User.find({ _id: {$in: tasks[i].assigned.map(each=>each.user)} }).select(['_id','first_name', 'last_name','avatar'])
