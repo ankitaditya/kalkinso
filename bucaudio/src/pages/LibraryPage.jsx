@@ -8,6 +8,7 @@ const LibraryPage = () => {
 	const [songs, setSongs] = useState([]);
 	const [tasks, setTasks] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [ taskLoading, setTaskLoading] = useState(true);
 	const [error, setError] = useState(false);
 
 	const fetchSongs = async () => {
@@ -27,6 +28,7 @@ const LibraryPage = () => {
 
 	const fetchTasks = async () => {
 		setLoading(true);
+		setTaskLoading(true);
 		setError(false);
 		await client
 			.get("/tasks/parent", {
@@ -37,11 +39,13 @@ const LibraryPage = () => {
 			})
 			.then((res) => {
 				setTasks(res.data);
+				setTaskLoading(false);
 				setLoading(false);
 			})
 			.catch(() => {
 				setError(true);
 				setLoading(false);
+				setTaskLoading(false);
 			});
 	};
 
@@ -76,7 +80,7 @@ const LibraryPage = () => {
 					Discover interesting songs
 				</Text>
 			</Box>
-			{loading && tasks.length < 1 && (
+			{(loading || taskLoading) && (tasks.length < 1 || songs.length < 1) && (
 				<Flex align="center" justify="center" color="accent.main" minH="20rem">
 					<AiOutlineLoading className="spin" size={36} />
 				</Flex>
@@ -93,7 +97,7 @@ const LibraryPage = () => {
 					tasks[index]?<SongCard key={song._id} song={song} task={tasks[index]} />:<></>
 				))}
 			</Grid>
-			{error && (
+			{error && !taskLoading && (
 				<Box>
 					<Text>Sorry, an error occured</Text>
 				</Box>
