@@ -11,7 +11,7 @@ module.exports = function (req, res, next) {
 	}
 
 	try {
-		const decoded = jwt.verify(token, process.env.REACT_APP_JWT_SECRET)
+		const decoded = jwt.verify(token, req.hostname.includes('bucaudio')?process.env.REACT_APP_BUCAUDIO_JWT_SECRET:process.env.REACT_APP_JWT_SECRET)
 		req.user = decoded.user
 		next()
 	} catch (err) {

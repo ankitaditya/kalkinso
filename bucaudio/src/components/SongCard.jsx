@@ -50,7 +50,7 @@ const SongCard = ({ song, task }) => {
 			}, {
 				baseURL: "https://www.kalkinso.com/api/",
 				headers: {
-					'X-Auth-Token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjcyMTIzMmM5OWEwZTJiZjY3YjAyZmY0In0sImlhdCI6MTczMjU1NTU3MiwiZXhwIjoxNzY0MDkxNTcyfQ.uie6RNs8UbdQMeV5AM0QEEFwTX-wxsIXLoseoHquYts",
+					'X-Auth-Token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjcyMTIzMmM5OWEwZTJiZjY3YjAyZmY0In0sImlhdCI6MTczMjU2NDE0OCwiZXhwIjoxNzY0MTAwMTQ4fQ.1v97cro-REbcfHC18qQQ5Jh08ZMknDBvJGehfXO8wiE",
 				}
 			}).then((res) => {
 				let newSong = {...song, org: task?.org, coverImage: task.thumbnail?task.thumbnail:task?.user?.avatar, title: task.name, songUrl: getAudioUrl(res.data?.entries[0]?.children?.entries)};

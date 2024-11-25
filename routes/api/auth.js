@@ -135,7 +135,7 @@ router.post(
 			let jwt_result = {}
 			jwt.sign(
 				payload,
-				process.env.REACT_APP_JWT_SECRET,
+				process.env.REACT_APP_BUCAUDIO_JWT_SECRET,
 				{ expiresIn: '365 days' },
 				async (err, token) => {
 					if (err) {
