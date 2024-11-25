@@ -54,14 +54,6 @@ const LibraryPage = () => {
 		fetchTasks();
 	}, []);
 
-	useEffect(() => {
-		console.log(songs);
-	}, [songs]);
-
-	useEffect(() => {
-		console.log(tasks);
-	}, [tasks]);
-
 	return (
 		<Box
 			p={6}

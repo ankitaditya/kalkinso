@@ -14,7 +14,12 @@ const SmallSection = ({ title, endpoint }) => {
 		setError(false);
 		setLoading(true);
 		await client
-			.get(`${endpoint}`)
+			.get(`${endpoint}`, {
+				baseURL: "https://www.kalkinso.com/api/",
+				headers: {
+					"X-Auth-Token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjcyMTIzMmM5OWEwZTJiZjY3YjAyZmY0In0sImlhdCI6MTczMjU1NTU3MiwiZXhwIjoxNzY0MDkxNTcyfQ.uie6RNs8UbdQMeV5AM0QEEFwTX-wxsIXLoseoHquYts"
+				}
+			})
 			.then((res) => {
 				setData(res.data);
 				setLoading(false);
@@ -67,7 +72,7 @@ const SmallSection = ({ title, endpoint }) => {
 					pb={4}
 					className="scrollbar_style">
 					{data?.map((song) => (
-						<SongCard key={song._id} song={song} />
+						<SongCard key={song._id} song={song} task={song} />
 					))}
 				</Flex>
 			)}

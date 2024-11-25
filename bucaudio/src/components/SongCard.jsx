@@ -53,8 +53,6 @@ const SongCard = ({ song, task }) => {
 					'X-Auth-Token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjcyMTIzMmM5OWEwZTJiZjY3YjAyZmY0In0sImlhdCI6MTczMjU1NTU3MiwiZXhwIjoxNzY0MDkxNTcyfQ.uie6RNs8UbdQMeV5AM0QEEFwTX-wxsIXLoseoHquYts",
 				}
 			}).then((res) => {
-				console.log(getAudioUrl(res.data?.entries[0]?.children?.entries));
-				console.log(song);
 				let newSong = {...song, org: task?.org, coverImage: task.thumbnail?task.thumbnail:task?.user?.avatar, title: task.name, songUrl: getAudioUrl(res.data?.entries[0]?.children?.entries)};
 				dispatch(setCurrentTrack(newSong));
 				dispatch(setTrackList({ list: [newSong] }));
