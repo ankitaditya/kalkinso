@@ -74,10 +74,10 @@ const LibraryPage = () => {
 					fontSize={{ base: "lg", md: "2xl" }}
 					fontWeight="semibold"
 					mb={{ base: 1, md: 3 }}>
-					Library
+					Audio Book Library
 				</Heading>
 				<Text fontSize="sm" color="zinc.400">
-					Discover interesting songs
+					Discover interesting Audio Books
 				</Text>
 			</Box>
 			{(loading || taskLoading) && (tasks.length < 1 || songs.length < 1) && (

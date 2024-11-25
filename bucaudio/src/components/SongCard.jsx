@@ -107,7 +107,7 @@ const SongCard = ({ song, task }) => {
 				overflow="hidden"
 				position="relative">
 				<Image
-					src={task?.thumbnail}
+					src={task?.thumbnail?task?.thumbnail:task?.user?.avatar}
 					alt={task?.name}
 					w="full"
 					roundedTop="base"
