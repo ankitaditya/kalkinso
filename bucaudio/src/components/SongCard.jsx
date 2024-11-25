@@ -55,7 +55,7 @@ const SongCard = ({ song, task }) => {
 			}).then((res) => {
 				console.log(getAudioUrl(res.data?.entries[0]?.children?.entries));
 				console.log(song);
-				let newSong = {...song, org: task?.org, coverImage: task.thumbnail, title: task.name, songUrl: getAudioUrl(res.data?.entries[0]?.children?.entries)};
+				let newSong = {...song, org: task?.org, coverImage: task.thumbnail?task.thumbnail:task?.user?.avatar, title: task.name, songUrl: getAudioUrl(res.data?.entries[0]?.children?.entries)};
 				dispatch(setCurrentTrack(newSong));
 				dispatch(setTrackList({ list: [newSong] }));
 				dispatch(setPlaying(true));
