@@ -14,7 +14,7 @@ import { LogoFacebook, LogoLinkedin, LogoGithub } from '@carbon/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser, otpLogin, sendVerificationLogin, setLoading } from '../../actions/auth';
 import { ButtonGroup, ButtonOr, Button as SemanticButton, Form as SemanticForm } from 'semantic-ui-react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { InputOtp } from 'primereact/inputotp';
 // import './Login.css';  // Custom styling
 
@@ -26,6 +26,7 @@ const VerifyOtp = () => {
   const [resend, setResend] = useState(false);
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let interval = null;
@@ -57,9 +58,13 @@ const VerifyOtp = () => {
     return null;
   };
 
-  const handleVerify = () => {
+  const handleVerify = (register) => {
+    if(register){
     dispatch(setLoading(true));
     dispatch(otpLogin({[sendOtp]:sendOtp==="mobile"?"+91"+emailOrMobile:emailOrMobile,otp: otp}));
+    } else {
+      navigate('/register');
+    }
   };
 
   const handleSubmit = (e) => {
@@ -109,11 +114,10 @@ const VerifyOtp = () => {
                 <SemanticButton className="submit-button form-item" disabled={resend} secondary>
                   {resend?`Resend OTP ${timer}s`:(sendOtp?"Resend OTP":"Send OTP")}
                 </SemanticButton>
-                {sendOtp&&(<>
                 <ButtonOr style={{zIndex: 0}} />
-                <SemanticButton type="button" onClick={handleVerify} className="submit-button form-item" disabled={otp.length!==6} primary>
-                  {"Verify"} OTP
-                </SemanticButton></>)}
+                <SemanticButton type="button" onClick={()=>handleVerify(sendOtp)} className="submit-button form-item" disabled={otp.length!==6} primary>
+                  {sendOtp?"Register":"Verify OTP"}
+                </SemanticButton>
               </ButtonGroup>
             </SemanticForm>
           </Column>
