@@ -8,11 +8,22 @@ import { Link } from "react-router-dom";
 const SmallSection = ({ title, endpoint }) => {
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
+	const [tasks, setTasks] = useState([]);
 	const [error, setError] = useState(false);
 
 	const fetchData = async () => {
 		setError(false);
 		setLoading(true);
+		await client
+			.get("/songs")
+			.then((res) => {
+				setData(res.data);
+				setLoading(false);
+			})
+			.catch(() => {
+				setError(true);
+				setLoading(false);
+			});
 		await client
 			.get(`${endpoint}`, {
 				baseURL: "https://www.kalkinso.com/api/",
@@ -21,7 +32,7 @@ const SmallSection = ({ title, endpoint }) => {
 				}
 			})
 			.then((res) => {
-				setData(res.data);
+				setTasks(res.data);
 				setLoading(false);
 			})
 			.catch(() => {
@@ -71,8 +82,8 @@ const SmallSection = ({ title, endpoint }) => {
 					mt={3}
 					pb={4}
 					className="scrollbar_style">
-					{data?.map((song) => (
-						<SongCard key={song._id} song={song} task={song} />
+					{data?.map((song, i) => (
+						<SongCard key={song._id} song={song} task={tasks[i]} />
 					))}
 				</Flex>
 			)}
