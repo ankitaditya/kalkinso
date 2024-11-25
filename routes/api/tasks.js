@@ -6,6 +6,8 @@ const Task = require('../../models/Tasks')
 const User = require('../../models/User')
 const AWS = require('aws-sdk')
 const ipAuth = require('../../middleware/ipAuth')
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 
 const s3 = new AWS.S3();
 
@@ -294,6 +296,9 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 		if(user){
 			for (let i = 0; i < tasks.length; i++) {
 				tasks[i].user = user
+				const client = new S3Client({region:'ap-south-1'});
+				const command = new GetObjectCommand({ Bucket: 'kalkinso.com', Key: `users/${req.user.id}/tasks/${tasks[i]._id.toString()}/cover.jpg` });
+				tasks[i].thumbnail = await getSignedUrl(client, command, { expiresIn: 3600*4 });
 				if(tasks[i].assigned.length>0){
 					console.log("Users: ",tasks[i].assigned.map(each=>each.user))
 					tasks[i].assigned = await User.find({ _id: {$in: tasks[i].assigned.map(each=>each.user)} }).select(['_id','first_name', 'last_name','avatar'])
