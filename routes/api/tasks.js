@@ -287,7 +287,7 @@ router.get('/', ipAuth, auth, async (req, res) => {
 
 async function checkFileExists(key) {
     try {
-      await destinationS3
+      await s3
         .headObject({
           Bucket: 'kalkinso.com',
           Key: key,
