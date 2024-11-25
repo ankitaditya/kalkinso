@@ -11,6 +11,10 @@ const TaskSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  thumbnail: {
+    // Task thumbnail
+    type: String
+  },
   short_description: {
     // Detailed description
     type: String,

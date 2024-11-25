@@ -11,7 +11,7 @@ const auth = require('../middleware/auth');
 
 const app = express();
 app.set("eventEmitter", new EventEmitter());
-var allowlist = ['http://localhost', 'https://localhost', 'https://localhost:3000', 'https://kalkinso.com', 'http://kalkinso.com', 'https://www.kalkinso.com', 'http://www.kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
+var allowlist = ['http://localhost', 'http://localhost:5173', 'https://localhost', 'https://localhost:3000', 'https://kalkinso.com', 'http://kalkinso.com', 'https://www.kalkinso.com', 'http://www.kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {
@@ -43,11 +43,11 @@ const authVerify = (token) => {
 app.use((req, res, next) => {
   // Example condition: apply frameguard only for certain routes
   // console.log(req.path.split('/')[1])
-  if(!req.hostname.includes('kalkinso.com')){
-    res.redirect('https://kalkinso.com'+req.path);
-    res.end();
-    helmet.frameguard({ action: 'deny' })(req, res, next);
-  }
+  // if(!req.hostname.includes('kalkinso.com')||!req.hostname.includes('localhost')){
+  //   res.redirect('https://kalkinso.com'+req.path);
+  //   res.end();
+  //   helmet.frameguard({ action: 'deny' })(req, res, next);
+  // }
   if (req.path.startsWith('/token=')||
       req.path.startsWith('/static')||
       req.path.startsWith('/3d/editor')||
@@ -83,6 +83,7 @@ app.use('/api/tasks', require('../routes/api/tasks'))
 app.use('/api/kalkiai', require('../routes/api/kalkiai'))
 app.use('/api/kits', require('../routes/api/kits'))
 app.use('/api/how-to', require('../routes/api/how_to'))
+app.use('/api/bucaudio', require('../routes/api/bucaudio'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));

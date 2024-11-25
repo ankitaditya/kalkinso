@@ -23,7 +23,7 @@ const TrackDetails = ({ track }) => {
 					fontSize={{ base: "xs", md: "sm" }}
 					color="zinc.500"
 					noOfLines={{ base: 1, md: undefined }}>
-					{track?.artistes.join(", ")}
+					{track?.org}
 				</Text>
 			</Flex>
 		</Flex>

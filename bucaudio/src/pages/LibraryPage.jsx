@@ -6,6 +6,7 @@ import { client } from "../api";
 
 const LibraryPage = () => {
 	const [songs, setSongs] = useState([]);
+	const [tasks, setTasks] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 
@@ -24,9 +25,38 @@ const LibraryPage = () => {
 			});
 	};
 
+	const fetchTasks = async () => {
+		setLoading(true);
+		setError(false);
+		await client
+			.get("/tasks/parent", {
+				baseURL: "http://localhost/api/",
+				headers: {
+					'X-Auth-Token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjcyMTIzMmM5OWEwZTJiZjY3YjAyZmY0In0sImlhdCI6MTczMjU1NTU3MiwiZXhwIjoxNzY0MDkxNTcyfQ.uie6RNs8UbdQMeV5AM0QEEFwTX-wxsIXLoseoHquYts'
+				}
+			})
+			.then((res) => {
+				setTasks(res.data);
+				setLoading(false);
+			})
+			.catch(() => {
+				setError(true);
+				setLoading(false);
+			});
+	};
+
 	useEffect(() => {
 		fetchSongs();
+		fetchTasks();
 	}, []);
+
+	useEffect(() => {
+		console.log(songs);
+	}, [songs]);
+
+	useEffect(() => {
+		console.log(tasks);
+	}, [tasks]);
 
 	return (
 		<Box
@@ -46,7 +76,7 @@ const LibraryPage = () => {
 					Discover interesting songs
 				</Text>
 			</Box>
-			{loading && songs.length < 1 && (
+			{loading && tasks.length < 1 && (
 				<Flex align="center" justify="center" color="accent.main" minH="20rem">
 					<AiOutlineLoading className="spin" size={36} />
 				</Flex>
@@ -59,8 +89,8 @@ const LibraryPage = () => {
 					xl: "repeat(5, 1fr)",
 				}}
 				gap={{ base: 3, md: 6 }}>
-				{songs.map((song) => (
-					<SongCard key={song._id} song={song} />
+				{songs.map((song, index) => (
+					tasks[index]?<SongCard key={song._id} song={song} task={tasks[index]} />:<></>
 				))}
 			</Grid>
 			{error && (

@@ -14,7 +14,7 @@ export const getPosts = () => async (dispatch) => {
 		dispatch({
 			type: actionTypes.POST_ERROR,
 			payload: {
-				msg: err.response.statusText,
+				msg: err?.response?.statusText,
 				status: err.response.status,
 			},
 		})
@@ -32,7 +32,7 @@ export const addLike = (postId) => async (dispatch) => {
 		dispatch({
 			type: actionTypes.POST_ERROR,
 			payload: {
-				msg: err.response.statusText,
+				msg: err?.response?.statusText,
 				status: err.response.status,
 			},
 		})
@@ -50,7 +50,7 @@ export const removeLike = (postId) => async (dispatch) => {
 		dispatch({
 			type: actionTypes.POST_ERROR,
 			payload: {
-				msg: err.response.statusText,
+				msg: err?.response?.statusText,
 				status: err.response.status,
 			},
 		})
@@ -114,7 +114,7 @@ export const getPost = (id) => async (dispatch) => {
 		dispatch({
 			type: actionTypes.POST_ERROR,
 			payload: {
-				msg: err.response.statusText,
+				msg: err?.response?.statusText,
 				status: err.response.status,
 			},
 		})

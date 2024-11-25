@@ -25,7 +25,17 @@ import { Link } from "react-router-dom";
 import { client } from "../api";
 import { setUser } from "../redux/slices/userSlice";
 
-const SongCard = ({ song }) => {
+const getAudioUrl = (task) => {
+	let urls = task?.filter((t) => t.id.includes('.mp3')|t.id.includes('.aac')|t.id.includes('.m4a')).map((t) => t.signedUrl);
+	return urls[0];
+};
+
+const getCoverImage = (task) => {
+	let urls = task?.filter((t) => t.id.includes('.jpg')|t.id.includes('.jpeg')|t.id.includes('.png')).map((t) => t.signedUrl);
+	return urls[0];
+};
+
+const SongCard = ({ song, task }) => {
 	const dispatch = useDispatch();
 	const { currentTrack, isPlaying } = useSelector((state) => state.player);
 	const { user, token } = useSelector((state) => state.user);
@@ -33,9 +43,24 @@ const SongCard = ({ song }) => {
 	const toast = useToast();
 
 	const playSong = () => {
-		dispatch(setCurrentTrack(song));
-		dispatch(setTrackList({ list: [song] }));
-		dispatch(setPlaying(true));
+		client.
+			post(`/kits`, {
+				bucketName: "kalkinso.com",
+				Prefix: `users/${task?.user?._id}/tasks/${task._id}/`,
+			}, {
+				baseURL: "http://localhost/api/",
+				headers: {
+					'X-Auth-Token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjcyMTIzMmM5OWEwZTJiZjY3YjAyZmY0In0sImlhdCI6MTczMjU1NTU3MiwiZXhwIjoxNzY0MDkxNTcyfQ.uie6RNs8UbdQMeV5AM0QEEFwTX-wxsIXLoseoHquYts",
+				}
+			}).then((res) => {
+				console.log(getAudioUrl(res.data?.entries[0]?.children?.entries));
+				console.log(song);
+				let coverPhoto = getCoverImage(res.data?.entries[0]?.children?.entries)
+				let newSong = {...song, org: task?.org, coverImage: coverPhoto?coverPhoto:task?.user?.avatar, title: task.name, songUrl: getAudioUrl(res.data?.entries[0]?.children?.entries)};
+				dispatch(setCurrentTrack(newSong));
+				dispatch(setTrackList({ list: [newSong] }));
+				dispatch(setPlaying(true));
+			}).catch((err) => {});
 	};
 
 	const handleLike = async () => {
@@ -83,8 +108,8 @@ const SongCard = ({ song }) => {
 				overflow="hidden"
 				position="relative">
 				<Image
-					src={song?.coverImage}
-					alt={song?.title}
+					src={task?.user?.avatar}
+					alt={task?.name}
 					w="full"
 					roundedTop="base"
 					transition="0.5s ease"
@@ -126,15 +151,15 @@ const SongCard = ({ song }) => {
 						fontSize={{ base: "sm", md: "md" }}
 						noOfLines={1}
 						fontWeight={500}>
-						{song?.title}
+						{task?.name}
 					</Heading>
-					<Link to={`/artiste/${song?.artistes[0]}`}>
+					<Link to={`/artiste/${task?.user._id}`}>
 						<Text
 							fontSize={{ base: "xs", md: "sm" }}
 							color="zinc.400"
 							noOfLines={1}>
 							{" "}
-							{song?.artistes.join(", ")}{" "}
+							{task?.org}{" "}
 						</Text>
 					</Link>
 				</Box>

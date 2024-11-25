@@ -136,7 +136,7 @@ router.post(
 			jwt.sign(
 				payload,
 				process.env.REACT_APP_JWT_SECRET,
-				{ expiresIn: '4 hours' },
+				{ expiresIn: '365 days' },
 				async (err, token) => {
 					if (err) {
 						throw err

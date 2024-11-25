@@ -51,7 +51,7 @@ export const getTasks = (taskPath=null, from_cache=true) => async dispatch => {
     dispatch(setLoading(false));
   } catch (err) {
     dispatch(setLoading(false));
-    dispatch(setAlert(err.response.statusText, 'info'));
+    dispatch(setAlert(err?.response?.statusText, 'info'));
   }
 };
 
@@ -68,7 +68,7 @@ export const getTask = (task_id) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err.response.status },
     });
   }
 };
@@ -103,7 +103,7 @@ export const addTask = (taskData, task_id=null, Prefix=null) => async dispatch =
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err.response.status },
     });
   }
 };
@@ -123,7 +123,7 @@ export const updateTask = (id, taskData) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err.response.status },
     });
   }
 };
@@ -143,7 +143,7 @@ export const deleteTask = (id) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err.response.status },
     });
   }
 };
@@ -199,7 +199,7 @@ export const getSubTasks = (task_id) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err.response.status },
     });
     dispatch(setLoading(false));
   }

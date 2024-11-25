@@ -283,6 +283,31 @@ router.get('/', ipAuth, auth, async (req, res) => {
 	}
 })
 
+router.get('/parent', ipAuth, auth, async (req, res) => {
+	try {
+		/* Write the code to get all tasks */
+		const tasks = await Task.find({ user: req.user.id, parentTasks: [] })
+		const user = await User.findById(req.user.id)
+		if (!tasks||tasks?.length===0) {
+			return res.status(404).json({ msg: `No tasks found, create tasks to get started!` })
+		}
+		if(user){
+			for (let i = 0; i < tasks.length; i++) {
+				tasks[i].user = user
+				if(tasks[i].assigned.length>0){
+					console.log("Users: ",tasks[i].assigned.map(each=>each.user))
+					tasks[i].assigned = await User.find({ _id: {$in: tasks[i].assigned.map(each=>each.user)} }).select(['_id','first_name', 'last_name','avatar'])
+					console.log("Users: ",tasks[i].assigned.map(each=>each))
+				}
+			}
+		}
+		res.json(tasks)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+})
+
 const deleteTasks = async (req, res) => {
 	const task = await Task.findById(req.params.id)
 		if (!task) {

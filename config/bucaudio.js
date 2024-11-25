@@ -5,12 +5,7 @@ const db = `mongodb+srv://dbUser:photosoto@cluster0.g8dz9qi.mongodb.net/bucaudio
 
 const getConnection = () => {
 	try {
-		return mongoose.createConnection(db,
-            {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            }
-        )
+		return mongoose.createConnection(db)
 	} catch (err) {
 		console.error(err.message)
 		process.exit(1)
