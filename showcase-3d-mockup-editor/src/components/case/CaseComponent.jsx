@@ -37,6 +37,38 @@ const PRODUCTS = {
     sceneTitle: 'T-Shirt Design',
     baseColorTextureIndex: 1,
     cameraOrbit: '0deg 90deg'
+  },
+  hoodie: {
+    label: 'Hoodie',
+    assetsFolderName: 'hoodie',
+    sceneTitle: 'Hoodie Design',
+    baseColorTextureIndex: 1,
+    cameraOrbit: '0deg 90deg',
+    fileName: 'hoodie.glb'
+  },
+  hoodieFuture: {
+    label: 'Hoodie Future',
+    assetsFolderName: 'hoodie-future',
+    sceneTitle: 'Hoodie Design',
+    baseColorTextureIndex: 1,
+    cameraOrbit: '0deg 90deg',
+    fileName: 'hoodie-future.glb'
+  },
+  hoodieMajestic: {
+    label: 'Hoodie Future',
+    assetsFolderName: 'hoodie-majestic',
+    sceneTitle: 'Hoodie Majestic',
+    baseColorTextureIndex: 1,
+    cameraOrbit: '0deg 90deg',
+    fileName: 'hoodie-majestic.glb'
+  },
+  hoodieMindfull: {
+    label: 'Hoodie Future',
+    assetsFolderName: 'hoodie-mindful',
+    sceneTitle: 'Hoodie Mindfull',
+    baseColorTextureIndex: 1,
+    cameraOrbit: '0deg 90deg',
+    fileName: 'hoodie-mindfull.glb'
   }
 };
 const WHITE_1_PX_IMAGE_PATH = `${process.env.NEXT_PUBLIC_URL_HOSTNAME}${process.env.NEXT_PUBLIC_URL}/cases/3d-mockup-editor/1x1-ffffffff.png`;
@@ -249,6 +281,7 @@ const CaseComponent = () => {
             opacity: mockupFullscreen ? '1' : '0'
           }}
         ></div>
+
         <div
           className={classNames({
             [classes.fullscreenMockupCenter]: mockupFullscreen
@@ -284,13 +317,15 @@ const CaseComponent = () => {
             )}
 
             {currentMockupUrl && (
+              <>
               <Mockup3DCanvas
                 isInteractive={mockupFullscreen}
                 imageUrl={currentMockupUrl}
-                modelUrl={`${process.env.NEXT_PUBLIC_URL_HOSTNAME}${process.env.NEXT_PUBLIC_URL}/cases/3d-mockup-editor/${productConfig.assetsFolderName}/scene.gltf`}
+                modelUrl={`${process.env.NEXT_PUBLIC_URL_HOSTNAME}${process.env.NEXT_PUBLIC_URL}/cases/3d-mockup-editor/${productConfig.assetsFolderName}/${productConfig?.fileName?productConfig.fileName:'scene.gltf'}`}
                 baseColorTextureIndex={productConfig.baseColorTextureIndex}
                 cameraOrbit={productConfig.cameraOrbit}
               />
+              </>
             )}
           </div>
         </div>
