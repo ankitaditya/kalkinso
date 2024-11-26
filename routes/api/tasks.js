@@ -311,7 +311,7 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 		if (kits&&kits?.expireAt>now) {
 			return res.json(JSON.parse(kits.selectedTask))
 		} else {
-			const regex = `/${req.user.id}.*/g`
+			const regex = new RegExp(req.user.id, 'g')
   			await Kits.deleteMany({ id: { $regex: regex } });
 		}
 
