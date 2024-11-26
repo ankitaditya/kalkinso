@@ -310,7 +310,11 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 		let now = new Date()
 		if (kits||kits?.expireAt>now) {
 			return res.json(JSON.parse(kits.selectedTask))
+		} else {
+			const regex = new RegExp(req.user.id, 'g');
+  			await Kits.deleteMany({ id: { $regex: regex } });
 		}
+
 		const tasks = await Task.find({ user: req.user.id, parentTasks: [] })
 		const user = await User.findById(req.user.id)
 		if (!tasks||tasks?.length===0) {
