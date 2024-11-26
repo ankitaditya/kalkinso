@@ -32,7 +32,7 @@ const PlayingBar = ({ time, track, onSeek, trackRef }) => {
 				</SliderThumb>
 			</Slider>
 			<Text fontSize="xs" color="zinc.500">
-				{track?.duration.split(".").join(":")}
+				{trackRef ? convertToMins(trackRef.duration) : "0:00"}
 			</Text>
 		</Flex>
 	);

@@ -24,43 +24,11 @@ import {
 import { Link } from "react-router-dom";
 import { client } from "../api";
 import { setUser } from "../redux/slices/userSlice";
-import metadata from "audio-metadata";
 
-const fetchAudioMetadata = async (signedUrl) => {
-    try {
-      // Fetch the audio file as a binary buffer
-      const response = await fetch(signedUrl, {
-        responseType: "arraybuffer", // Get the audio file as a buffer
-      });
-
-      const audioBuffer = Buffer.from(response.data); // Convert to Node.js Buffer
-      const meta = metadata.parse(audioBuffer, { duration: true }); // Parse metadata
-
-      if (meta && meta.duration) {
-        return meta.duration;
-      } else {
-        return 0;
-      }
-    } catch (err) {
-      return 0;
-    }
-  };
-
-const getAudioUrl = async (task) => {
+const getAudioUrl = (task) => {
 	let urls = task?.filter((t) => t.id.includes('.mp3')|t.id.includes('.aac')|t.id.includes('.m4a')).map((t) => t.signedUrl);
-	if(urls.length === 0) return null;
-	let duration = await fetchAudioMetadata(urls[0]);
-	return {audioUrl:urls[0], duration:getTime(duration)};
-};
-
-const getTime = (duration) => {
-	if(Math.floor(duration / 3600)>0){
-		return `${Math.floor(duration / 3600)}.${Math.floor(Math.floor(duration % 3600) / 60)}.${Math.floor(Math.floor(duration % 3600) % 60)}`
-	} else if(Math.floor(duration / 60) > 0){
-		return `${Math.floor(duration / 60)}.${Math.floor(duration % 60)}`
-	} else {
-		return `0.${Math.floor(duration)}`
-	}
+	if(urls.length === 0) return {audioUrl:null};
+	return {audioUrl:urls[0]};
 };
 
 const SongCard = ({ song, task }) => {
@@ -81,12 +49,11 @@ const SongCard = ({ song, task }) => {
 					'X-Auth-Token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjcyMTIzMmM5OWEwZTJiZjY3YjAyZmY0In0sImlhdCI6MTczMjU2NDE0OCwiZXhwIjoxNzY0MTAwMTQ4fQ.1v97cro-REbcfHC18qQQ5Jh08ZMknDBvJGehfXO8wiE",
 				}
 			}).then((res) => {
-				getAudioUrl(res.data?.entries[0]?.children?.entries).then(({audioUrl, duration}) => {
-					let newSong = {...song, org: task?.org, coverImage: task.thumbnail?task.thumbnail:task?.user?.avatar, title: task.name, songUrl: audioUrl, duration: duration};
-					dispatch(setCurrentTrack(newSong));
-					dispatch(setTrackList({ list: [newSong] }));
-					dispatch(setPlaying(true));
-				});
+				let { audioUrl } = getAudioUrl(res.data?.entries[0]?.children?.entries);
+				let newSong = {...song, org: task?.org, coverImage: task.thumbnail?task.thumbnail:task?.user?.avatar, title: task.name, songUrl: audioUrl};
+				dispatch(setCurrentTrack(newSong));
+				dispatch(setTrackList({ list: [newSong] }));
+				dispatch(setPlaying(true));
 			}).catch((err) => {});
 	};
 
