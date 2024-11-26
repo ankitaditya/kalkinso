@@ -4,6 +4,7 @@ const { body, validationResult } = require('express-validator')
 const auth = require('../../middleware/auth')
 const Task = require('../../models/Tasks')
 const User = require('../../models/User')
+const Kits = require('../../models/Kits')
 const AWS = require('aws-sdk')
 const ipAuth = require('../../middleware/ipAuth')
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
@@ -305,6 +306,11 @@ async function checkFileExists(key) {
 router.get('/parent', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
+		const kits = await Kits.findOne({ id: `${req.user.id}-demo` })
+		let now = new Date()
+		if (kits||kits.expireAt>now) {
+			return res.json(JSON.parse(kits.selectedTask))
+		}
 		const tasks = await Task.find({ user: req.user.id, parentTasks: [] })
 		const user = await User.findById(req.user.id)
 		if (!tasks||tasks?.length===0) {
@@ -328,6 +334,7 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 				}
 			}
 		}
+		new Kits({id: `${req.user.id}-demo`, selectedTask: JSON.stringify(tasks)}).save()
 		res.json(tasks)
 	} catch (err) {
 		console.error(err.message)
