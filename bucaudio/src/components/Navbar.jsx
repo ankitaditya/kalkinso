@@ -44,7 +44,7 @@ const MobileNav = () => {
 			<Flex align="center" justify="space-between" p={2}>
 				<Link to="/home" style={{cursor:"pointer"}}>
 					<Flex color="accent.main" align="center" gap={4}>
-						<img src={Logo} alt="BuCAudio" width="40" />
+						<img src={Logo} alt="KALKINSO KALKINSO BuCAudio" width="40" />
 
 						<Heading as="h1" fontWeight="semibold" fontSize="2xl">
 							BuCAudio
@@ -78,7 +78,7 @@ const DesktopNav = () => {
 			bg="zinc.900">
 			<Flex direction="column" minH="100vh" p={4}>
 				<Flex color="accent.main" align="center" gap={4} style={{cursor:"pointer"}}>
-					<img src={Logo} alt="BuCAudio" width="40" />
+					<img src={Logo} alt="KALKINSO KALKINSO BuCAudio" width="40" />
 					<Heading as="h1" fontWeight="semibold" fontSize="2xl">
 						BuCAudio
 					</Heading>

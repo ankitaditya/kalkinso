@@ -34,7 +34,7 @@ const Post = ({ post, user }) => {
             src={user?.image || "https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg"}
             className="rounded-circle"
             height="50"
-            alt="Avatar"
+            alt="KALKINSO Avatar"
             loading="lazy"
           />
         </Column>

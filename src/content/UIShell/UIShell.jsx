@@ -106,17 +106,17 @@ class UIShell extends React.Component {
                         <HeaderContainer 
                             render={({isSideNavExpanded, onClickSideNavExpand}) => (
                                 <div>
-                                    <Header aria-label="Kalkinso Platform">
+                                    <Header aria-label="KALKINSO Platform">
                                         {/* <SkipToContent />
                                         <HeaderMenuButton
                                             aria-label="Open menu"
                                             onClick={onClickSideNavExpand}
                                             isActive={isSideNavExpanded}
                                         /> */}
-                                        {!(window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))&&(<><HeaderName href="/#" prefix={<img src={brandLogo} alt="Kalkinso Logo" height={75} />}>
+                                        {!(window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))&&(<><HeaderName href="/#" prefix={<img src={brandLogo} alt="KALKINSO KALKINSO Logo" height={75} />}>
                                             KALKINSO
                                         </HeaderName>
-                                        <HeaderNavigation aria-label="Carbon React App">
+                                        <HeaderNavigation aria-label="KALKINSO App">
                                             <HeaderItemExplore />
                                             {/* <HeaderMenuItem href="/#/Contact">Contact</HeaderMenuItem> */}
                                             <HeaderMenuItem href="/#/how-to">How To</HeaderMenuItem>

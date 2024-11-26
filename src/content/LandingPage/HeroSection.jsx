@@ -33,7 +33,7 @@ const HeroSection = ({ButtonComponent}) => {
             {ButtonComponent}
           </Column>
           <Column lg={4} md={2} sm={2}>
-            <img src={logo} alt="Hero Image" className="hero-image" />
+            <img src={logo} alt="KALKINSO Hero Image" className="hero-image" />
           </Column>
       </Grid>
     </div>

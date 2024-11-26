@@ -17,7 +17,7 @@ const LinkTile = ({ link, title, body, url }) => {
                 <Column sm={4} md={4} lg={4}>
                     <UserAvatar
                         src={link}
-                        alt="Avatar"
+                        alt="KALKINSO Avatar"
                         className="img-fluid rounded-left"
                     />
                 </Column>

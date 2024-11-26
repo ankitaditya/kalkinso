@@ -103,7 +103,7 @@ class LandingPage extends Component {
                     <img
                       className="landing-page__illo"
                       src={`${process.env.PUBLIC_URL}/kalkinso-background.png`}
-                      alt="Carbon illustration"
+                      alt="KALKINSO Carbon illustration"
                     />
                   </Column>
                 </Grid>

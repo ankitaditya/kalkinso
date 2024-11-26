@@ -32,7 +32,7 @@ const HorizontalMusicCard = ({ song, onPlay }) => {
 				<Flex align="center" gap={{ base: 2, md: 4 }}>
 					<Image
 						src={song?.coverImage}
-						alt="album"
+						alt="KALKINSO album"
 						objectFit="cover"
 						w={{ base: 8, md: 10 }}
 						h={{ base: 8, md: 10 }}

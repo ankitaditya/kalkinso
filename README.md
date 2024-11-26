@@ -1,12 +1,12 @@
 <p align="center">
     <a href="http://kitura.io/">
-        <img src="./public/logo-new.png" height="100" alt="IBM Cloud">
+        <img src="./public/logo-new.png" height="100" alt="KALKINSO IBM Cloud">
     </a>
 </p>
 
 <p align="center">
-    <img src="https://img.shields.io/badge/platform-node-lightgrey.svg?style=flat" alt="platform">
-    <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
+    <img src="https://img.shields.io/badge/platform-node-lightgrey.svg?style=flat" alt="KALKINSO KALKINSO platform">
+    <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="KALKINSO KALKINSO Apache 2">
 </p>
 
 # Kalkinso Project

@@ -24,7 +24,7 @@ const AuthLayout = () => {
 				pl={6}
 				h={{ base: "full", md: "5rem" }}>
 				<Flex align="center" color="accent.main" justify="flex-start" gap={2}>
-					<img src={Logo} alt="BuCAudio" width="40" />
+					<img src={Logo} alt="KALKINSO BuCAudio" width="40" />
 					<Heading
 						fontWeight="semibold"
 						color="gray.200"
