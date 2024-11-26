@@ -254,7 +254,7 @@ router.post('/', auth, ipAuth, async (req, res) => {
 
 // Upload API
 router.post('/upload', ipAuth, auth, upload.single('file'), async (req, res) => {
-  const regex = new RegExp(req.user.id, 'g');
+  const regex = `/${req.user.id}.*/g`
   await Kits.deleteMany({ id: { $regex: regex } });
   const file = req.file;
   const params = JSON.parse(req.body.params);
@@ -297,7 +297,7 @@ router.post('/upload', ipAuth, auth, upload.single('file'), async (req, res) => 
 
 router.post('/copy', ipAuth, auth, async (req, res) => {
   try {
-    const regex = new RegExp(req.user.id, 'g');
+    const regex = `/${req.user.id}.*/g`
     await Kits.deleteMany({ id: { $regex: regex } });
     const { Bucket, CopySource, Key } = req.body;
     const copyParams = {
@@ -316,7 +316,7 @@ router.post('/copy', ipAuth, auth, async (req, res) => {
 
 router.put('/save', ipAuth, auth, async (req, res) => {
   try {
-    const regex = new RegExp(req.user.id, 'g');
+    const regex = `/${req.user.id}.*/g`
     await Kits.deleteMany({ id: { $regex: regex } });
     const { params } = req.body;
     await s3.putObject(params).promise();
