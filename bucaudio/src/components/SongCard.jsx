@@ -57,6 +57,8 @@ const getAudioUrl = async (task) => {
 const getTime = (duration) => {
 	if(Math.floor(duration / 60)>60){
 		return `${Math.floor(duration / 3600)}.${Math.floor(Math.floor(duration % 3600) / 60)}.${Math.floor(Math.floor(duration % 3600) % 60)}`
+	} else {
+		return `${Math.floor(duration / 60)}.${Math.floor(duration % 60)}`
 	}
 };
 
