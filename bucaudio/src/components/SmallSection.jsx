@@ -33,6 +33,7 @@ const SmallSection = ({ title, endpoint }) => {
 			})
 			.then((res) => {
 				setTasks(res.data);
+				setData(res.data);
 				setLoading(false);
 			})
 			.catch(() => {

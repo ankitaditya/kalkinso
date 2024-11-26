@@ -39,6 +39,7 @@ const LibraryPage = () => {
 			})
 			.then((res) => {
 				setTasks(res.data);
+				setSongs(res.data);
 				setTaskLoading(false);
 				setLoading(false);
 			})
