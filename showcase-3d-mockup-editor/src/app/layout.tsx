@@ -18,11 +18,11 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
         <meta
           name="description"
-          content="Kalkinso Software (OPC) Private Limited provides innovative software solutions and AI-powered tools to bring your ideas to life."
+          content="KALKINSO Software (OPC) Private Limited provides innovative software solutions and AI-powered tools to bring your ideas to life."
         />
-        <meta name="keywords" content="Kalkinso Software, AI tools, software solutions, innovative technology, AI-powered software, OPC Private Limited" />
-        <meta name="author" content="Kalkinso Software (OPC) Private Limited" />
-        <meta property="og:title" content="Kalkinso Software (OPC) Private Limited" />
+        <meta name="keywords" content="KALKINSO Software, AI tools, software solutions, innovative technology, AI-powered software, OPC Private Limited" />
+        <meta name="author" content="KALKINSO Software (OPC) Private Limited" />
+        <meta property="og:title" content="KALKINSO Software (OPC) Private Limited" />
         <meta property="og:image" content="%PUBLIC_URL%/logo-new.png" />
         <meta property="og:description" content="Bringing innovative software ideas to life with cutting-edge AI tools and solutions." />
         {`<script>

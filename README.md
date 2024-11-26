@@ -9,9 +9,9 @@
     <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="KALKINSO KALKINSO Apache 2">
 </p>
 
-# Kalkinso Project
+# KALKINSO Project
 
-Kalkinso is a web application built using Node.js and React, designed to provide a robust and scalable platform for modern web development. This project follows best practices and includes features such as health checks and application metric monitoring.
+KALKINSO is a web application built using Node.js and React, designed to provide a robust and scalable platform for modern web development. This project follows best practices and includes features such as health checks and application metric monitoring.
 
 ## Table of Contents
 
@@ -35,7 +35,7 @@ This application includes an opinionated set of components for modern web develo
 
 ## Installation
 
-To get started with the Kalkinso project, follow these steps:
+To get started with the KALKINSO project, follow these steps:
 
 1. Clone the repository:
     ```sh
@@ -63,11 +63,11 @@ To get started with the Kalkinso project, follow these steps:
 
 ## Usage
 
-To use the application, open your browser and navigate to `http://localhost:3000`. You can interact with the web interface and explore the features provided by the Kalkinso project.
+To use the application, open your browser and navigate to `http://localhost:3000`. You can interact with the web interface and explore the features provided by the KALKINSO project.
 
 ## API Endpoints
 
-The following are the main API endpoints available in the Kalkinso project:
+The following are the main API endpoints available in the KALKINSO project:
 
 - **User Authentication**
   - `POST /api/auth/register`: Register a new user
@@ -84,7 +84,7 @@ The following are the main API endpoints available in the Kalkinso project:
 
 ## Contributing
 
-We welcome contributions to the Kalkinso project. To contribute, follow these steps:
+We welcome contributions to the KALKINSO project. To contribute, follow these steps:
 
 1. Fork the repository.
 2. Create a new branch:
