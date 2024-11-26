@@ -308,7 +308,7 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 		/* Write the code to get all tasks */
 		const kits = await Kits.findOne({ id: `${req.user.id}-demo` })
 		let now = new Date()
-		if (kits||kits.expireAt>now) {
+		if (kits||kits?.expireAt>now) {
 			return res.json(JSON.parse(kits.selectedTask))
 		}
 		const tasks = await Task.find({ user: req.user.id, parentTasks: [] })
