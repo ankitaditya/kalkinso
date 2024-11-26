@@ -1,4 +1,3 @@
 User-agent: *
-Disallow:
-
-Sitemap: https://www.kalkinso.com/sitemap.xml
+Disallow: /
+Sitemap: https://bucaudio.kalkinso.com/sitemap.xml
