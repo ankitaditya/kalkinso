@@ -10,6 +10,7 @@ const auth = require('../middleware/auth');
 
 
 const app = express();
+app.use(limiter);
 app.set("eventEmitter", new EventEmitter());
 var allowlist = ['http://localhost', 'http://localhost:5173', 'https://bucaudio.kalkinso.com', 'https://localhost', 'https://localhost:3000', 'https://kalkinso.com', 'http://kalkinso.com', 'https://www.kalkinso.com', 'http://www.kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
 var corsOptionsDelegate = function (req, callback) {
@@ -48,6 +49,10 @@ app.use((req, res, next) => {
   //   res.end();
   //   helmet.frameguard({ action: 'deny' })(req, res, next);
   // }
+  if (req.headers["user-agent"].includes("SuspiciousBot")) {
+    res.status(403).send("Access Denied");
+    return;
+  }
   if (req.path.startsWith('/token=')||
       req.path.startsWith('/static')||
       req.path.startsWith('/3d/editor')||
