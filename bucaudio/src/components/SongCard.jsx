@@ -24,13 +24,12 @@ import {
 import { Link } from "react-router-dom";
 import { client } from "../api";
 import { setUser } from "../redux/slices/userSlice";
-import axios from "axios";
 import metadata from "audio-metadata";
 
 const fetchAudioMetadata = async (signedUrl) => {
     try {
       // Fetch the audio file as a binary buffer
-      const response = await axios.get(signedUrl, {
+      const response = await fetch(signedUrl, {
         responseType: "arraybuffer", // Get the audio file as a buffer
       });
 
