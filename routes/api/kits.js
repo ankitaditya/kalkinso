@@ -12,6 +12,7 @@ const fs = require('fs');
 const formidable = require('formidable');
 const ipAuth = require('../../middleware/ipAuth');
 const upload = multer({ dest: 'temp/upload/' });
+const Kits = require('../../models/Kits');
 
 const router = express.Router();
 const s3 = new AWS.S3();
@@ -91,7 +92,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
             title: fileName,
             icon: 'Document',
             fileType: fileName.split('.').pop(),
-            content: await getSignedUrl(client, command, { expiresIn: 3600 }),
+            content: await getSignedUrl(client, command, { expiresIn: 3600*4 }),
             size: fileContent.length,
         });
         return {
@@ -121,7 +122,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
                 title: fileKey,
                 icon: 'Document',
                 fileType: fileKey.split('.').pop(),
-                signedUrl: await getSignedUrl(client, command, { expiresIn: 3600 }),
+                signedUrl: await getSignedUrl(client, command, { expiresIn: 3600*4 }),
                 size: file.Size,
             });
         }
@@ -230,9 +231,20 @@ router.post('/delete', ipAuth, async (req, res) => {
   }
 });
 
-router.post('/', ipAuth, async (req, res) => {
+router.post('/', auth, ipAuth, async (req, res) => {
   try {
-    const result = await getFolderStructure(req.body.bucketName, req.body.Prefix);
+    const kits = await Kits.findOne({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}` }).sort({ date: -1 });
+    let kitsRecords = null;
+    let result = [];
+    let now = new Date();
+    if (!kits || kits.expireAt < now) {
+      await Kits.deleteMany({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}` });
+      result = await getFolderStructure(req.body.bucketName, req.body.Prefix);
+      kitsRecords = new Kits({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}`, selectedTask: JSON.stringify(result)});
+      await kitsRecords.save();
+    } else {
+      result = JSON.parse(kits.selectedTask)
+    }
     res.json(result);
   } catch (err) {
     console.error(err.message);
@@ -241,7 +253,9 @@ router.post('/', ipAuth, async (req, res) => {
 });
 
 // Upload API
-router.post('/upload', ipAuth, auth, upload.single('file'), (req, res) => {
+router.post('/upload', ipAuth, auth, upload.single('file'), async (req, res) => {
+  const regex = new RegExp(req.user.id, 'g');
+  await Kits.deleteMany({ id: { $regex: regex } });
   const file = req.file;
   const params = JSON.parse(req.body.params);
 
@@ -283,6 +297,8 @@ router.post('/upload', ipAuth, auth, upload.single('file'), (req, res) => {
 
 router.post('/copy', ipAuth, auth, async (req, res) => {
   try {
+    const regex = new RegExp(req.user.id, 'g');
+    await Kits.deleteMany({ id: { $regex: regex } });
     const { Bucket, CopySource, Key } = req.body;
     const copyParams = {
       Bucket: Bucket,
@@ -300,6 +316,8 @@ router.post('/copy', ipAuth, auth, async (req, res) => {
 
 router.put('/save', ipAuth, auth, async (req, res) => {
   try {
+    const regex = new RegExp(req.user.id, 'g');
+    await Kits.deleteMany({ id: { $regex: regex } });
     const { params } = req.body;
     await s3.putObject(params).promise();
     res.json({ msg: 'File saved successfully' });
