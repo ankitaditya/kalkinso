@@ -55,7 +55,7 @@ const PRODUCTS = {
     fileName: 'hoodie-future.glb'
   },
   hoodieMajestic: {
-    label: 'Hoodie Future',
+    label: 'Hoodie Majestic',
     assetsFolderName: 'hoodie-majestic',
     sceneTitle: 'Hoodie Majestic',
     baseColorTextureIndex: 1,
@@ -63,7 +63,7 @@ const PRODUCTS = {
     fileName: 'hoodie-majestic.glb'
   },
   hoodieMindfull: {
-    label: 'Hoodie Future',
+    label: 'Hoodie Mindfull',
     assetsFolderName: 'hoodie-mindful',
     sceneTitle: 'Hoodie Mindfull',
     baseColorTextureIndex: 1,
