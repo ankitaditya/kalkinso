@@ -11,7 +11,7 @@ const KitsSchema = new mongoose.Schema({
     },
     expireAt: {
         type: Date,
-        default: new Date(Date.now() + 3600 * 1000 * 4),
+        default: () => new Date(Date.now() + 4 * 60 * 60 * 1000),
     },
 })
 
