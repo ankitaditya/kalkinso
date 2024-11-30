@@ -110,7 +110,7 @@ const WalletPage = () => {
       const { paymentSessionId, returnUrl, orderId } = await response.data;
 
       // Load Cashfree SDK
-      const cashfree = await load({ mode: 'sandbox' }); // Use 'production' in live environment
+      const cashfree = await load({ mode: 'production' }); // Use 'production' in live environment
 
       // Configure payment options
       const paymentOptions = {
