@@ -136,10 +136,18 @@ const TaskSchema = new mongoose.Schema({
           type: Date,
           default: Date.now
         },
-        reaction: {
-          // Task reaction
-          type: Number
-        },
+        reaction: [
+          {
+            // Task reactions
+            user: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "User"
+            },
+            reaction: {
+              type: Number
+            }
+          }
+        ],
         attachments: [
           {
             // Task attachments
@@ -160,20 +168,37 @@ const TaskSchema = new mongoose.Schema({
               type: mongoose.Schema.Types.ObjectId,
               ref: "User"
             },
+            comment: {
+              type: mongoose.Schema.Types.ObjectId,
+            },
+            reactions: [
+              {
+                user: {
+                  type: mongoose.Schema.Types.ObjectId,
+                  ref: "User"
+                },
+                reaction: {
+                  // Task reaction
+                  type: Number
+                }
+              }
+            ]
           }
         ]
       }
     ],
-    reactions: {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      },
-      reaction: {
-        // Task reaction
-        type: Number
+    reactions: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User"
+        },
+        reaction: {
+          // Task reaction
+          type: Number
+        }
       }
-    }
+    ]
   },
   priority: {
     // Task priority

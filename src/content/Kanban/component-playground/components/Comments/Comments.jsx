@@ -20,8 +20,9 @@ import {
     ButtonOr,
     ButtonGroup } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuid4 } from 'uuid';
+import { useParams } from 'react-router-dom';
 
 const CommentPage = ({data, setData}) => {
     const [newComment, setNewComment] = useState('');
@@ -29,6 +30,9 @@ const CommentPage = ({data, setData}) => {
     const [attachment, setAttachment] = useState(null);
     const [replyingTo, setReplyingTo] = useState(null);
     const { user }  = useSelector((state) => state.auth);
+    const profile = useSelector((state) => state.profile);
+    const { taskPath } = useParams();
+    const dispatch = useDispatch();
 
     // useEffect(() => {
     //     console.log('comments: ', data);
@@ -45,32 +49,40 @@ const CommentPage = ({data, setData}) => {
     const handleAttachmentChange = (e) => {
         // console.log('attachment: ', e.target.files[0]);
         setAttachment(e.target.files[0]);
+        console.log(`users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${e.target.files[0].name}`);
     };
 
     const handleSubmit = (e) => {
         if (newComment || newReply) {
             const newEntry = newComment ?{
-                user_id: user?._id, 
-                comment_id: uuid4(),
+                user: user?._id, 
+                _id: uuid4(),
                 text: newComment,
-                attachment: attachment ? URL.createObjectURL(attachment) : null,
+                attachment: {
+                    type: attachment?.type,
+                    url: `users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${attachment?.name}`
+                },
                 timestamp: new Date().toLocaleString(),
-                likes: 0,
-                replies: []
+                reaction: [],
+                reply_to: []
             }: {
-                user_id: user?._id, 
-                comment_id: uuid4(),
+                user: user?._id, 
+                _id: uuid4(),
                 text: newReply,
-                attachment: attachment ? URL.createObjectURL(attachment) : null,
+                attachment: {
+                    type: attachment?.type,
+                    url: `users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${attachment?.name}`
+                },
                 timestamp: new Date().toLocaleString(),
-                likes: 0,
-                replies: []
+                reaction: [],
+                reply_to: []
             };
 
             if (replyingTo !== null) {
                 const updatedComments = [...data];
-                updatedComments[replyingTo.index].replies.push(newEntry);
+                updatedComments[replyingTo.index].reply_to.push(newEntry);
                 setData(updatedComments);
+
                 setReplyingTo(null);
             } else {
                 setData([newEntry, ...data]);
@@ -84,9 +96,9 @@ const CommentPage = ({data, setData}) => {
     const handleLike = (index, parentIndex = null) => {
         const updatedComments = [...data];
         if (parentIndex !== null) {
-            updatedComments[parentIndex].replies[index].likes += 1;
+            updatedComments[parentIndex].reply_to[index].reaction = [...updatedComments[parentIndex].reply_to[index].reaction, { user: user?._id, reaction: 1 }];
         } else {
-            updatedComments[index].likes += 1;
+            updatedComments[index].reaction = [...updatedComments[index].reaction, { user: user?._id, reaction: 1 }];
         }
         setData(updatedComments);
     };
@@ -94,7 +106,7 @@ const CommentPage = ({data, setData}) => {
     const handleDelete = (index, parentIndex = null) => {
         if (parentIndex !== null) {
             const updatedComments = [...data];
-            updatedComments[parentIndex].replies = updatedComments[parentIndex].replies.filter(
+            updatedComments[parentIndex].reply_to = updatedComments[parentIndex].reply_to.filter(
                 (_, i) => i !== index
             );
             setData(updatedComments);
@@ -105,7 +117,7 @@ const CommentPage = ({data, setData}) => {
 
     const handleEdit = (index, parentIndex = null) => {
         if (parentIndex !== null) {
-            const commentToEdit = data[parentIndex].replies[index];
+            const commentToEdit = data[parentIndex].reply_to[index];
             setNewComment(commentToEdit.text);
             handleDelete(index, parentIndex);
         } else {
@@ -146,9 +158,9 @@ const CommentPage = ({data, setData}) => {
                     )}
                     <CommentActions>
                         <CommentAction onClick={() => handleLike(index, parentIndex)}>
-                            <Icon name="thumbs up" /> {comment.likes} Likes
+                            <Icon name="thumbs up" /> {comment.reaction?.length} Likes
                         </CommentAction>
-                        <CommentAction onClick={() => handleReply({index,id:comment.comment_id})}>
+                        <CommentAction onClick={() => handleReply({index,id:comment._id})}>
                             <Icon name="reply" /> Reply
                         </CommentAction>
                         <CommentAction onClick={() => handleEdit(index, parentIndex)}>
@@ -162,10 +174,10 @@ const CommentPage = ({data, setData}) => {
                         </CommentAction>
                     </CommentActions>
                 </CommentContent>
-                {comment.replies && comment.replies.length > 0 && (
-                    <CommentGroup>{renderComments(comment.replies, index)}</CommentGroup>
+                {comment.reply_to && comment.reply_to.length > 0 && (
+                    <CommentGroup>{renderComments(comment.reply_to, index)}</CommentGroup>
                 )}
-                {replyingTo !== null && replyingTo.id === comment.comment_id && (
+                {replyingTo !== null && replyingTo.id === comment._id && (
                     <Form reply onSubmit={handleSubmit}>
                         <FormTextArea
                             placeholder={'Write a reply...'}
@@ -201,7 +213,7 @@ const CommentPage = ({data, setData}) => {
                     style={{ marginBottom: '-10px' }}
                     onChange={(e) => e?.target?.files?.length>0&&handleAttachmentChange(e)}
                 />
-                <Button style={{float:"right"}} icon="send" secondary />
+                <Button type="submit" style={{float:"right"}} icon="send" secondary />
             </Form>
             <CommentGroup>
                 {data.length > 0 ? (

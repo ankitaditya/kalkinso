@@ -4,6 +4,7 @@ const KitsSchema = new mongoose.Schema({
 	id: {
         type: String,
         required: true,
+        unique: true,
     },
     selectedTask: {
         type: String,
@@ -11,7 +12,7 @@ const KitsSchema = new mongoose.Schema({
     },
     expireAt: {
         type: Date,
-        default: () => new Date(Date.now() + 4 * 60 * 60 * 1000),
+        default: () => new Date(Date.now() + 48 * 60 * 60 * 1000),
     },
 })
 

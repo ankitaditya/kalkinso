@@ -92,7 +92,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
             title: fileName,
             icon: 'Document',
             fileType: fileName.split('.').pop(),
-            content: await getSignedUrl(client, command, { expiresIn: 3600*4 }),
+            content: await getSignedUrl(client, command, { expiresIn: 3600*48 }),
             size: fileContent.length,
         });
         return {
@@ -122,7 +122,7 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
                 title: fileKey,
                 icon: 'Document',
                 fileType: fileKey.split('.').pop(),
-                signedUrl: await getSignedUrl(client, command, { expiresIn: 3600*4 }),
+                signedUrl: await getSignedUrl(client, command, { expiresIn: 3600*48 }),
                 size: file.Size,
             });
         }
@@ -201,8 +201,18 @@ const getFolderStructure = async (bucketName, folderPrefix) => {
 };
   
 
-router.post('/delete', ipAuth, async (req, res) => {
+router.post('/delete', ipAuth, auth, async (req, res) => {
   try {
+    const regex = new RegExp(req.user.id, 'g')
+    await Kits.deleteMany({ id: { $regex: regex } });
+    await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': req.header('x-auth-token'),
+      },
+      body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+    });
     const { bucketName, Prefix, isTask } = req.body;
     const params = {
       Bucket: bucketName,
@@ -241,7 +251,10 @@ router.post('/', auth, ipAuth, async (req, res) => {
       await Kits.deleteMany({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}` });
       result = await getFolderStructure(req.body.bucketName, req.body.Prefix);
       kitsRecords = new Kits({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}`, selectedTask: JSON.stringify(result)});
-      await kitsRecords.save();
+      const checkKits = await Kits.findOne({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}` }).sort({ date: -1 });
+      if(!checkKits){
+        await kitsRecords.save();
+      }
     } else {
       result = JSON.parse(kits.selectedTask)
     }
@@ -256,6 +269,14 @@ router.post('/', auth, ipAuth, async (req, res) => {
 router.post('/upload', ipAuth, auth, upload.single('file'), async (req, res) => {
   const regex = new RegExp(req.user.id, 'g')
   await Kits.deleteMany({ id: { $regex: regex } });
+  await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-auth-token': req.header('x-auth-token'),
+    },
+    body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+  });
   const file = req.file;
   const params = JSON.parse(req.body.params);
 
@@ -299,6 +320,14 @@ router.post('/copy', ipAuth, auth, async (req, res) => {
   try {
     const regex = new RegExp(req.user.id, 'g')
     await Kits.deleteMany({ id: { $regex: regex } });
+    await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': req.header('x-auth-token'),
+      },
+      body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+    });
     const { Bucket, CopySource, Key } = req.body;
     const copyParams = {
       Bucket: Bucket,
@@ -318,6 +347,14 @@ router.put('/save', ipAuth, auth, async (req, res) => {
   try {
     const regex = new RegExp(req.user.id, 'g')
     await Kits.deleteMany({ id: { $regex: regex } });
+    await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-auth-token': req.header('x-auth-token'),
+      },
+      body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+    });
     const { params } = req.body;
     await s3.putObject(params).promise();
     res.json({ msg: 'File saved successfully' });

@@ -88,29 +88,10 @@ app.use('/api/kalkiai', require('../routes/api/kalkiai'))
 app.use('/api/kits', require('../routes/api/kits'))
 app.use('/api/how-to', require('../routes/api/how_to'))
 // app.use('/api/bucaudio', require('../routes/api/bucaudio'))
+app.use('/api/payments', require('../routes/api/payments'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));
-
-app.get("/api/progress", (req, res) => {
-  const eventEmitter = req.app.get("eventEmitter");
-
-  const onProgress = (data) => {
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
-  };
-
-  // Send headers for Server-Sent Events (SSE)
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-
-  eventEmitter.on("uploadProgress", onProgress);
-
-  req.on("close", () => {
-    eventEmitter.removeListener("uploadProgress", onProgress);
-    res.end();
-  });
-});
 
 // app.use('/api/config', require('../routes/api/config'))
 // app.get('/3d/editor', (req, res) => {

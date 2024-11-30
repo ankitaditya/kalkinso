@@ -27,6 +27,9 @@ router.post(
 			return res.status(400).json({ errors: errors.array() })
 		}
 
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+
 		const { task, task_id, Prefix } = req.body
 
 		try {
@@ -220,6 +223,8 @@ router.put('/:id', ipAuth, auth, async (req, res) => {
 	const { taskFields } = req.body
 
 	try {
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
 		/* Write the code to update task */
 		let task = await Task.findById(req.params.id)
 		if (!taskFields) {
@@ -263,6 +268,14 @@ router.put('/:id', ipAuth, auth, async (req, res) => {
 
 router.get('/', ipAuth, auth, async (req, res) => {
 	try {
+		const kits = await Kits.findOne({ id: `${req.user.id}-tasks` })
+		let now = new Date()
+		if (kits&&kits?.expireAt>now) {
+			return res.json(JSON.parse(kits.selectedTask))
+		} else {
+			const regex = new RegExp(req.user.id, 'g')
+  			await Kits.deleteMany({ id: { $regex: regex } });
+		}
 		/* Write the code to get all tasks */
 		const tasks = await Task.find({ user: req.user.id })
 		const user = await User.findById(req.user.id)
@@ -278,6 +291,10 @@ router.get('/', ipAuth, auth, async (req, res) => {
 					console.log("Users: ",tasks[i].assigned.map(each=>each))
 				}
 			}
+		}
+		const checkKits = await Kits.findOne({ id: `${req.user.id}-tasks` })
+		if(!checkKits){
+			new Kits({id: `${req.user.id}-tasks`, selectedTask: JSON.stringify(tasks)}).save()
 		}
 		res.json(tasks)
 	} catch (err) {
@@ -327,7 +344,7 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 				const command = new GetObjectCommand({ Bucket: 'kalkinso.com', Key: `users/${req.user.id}/tasks/${tasks[i]._id.toString()}/cover.jpg` });
 				const FileExists = await checkFileExists(`users/${req.user.id}/tasks/${tasks[i]._id.toString()}/cover.jpg`)
 				if(FileExists){
-					tasks[i].thumbnail = await getSignedUrl(client, command, { expiresIn: 3600*4 });
+					tasks[i].thumbnail = await getSignedUrl(client, command, { expiresIn: 3600*48 });
 				} else {
 					tasks[i].thumbnail = null;
 				}
@@ -338,7 +355,10 @@ router.get('/parent', ipAuth, auth, async (req, res) => {
 				}
 			}
 		}
-		new Kits({id: `${req.user.id}-demo`, selectedTask: JSON.stringify(tasks)}).save()
+		const checkKits = await Kits.findOne({ id: `${req.user.id}-demo` })
+		if(!checkKits){
+			new Kits({id: `${req.user.id}-demo`, selectedTask: JSON.stringify(tasks)}).save()
+		}
 		res.json(tasks)
 	} catch (err) {
 		console.error(err.message)
@@ -400,7 +420,206 @@ router.delete('/:id', ipAuth, auth, async (req, res) => {
 	}
 })
 
+router.post('/comment/:id', ipAuth, auth, async (req, res) => {
+	const { commentObject } = req.body
 
+	try {
+		/* Write the code to add comment */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		task.analytics.commenters.unshift(commentObject)
+		await task.save()
+		res.json(task.analytics.commenters)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.delete('/comment/:id/:comment_id', ipAuth, auth, async (req, res) => {
+	try {
+		/* Write the code to delete comment */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const removeIndex = task.analytics.commenters.map(item => item.id).indexOf(req.params.comment_id)
+		task.analytics.commenters.splice(removeIndex, 1)
+		await task.save()
+		res.json(task.analytics.commenters)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.put('/comment/:id/:comment_id', ipAuth, auth, async (req, res) => {
+	const { commentObject } = req.body
+
+	try {
+		/* Write the code to update comment */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const removeIndex = task.analytics.commenters.map(item => item.id).indexOf(req.params.comment_id)
+		task.analytics.commenters[removeIndex] = commentObject
+		await task.save()
+		res.json(task.analytics.commenters)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.post('/reaction/:id/:comment_id', ipAuth, auth, async (req, res) => {
+	const { reactionObject } = req.body
+
+	try {
+		/* Write the code to add reaction */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const comment = task.analytics.commenters.find((comment) => comment.id === req.params.comment_id)
+		comment.reaction.unshift(reactionObject)
+		await task.save()
+		res.json(task.analytics.commenters)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.post('/reply/:id/:comment_id', ipAuth, auth, async (req, res) => {
+	const { replyObject } = req.body
+
+	try {
+		/* Write the code to add reply */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const comment = task.analytics.commenters.find((comment) => comment.id === req.params.comment_id)
+		comment.replies.unshift(replyObject)
+		await task.save()
+		res.json(task.analytics.commenters)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.delete('/reply/:id/:comment_id/:reply_id', ipAuth, auth, async (req, res) => {
+	try {
+		/* Write the code to delete reply */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const comment = task.analytics.commenters.find((comment) => comment.id === req.params.comment_id)
+		const removeIndex = comment.replies.map(item => item.id).indexOf(req.params.reply_id)
+		comment.replies.splice(removeIndex, 1)
+		await task.save()
+		res.json(task.analytics.commenters)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.put('/reply/:id/:comment_id/:reply_id', ipAuth, auth, async (req, res) => {
+	const { replyObject } = req.body
+
+	try {
+		/* Write the code to update reply */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const comment = task.analytics.commenters.find((comment) => comment.id === req.params.comment_id)
+		const removeIndex = comment.replies.map(item => item.id).indexOf(req.params.reply_id)
+		comment.replies[removeIndex] = replyObject
+		await task.save()
+		res.json(task.analytics.commenters)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.post('/attachment/:id', ipAuth, auth, async (req, res) => {
+	const { attachmentObject } = req.body
+
+	try {
+		/* Write the code to add attachment */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		task.attachments.unshift(attachmentObject)
+		await task.save()
+		res.json(task.attachments)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.delete('/attachment/:id/:attachment_id', ipAuth, auth, async (req, res) => {
+	try {
+		/* Write the code to delete attachment */
+		const task = await Task.findById(req.params.id)
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const removeIndex = task.attachments.map(item => item.id).indexOf(req.params.attachment_id)
+		task.attachments.splice(removeIndex, 1)
+		await task.save()
+		res.json(task.attachments)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
 
 
 module.exports = router

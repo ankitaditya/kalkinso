@@ -211,3 +211,153 @@ export const setDeleteFile = (context) => {
       payload: context,
     };
 }
+
+export const addComment = (task_id, comment) => async dispatch => {
+  try {
+    const res = await axios.post(`/api/tasks/comment/${task_id}`, comment);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const addReaction = (task_id, reaction) => async dispatch => {
+  try {
+    const res = await axios.post(`/api/tasks/reaction/${task_id}`, reaction);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const addAttachment = (task_id, attachment) => async dispatch => {
+  try {
+    const res = await axios.post(`/api/tasks/attachment/${task_id}`, attachment);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const deleteAttachment = (task_id, attachment) => async dispatch => {
+  try {
+    const res = await axios.post(`/api/tasks/delete-attachment/${task_id}`, attachment);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const addReply = (task_id, comment_id, reply) => async dispatch => {
+  try {
+    const res = await axios.post(`/api/tasks/reply/${task_id}/${comment_id}`, reply);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const deleteComment = (task_id, comment_id) => async dispatch => {
+  try {
+    const res = await axios.delete(`/api/tasks/comment/${task_id}/${comment_id}`);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const deleteReply = (task_id, comment_id, reply_id) => async dispatch => {
+  try {
+    const res = await axios.delete(`/api/tasks/reply/${task_id}/${comment_id}/${reply_id}`);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const updateComment = (task_id, comment_id, comment) => async dispatch => {
+  try {
+    const res = await axios.put(`/api/tasks/comment/${task_id}/${comment_id}`, comment);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const updateReply = (task_id, comment_id, reply_id, reply) => async dispatch => {
+  try {
+    const res = await axios.put(`/api/tasks/reply/${task_id}/${comment_id}/${reply_id}`, reply);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const addCommentReaction = (task_id, comment_id, reaction) => async dispatch => {
+  try {
+    const res = await axios.post(`/api/tasks/comment/reaction/${task_id}/${comment_id}`, reaction);
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};

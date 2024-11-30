@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Function to generate a signed URL
-export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600*4) {
+export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600*48) {
     try {
       // Create a GetObjectCommand with the bucket and object key
       const body = JSON.stringify({

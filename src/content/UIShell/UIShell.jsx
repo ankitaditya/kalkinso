@@ -60,6 +60,8 @@ import Resume from "./Resume";
 import PrivacyPolicy from "./PrivacyPolicy/PrivacyPolicy";
 import TermsNConditions from "./TermsNConditions/TermsNConditions";
 import Footer from "./Footer/Footer";
+import WalletPage from "../Wallet";
+import PaymentStatus from "../Wallet/PaymentStatus";
 // import Notification from '../../components/Notification';
 
 
@@ -195,6 +197,10 @@ class UIShell extends React.Component {
                             <Route path="how-to" element={<HowToPage />} />
                             <Route path="test-component" element={<PrivateRoute Component={AIReact} config={AIReactChatConfig} />} />
                             <Route path="test-dashboard" element={<PrivateRoute Component={AIReact} config={AIReactDashboardConfig} />} />
+                            <Route path="wallet">
+                                <Route path="" element={<PrivateRoute Component={WalletPage} />} />
+                                <Route path=":orderId" element={<PrivateRoute Component={PaymentStatus} />} />
+                            </Route>
                             <Route path="ankit.see" element={
                                     <Resume />
                                 } />
