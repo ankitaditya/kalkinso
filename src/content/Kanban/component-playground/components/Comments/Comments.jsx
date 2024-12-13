@@ -26,6 +26,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { addComment, addCommentReaction, addReaction, addReply, deleteComment, deleteCommentReaction, deleteReply, updateComment } from '../../../../../actions/task';
 import { formatDistanceToNow } from 'date-fns';
+import Thumbnail from './Thumbnail';
 
 const CommentPage = ({data, setData}) => {
     const [newComment, setNewComment] = useState('');
@@ -66,7 +67,8 @@ const CommentPage = ({data, setData}) => {
                 setAttachment({
                     name: e.target.files[0].name,
                     type: e.target.files[0].type,
-                    url: response.data.url,
+                    url: `users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${e.target.files[0].name}`,
+                    signedUrl: response.data.url,
                 });
             }).catch((error) => {
                 console.error('Error uploading file:', error);
@@ -166,10 +168,10 @@ const CommentPage = ({data, setData}) => {
         console.log('attachment: ', attachment);
         if(Object.keys(attachment).length === 0) return <></>;
         if (attachment?.type?.includes('image')) {
-            return <Image src={attachment?.url} style={{ margin: '5px' }} size='tiny' />;
+            return <Thumbnail src={attachment?.signedUrl?attachment?.signedUrl:attachment?.url} alt={attachment?.name} relative={attachment?.signedUrl?false:true} />;
         } else {
             return (
-                <Image src={`https://via.placeholder.com/100?text=${attachment.name}`} style={{ margin: '5px' }} size='tiny' />
+                <Thumbnail src={`https://via.placeholder.com/100?text=${attachment.name}`} alt={attachment?.name} relative={false} />
             );
         }
     };

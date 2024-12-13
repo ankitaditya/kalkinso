@@ -148,19 +148,18 @@ const TaskSchema = new mongoose.Schema({
             }
           }
         ],
-        attachments: [
-          {
-            // Task attachments
-            type: {
-              type: String,
-              required: true
-            },
-            url: {
-              type: String,
-              required: true
-            }
+        attachment: {
+          // Task attachments
+          type: {
+            type: String,
+          },
+          name: {
+            type: String,
+          },
+          url: {
+            type: String,
           }
-        ],
+        },
         reply_to: [
           {
             // Users who can comment on the task
