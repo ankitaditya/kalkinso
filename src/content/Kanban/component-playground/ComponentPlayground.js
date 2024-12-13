@@ -407,10 +407,10 @@ const App = ({breadcrumb}) => {
       </Cascade>
       
 
-      {contentSwitch?.name==='one'&&(<Cascade grid>
+      {contentSwitch?.name==='one'&&!taskPath.includes('create')&&(<Cascade grid>
         {cardsComponent}
       </Cascade>)}
-      {contentSwitch?.name==='two'&&(
+      {contentSwitch?.name==='two'&&!taskPath.includes('create')&&(
         // <Cascade grid>
         //   <Column key={`comments-input-box`} lg={16} md={8} sm={4} style={{
         //     // stylelint-disable-next-line carbon/layout-token-use
