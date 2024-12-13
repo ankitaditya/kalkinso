@@ -304,6 +304,9 @@ router.post('/upload', ipAuth, auth, upload.single('file'), async (req, res) => 
     req.app.get("eventEmitter").emit("httpUploadProgress", [progress]);
   });
 
+  const client = new S3Client({region:'ap-south-1'});
+  const command = new GetObjectCommand({ Bucket: params.Bucket, Key: params.Key });
+
   s3Upload.send((err, data) => {
     fs.unlinkSync(file.path); // Delete temp file after upload
     if (err) {
@@ -311,7 +314,9 @@ router.post('/upload', ipAuth, auth, upload.single('file'), async (req, res) => 
       res.status(500).json({ error: 'Failed to upload file' });
     } else {
       console.log('Upload complete:', data.Location);
-      res.json({ success: true, url: data.Location });
+      getSignedUrl(client, command, { expiresIn: 3600*48 }).then((url) => {
+        res.json({ success: true, url });
+      });
     }
   });
 });

@@ -294,7 +294,11 @@ router.get('/', ipAuth, auth, async (req, res) => {
 		}
 		const checkKits = await Kits.findOne({ id: `${req.user.id}-tasks` })
 		if(!checkKits){
+			try {
 			new Kits({id: `${req.user.id}-tasks`, selectedTask: JSON.stringify(tasks)}).save()
+			} catch (err) {
+				
+			}
 		}
 		res.json(tasks)
 	} catch (err) {
@@ -409,6 +413,16 @@ const deleteTasks = async (req, res) => {
 router.delete('/:id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to delete task */
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		const response = await deleteTasks(req, res)
 		if(response){
 			return res.status(404).json(response)
@@ -426,15 +440,26 @@ router.post('/comment/:id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to add comment */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
 		if (task.user.toString() !== req.user.id) {
 			return res.status(401).json({ msg: 'User not authorized' })
 		}
-		task.analytics.commenters.unshift(commentObject)
+		let {_id, ...newCommentObject} = commentObject;
+		task.analytics.commenters.unshift(newCommentObject)
 		await task.save()
-		res.json(task.analytics.commenters)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -446,6 +471,16 @@ router.delete('/comment/:id/:comment_id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to delete comment */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -455,7 +490,7 @@ router.delete('/comment/:id/:comment_id', ipAuth, auth, async (req, res) => {
 		const removeIndex = task.analytics.commenters.map(item => item.id).indexOf(req.params.comment_id)
 		task.analytics.commenters.splice(removeIndex, 1)
 		await task.save()
-		res.json(task.analytics.commenters)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -469,6 +504,16 @@ router.put('/comment/:id/:comment_id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to update comment */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -478,7 +523,7 @@ router.put('/comment/:id/:comment_id', ipAuth, auth, async (req, res) => {
 		const removeIndex = task.analytics.commenters.map(item => item.id).indexOf(req.params.comment_id)
 		task.analytics.commenters[removeIndex] = commentObject
 		await task.save()
-		res.json(task.analytics.commenters)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -492,6 +537,16 @@ router.post('/reaction/:id/:comment_id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to add reaction */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -501,7 +556,73 @@ router.post('/reaction/:id/:comment_id', ipAuth, auth, async (req, res) => {
 		const comment = task.analytics.commenters.find((comment) => comment.id === req.params.comment_id)
 		comment.reaction.unshift(reactionObject)
 		await task.save()
-		res.json(task.analytics.commenters)
+		res.json(task)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.delete('/reaction/:id/:comment_id', ipAuth, auth, async (req, res) => {
+
+	try {
+		/* Write the code to add reaction */
+		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const comment = task.analytics.commenters.find((comment) => comment.id === req.params.comment_id)
+		const removeIndex = comment.reaction.map(item => item.id).indexOf(req.params.reaction_id)
+		comment.reaction.splice(removeIndex, 1)
+		await task.save()
+		res.json(task)
+	} catch (err) {
+		console.error(err.message)
+		res.status(500).json({ msg: 'Server error' })
+	}
+}
+)
+
+router.post('/reaction/:id', ipAuth, auth, async (req, res) => {
+	const { reactionObject } = req.body
+
+	try {
+		/* Write the code to add reaction */
+		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
+		if (!task) {
+			return res.status(404).json({ msg: 'Task not found' })
+		}
+		if (task.user.toString() !== req.user.id) {
+			return res.status(401).json({ msg: 'User not authorized' })
+		}
+		const reactions = task.analytics.reactions
+		reactions.unshift(reactionObject)
+		await task.save()
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -515,6 +636,16 @@ router.post('/reply/:id/:comment_id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to add reply */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -524,7 +655,7 @@ router.post('/reply/:id/:comment_id', ipAuth, auth, async (req, res) => {
 		const comment = task.analytics.commenters.find((comment) => comment.id === req.params.comment_id)
 		comment.replies.unshift(replyObject)
 		await task.save()
-		res.json(task.analytics.commenters)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -536,6 +667,16 @@ router.delete('/reply/:id/:comment_id/:reply_id', ipAuth, auth, async (req, res)
 	try {
 		/* Write the code to delete reply */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -546,7 +687,7 @@ router.delete('/reply/:id/:comment_id/:reply_id', ipAuth, auth, async (req, res)
 		const removeIndex = comment.replies.map(item => item.id).indexOf(req.params.reply_id)
 		comment.replies.splice(removeIndex, 1)
 		await task.save()
-		res.json(task.analytics.commenters)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -560,6 +701,16 @@ router.put('/reply/:id/:comment_id/:reply_id', ipAuth, auth, async (req, res) =>
 	try {
 		/* Write the code to update reply */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -570,7 +721,7 @@ router.put('/reply/:id/:comment_id/:reply_id', ipAuth, auth, async (req, res) =>
 		const removeIndex = comment.replies.map(item => item.id).indexOf(req.params.reply_id)
 		comment.replies[removeIndex] = replyObject
 		await task.save()
-		res.json(task.analytics.commenters)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -584,6 +735,16 @@ router.post('/attachment/:id', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to add attachment */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -592,7 +753,7 @@ router.post('/attachment/:id', ipAuth, auth, async (req, res) => {
 		}
 		task.attachments.unshift(attachmentObject)
 		await task.save()
-		res.json(task.attachments)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })
@@ -604,6 +765,16 @@ router.delete('/attachment/:id/:attachment_id', ipAuth, auth, async (req, res) =
 	try {
 		/* Write the code to delete attachment */
 		const task = await Task.findById(req.params.id)
+		const regex = new RegExp(req.user.id, 'g')
+		await Kits.deleteMany({ id: { $regex: regex } });
+		await fetch(`${req.protocol}://${req.hostname}/api/kits`, {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json',
+			'x-auth-token': req.header('x-auth-token'),
+			},
+			body: JSON.stringify({ bucketName: req.body.bucketName, Prefix: `users/${req.user.id}/tasks/` }),
+		});
 		if (!task) {
 			return res.status(404).json({ msg: 'Task not found' })
 		}
@@ -613,7 +784,7 @@ router.delete('/attachment/:id/:attachment_id', ipAuth, auth, async (req, res) =
 		const removeIndex = task.attachments.map(item => item.id).indexOf(req.params.attachment_id)
 		task.attachments.splice(removeIndex, 1)
 		await task.save()
-		res.json(task.attachments)
+		res.json(task)
 	} catch (err) {
 		console.error(err.message)
 		res.status(500).json({ msg: 'Server error' })

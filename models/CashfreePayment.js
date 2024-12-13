@@ -11,6 +11,10 @@ const CashfreePaymentSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
   paymentSessionId: {
     type: String,
     required: true,

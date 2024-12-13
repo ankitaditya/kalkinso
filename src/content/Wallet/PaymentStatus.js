@@ -30,6 +30,7 @@ const PaymentStatus = () => {
             dispatch(setLoading(true));
             setTimeout(() => {
                 navigate('/wallet');
+                window.location.reload();
                 dispatch(setLoading(false));
             }, 1000);
         }, 5000);
@@ -79,6 +80,7 @@ const PaymentStatus = () => {
                   <div style={{ textAlign: 'left' }}>
                     <p><strong>Order ID:</strong> {paymentStatus.orderId}</p>
                     <p><strong>Status:</strong> {paymentStatus.paymentStatus}</p>
+                    <p><strong>Description:</strong> {paymentStatus.description}</p>
                     <p><strong>Amount:</strong> ₹{paymentStatus.amount}</p>
                   </div>
                 )}

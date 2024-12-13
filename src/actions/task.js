@@ -212,9 +212,9 @@ export const setDeleteFile = (context) => {
     };
 }
 
-export const addComment = (task_id, comment) => async dispatch => {
+export const addComment = (task_id, commentObject) => async dispatch => {
   try {
-    const res = await axios.post(`/api/tasks/comment/${task_id}`, comment);
+    const res = await axios.post(`/api/tasks/comment/${task_id}`, {commentObject});
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -227,9 +227,9 @@ export const addComment = (task_id, comment) => async dispatch => {
   }
 };
 
-export const addReaction = (task_id, reaction) => async dispatch => {
+export const addReaction = (task_id, reactionObject) => async dispatch => {
   try {
-    const res = await axios.post(`/api/tasks/reaction/${task_id}`, reaction);
+    const res = await axios.post(`/api/tasks/reaction/${task_id}`, {reactionObject});
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -242,9 +242,9 @@ export const addReaction = (task_id, reaction) => async dispatch => {
   }
 };
 
-export const addAttachment = (task_id, attachment) => async dispatch => {
+export const addAttachment = (task_id, attachmentObject) => async dispatch => {
   try {
-    const res = await axios.post(`/api/tasks/attachment/${task_id}`, attachment);
+    const res = await axios.post(`/api/tasks/attachment/${task_id}`, {attachmentObject});
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -259,7 +259,7 @@ export const addAttachment = (task_id, attachment) => async dispatch => {
 
 export const deleteAttachment = (task_id, attachment) => async dispatch => {
   try {
-    const res = await axios.post(`/api/tasks/delete-attachment/${task_id}`, attachment);
+    const res = await axios.delete(`/api/tasks/delete-attachment/${task_id}/${attachment}`);
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -272,9 +272,9 @@ export const deleteAttachment = (task_id, attachment) => async dispatch => {
   }
 };
 
-export const addReply = (task_id, comment_id, reply) => async dispatch => {
+export const addReply = (task_id, comment_id, replyObject) => async dispatch => {
   try {
-    const res = await axios.post(`/api/tasks/reply/${task_id}/${comment_id}`, reply);
+    const res = await axios.post(`/api/tasks/reply/${task_id}/${comment_id}`, {replyObject});
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -317,9 +317,9 @@ export const deleteReply = (task_id, comment_id, reply_id) => async dispatch => 
   }
 };
 
-export const updateComment = (task_id, comment_id, comment) => async dispatch => {
+export const updateComment = (task_id, comment_id, commentObject) => async dispatch => {
   try {
-    const res = await axios.put(`/api/tasks/comment/${task_id}/${comment_id}`, comment);
+    const res = await axios.put(`/api/tasks/comment/${task_id}/${comment_id}`, {commentObject});
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -332,9 +332,9 @@ export const updateComment = (task_id, comment_id, comment) => async dispatch =>
   }
 };
 
-export const updateReply = (task_id, comment_id, reply_id, reply) => async dispatch => {
+export const updateReply = (task_id, comment_id, reply_id, replyObject) => async dispatch => {
   try {
-    const res = await axios.put(`/api/tasks/reply/${task_id}/${comment_id}/${reply_id}`, reply);
+    const res = await axios.put(`/api/tasks/reply/${task_id}/${comment_id}/${reply_id}`, {replyObject});
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,
@@ -347,9 +347,24 @@ export const updateReply = (task_id, comment_id, reply_id, reply) => async dispa
   }
 };
 
-export const addCommentReaction = (task_id, comment_id, reaction) => async dispatch => {
+export const addCommentReaction = (task_id, comment_id, reactionObject) => async dispatch => {
   try {
-    const res = await axios.post(`/api/tasks/comment/reaction/${task_id}/${comment_id}`, reaction);
+    const res = await axios.post(`/api/tasks/reaction/${task_id}/${comment_id}`, {reactionObject});
+    dispatch({
+      type: UPDATE_TASK,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: TASKS_ERROR,
+      payload: { msg: err?.response?.statusText, status: err.response.status },
+    });
+  }
+};
+
+export const deleteCommentReaction = (task_id, comment_id) => async dispatch => {
+  try {
+    const res = await axios.delete(`/api/tasks/reaction/${task_id}/${comment_id}`);
     dispatch({
       type: UPDATE_TASK,
       payload: res.data,

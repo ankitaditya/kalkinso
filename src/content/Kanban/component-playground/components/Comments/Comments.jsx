@@ -23,20 +23,18 @@ import 'semantic-ui-css/semantic.min.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuid4 } from 'uuid';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { addComment, addCommentReaction, addReaction, addReply, deleteComment, deleteCommentReaction, deleteReply, updateComment } from '../../../../../actions/task';
+import { formatDistanceToNow } from 'date-fns';
 
 const CommentPage = ({data, setData}) => {
     const [newComment, setNewComment] = useState('');
     const [newReply, setNewReply] = useState('');
     const [attachment, setAttachment] = useState(null);
     const [replyingTo, setReplyingTo] = useState(null);
-    const { user }  = useSelector((state) => state.auth);
     const profile = useSelector((state) => state.profile);
     const { taskPath } = useParams();
     const dispatch = useDispatch();
-
-    // useEffect(() => {
-    //     console.log('comments: ', data);
-    // }, [data]);
 
     const handleCommentChange = (e) => {
         setNewComment(e.target.value);
@@ -48,32 +46,56 @@ const CommentPage = ({data, setData}) => {
 
     const handleAttachmentChange = (e) => {
         // console.log('attachment: ', e.target.files[0]);
-        setAttachment(e.target.files[0]);
+        let file = e.target.files[0];
+        if (!file) {
+            console.error('No file selected');
+            return;
+        }
+        const params = {
+            Bucket: 'kalkinso.com',
+            Key: `users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${e.target.files[0].name}`,
+            ContentType: file.type,
+        };
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('params', JSON.stringify(params));
+        axios.post('/api/kits/upload', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            }}).then((response) => {
+                setAttachment({
+                    name: e.target.files[0].name,
+                    type: e.target.files[0].type,
+                    url: response.data.url,
+                });
+            }).catch((error) => {
+                console.error('Error uploading file:', error);
+            });
         console.log(`users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${e.target.files[0].name}`);
     };
 
     const handleSubmit = (e) => {
         if (newComment || newReply) {
             const newEntry = newComment ?{
-                user: user?._id, 
+                user: profile.user, 
                 _id: uuid4(),
                 text: newComment,
-                attachment: {
+                attachment: attachment?.type?{
                     type: attachment?.type,
-                    url: `users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${attachment?.name}`
-                },
-                timestamp: new Date().toLocaleString(),
+                    name: attachment?.name,
+                    url: attachment?.url
+                }:{},
                 reaction: [],
                 reply_to: []
             }: {
-                user: user?._id, 
+                user: profile.user, 
                 _id: uuid4(),
                 text: newReply,
-                attachment: {
+                attachment: attachment?.type?{
                     type: attachment?.type,
-                    url: `users/${profile?.user}/tasks/${taskPath.split('&&').join('/')}/comments/${attachment?.name}`
-                },
-                timestamp: new Date().toLocaleString(),
+                    name: attachment?.name,
+                    url: attachment?.url
+                }:{},
                 reaction: [],
                 reply_to: []
             };
@@ -82,9 +104,10 @@ const CommentPage = ({data, setData}) => {
                 const updatedComments = [...data];
                 updatedComments[replyingTo.index].reply_to.push(newEntry);
                 setData(updatedComments);
-
+                dispatch(addReply(taskPath.split('&&').slice(-1)[0], updatedComments[replyingTo.index]._id, newEntry));
                 setReplyingTo(null);
             } else {
+                dispatch(addComment(taskPath.split('&&').slice(-1)[0], newEntry));
                 setData([newEntry, ...data]);
             }
 
@@ -94,23 +117,30 @@ const CommentPage = ({data, setData}) => {
     };
 
     const handleLike = (index, parentIndex = null) => {
-        const updatedComments = [...data];
+        let updatedComments = [...data];
         if (parentIndex !== null) {
-            updatedComments[parentIndex].reply_to[index].reaction = [...updatedComments[parentIndex].reply_to[index].reaction, { user: user?._id, reaction: 1 }];
+            // updatedComments[parentIndex].reply_to[index].reaction = [...updatedComments[parentIndex].reply_to[index].reaction, { user: profile.user, reaction: 1 }];
         } else {
-            updatedComments[index].reaction = [...updatedComments[index].reaction, { user: user?._id, reaction: 1 }];
+            // updatedComments[index].reaction = [...updatedComments[index].reaction, { user: profile.user, reaction: 1 }];
+            if(updatedComments[index].reaction.find(rec=>rec.user===profile.user)){
+                dispatch(deleteCommentReaction(taskPath.split('&&').slice(-1)[0], updatedComments[index]._id, profile.user));
+            } else {
+                dispatch(addCommentReaction(taskPath.split('&&').slice(-1)[0], updatedComments[index]._id, { user: profile.user, reaction: 1 }));
+            }
         }
         setData(updatedComments);
     };
 
     const handleDelete = (index, parentIndex = null) => {
         if (parentIndex !== null) {
-            const updatedComments = [...data];
+            let updatedComments = [...data];
+            dispatch(deleteReply(taskPath.split('&&').slice(-1)[0],updatedComments[parentIndex]._id, updatedComments[parentIndex].reply_to[index]._id));
             updatedComments[parentIndex].reply_to = updatedComments[parentIndex].reply_to.filter(
                 (_, i) => i !== index
             );
             setData(updatedComments);
         } else {
+            dispatch(deleteComment(taskPath.split('&&').slice(-1)[0],data[index]._id));
             setData(data.filter((_, i) => i !== index));
         }
     };
@@ -133,12 +163,13 @@ const CommentPage = ({data, setData}) => {
     };
 
     const AttachmentThumbNail = ({attachment}) => {
-        // console.log('attachment: ', attachment.blob);
-        if (attachment.endsWith('.jpg') || attachment.endsWith('.png') || attachment.endsWith('.jpeg')) {
-            return <Image src={attachment} style={{ margin: '10px' }} />;
+        console.log('attachment: ', attachment);
+        if(Object.keys(attachment).length === 0) return <></>;
+        if (attachment?.type?.includes('image')) {
+            return <Image src={attachment?.url} style={{ margin: '5px' }} size='tiny' />;
         } else {
             return (
-                <img src="https://via.placeholder.com/100?text=File" style={{ margin: '10px' }} />
+                <Image src={`https://via.placeholder.com/100?text=${attachment.name}`} style={{ margin: '5px' }} size='tiny' />
             );
         }
     };
@@ -150,7 +181,7 @@ const CommentPage = ({data, setData}) => {
                     <CommentAvatar src='https://react.semantic-ui.com/images/avatar/small/matt.jpg' />
                     <CommentAuthor as="a">User</CommentAuthor>
                     <CommentMetadata>
-                        <div>{comment.timestamp}</div>
+                        <div>{comment?.timestamp?formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true }):""}</div>
                     </CommentMetadata>
                     <CommentText>{comment.text}</CommentText>
                     {comment.attachment && (
@@ -158,17 +189,17 @@ const CommentPage = ({data, setData}) => {
                     )}
                     <CommentActions>
                         <CommentAction onClick={() => handleLike(index, parentIndex)}>
-                            <Icon name="thumbs up" /> {comment.reaction?.length} Likes
+                            <Icon name="thumbs up" /> {comment.reaction?.length} {comment.reaction?.find(rec=>rec.user===profile.user)?"Remove":"Like"}
                         </CommentAction>
                         <CommentAction onClick={() => handleReply({index,id:comment._id})}>
                             <Icon name="reply" /> Reply
                         </CommentAction>
-                        <CommentAction onClick={() => handleEdit(index, parentIndex)}>
+                        {comment?.user&&comment?.user===profile?.user&&(<><CommentAction onClick={() => handleEdit(index, parentIndex)}>
                             <Icon name="edit" /> Edit
                         </CommentAction>
                         <CommentAction onClick={() => handleDelete(index, parentIndex)}>
                             <Icon name="trash" /> Delete
-                        </CommentAction>
+                        </CommentAction></>)}
                         <CommentAction>
                             <Icon name="flag" /> Report
                         </CommentAction>

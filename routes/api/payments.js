@@ -105,7 +105,7 @@ router.get('/payment-status/:orderId', ipAuth, auth, async (req, res) => {
 // Initiate wallet top-up
 router.post('/wallet/top-up', ipAuth, auth, async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { amount, description } = req.body;
     const userId = req.user.id;
     const user = await User.findById(userId);
     const orderId = `TOPUP_${Date.now()}`;
@@ -113,6 +113,7 @@ router.post('/wallet/top-up', ipAuth, auth, async (req, res) => {
     const paymentSession = await Cashfree.PGCreateOrder('2022-09-01', {
       order_id: orderId,
       order_amount: amount,
+      order_note: description,
       customer_details: {
         customer_id: userId,
         customer_name: user.first_name + ' ' + user.last_name,
@@ -129,6 +130,7 @@ router.post('/wallet/top-up', ipAuth, auth, async (req, res) => {
       user: userId,
       orderId,
       paymentSessionId: paymentSession.data.payment_session_id,
+      description,
       amount,
       customerDetails: { name: user.first_name + ' ' + user.last_name, email: user.email, phone: user.mobile },
     });
@@ -144,7 +146,7 @@ router.post('/wallet/top-up', ipAuth, auth, async (req, res) => {
 // Withdraw from wallet
 router.post('/wallet/withdraw', ipAuth, auth, async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { amount, description } = req.body;
     const userId = req.user.id;
     const orderId = `WITHDRAW_${Date.now()}`;
     const user = await User.findById(userId);
@@ -157,6 +159,7 @@ router.post('/wallet/withdraw', ipAuth, auth, async (req, res) => {
     const paymentSession = await Cashfree.PGCreateOrder('2022-09-01', {
       order_id: orderId,
       order_amount: amount,
+      order_note: description,
       customer_details: {
         customer_id: userId,
         customer_name: user.first_name + ' ' + user.last_name,
@@ -173,6 +176,7 @@ router.post('/wallet/withdraw', ipAuth, auth, async (req, res) => {
       user: userId,
       orderId,
       paymentSessionId: paymentSession.data.payment_session_id,
+      description,
       amount,
       customerDetails: { name: user.first_name + ' ' + user.last_name, email: user.email, phone: user.mobile },
     });

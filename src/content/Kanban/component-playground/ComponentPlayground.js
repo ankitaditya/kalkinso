@@ -78,8 +78,13 @@ const App = ({breadcrumb}) => {
       setCards(tasks);
     } else if(tasks.length>0 && taskPath) {
       // console.log('Task path:', tasks.find(task => task._id === taskPath));
-      if(tasks.find(task => task._id === taskPath.split('&&').slice(-1)[0])?.subTasks.length>0){
-        let sub_tasks = tasks.find(task => task._id === taskPath.split('&&').slice(-1)[0]).subTasks.map((subTask) => {
+      let SelectedTask = tasks.find(task => task._id === taskPath.split('&&').slice(-1)[0])
+      if(SelectedTask){
+        console.log('This is selected task:', SelectedTask);
+        setData(SelectedTask?.analytics?.commenters?SelectedTask?.analytics?.commenters:[]);
+      }
+      if(SelectedTask?.subTasks.length>0){
+        let sub_tasks = SelectedTask.subTasks.map((subTask) => {
           let sub_tasks = tasks.find(task => task._id === subTask)
           if(sub_tasks){
             return sub_tasks;

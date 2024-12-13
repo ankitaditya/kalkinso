@@ -100,6 +100,7 @@ const WalletPage = () => {
       let url = option === 'ADD' ? '/api/payments/wallet/top-up' : '/api/payments/wallet/withdraw';
       const response = await axios.post(url, {
         amount: amount,
+        description: option === 'ADD' ? 'Wallet Top-up' : 'Wallet Withdrawal',
       },
     {
         headers: {

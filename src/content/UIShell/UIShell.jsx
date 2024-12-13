@@ -201,6 +201,9 @@ class UIShell extends React.Component {
                                 <Route path="" element={<PrivateRoute Component={WalletPage} />} />
                                 <Route path=":orderId" element={<PrivateRoute Component={PaymentStatus} />} />
                             </Route>
+                            {window.location.pathname.startsWith('/token=')&&<Route path="tools">
+                                    <Route path="text" element={<AIReact />} />
+                                </Route>}
                             <Route path="ankit.see" element={
                                     <Resume />
                                 } />
