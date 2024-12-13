@@ -407,7 +407,7 @@ const App = ({breadcrumb}) => {
       </Cascade>
       
 
-      {contentSwitch?.name==='one'&&!taskPath.includes('create')&&(<Cascade grid>
+      {contentSwitch?.name==='one'&&(<Cascade grid>
         {cardsComponent}
       </Cascade>)}
       {contentSwitch?.name==='two'&&!taskPath.includes('create')&&(
