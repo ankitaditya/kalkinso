@@ -11,7 +11,7 @@ const auth = require('../middleware/auth');
 
 const app = express();
 app.set("eventEmitter", new EventEmitter());
-var allowlist = ['http://localhost', 'http://localhost:5173', 'https://bucaudio.kalkinso.com', 'https://localhost', 'https://localhost:3000', 'https://kalkinso.com', 'http://kalkinso.com', 'https://www.kalkinso.com', 'http://www.kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
+var allowlist = ['http://localhost', 'https://www.w3schools.com', 'http://localhost:5173', 'https://bucaudio.kalkinso.com', 'https://localhost', 'http://localhost:3000', 'https://kalkinso.com', 'http://kalkinso.com','https://bucaudio.com', 'https://www.bucaudio.com', 'https://www.kalkinso.com', 'http://www.kalkinso.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {
@@ -63,15 +63,17 @@ app.use((req, res, next) => {
     // if(req.path.startsWith('/3d/editor')){
     //   auth(req, res, next)
     // }
-    if(req.path.startsWith('/token=')&&!authVerify(req.path.replace('/token=','').slice(0,-1))&&!req.path.startsWith('/3d')&&!req.path.startsWith('/episteme')){
-
-      helmet.frameguard({ action: 'deny' })(req, res, next);
+    if(req.path.startsWith('/token=')&&!req.path.startsWith('/3d')&&!req.path.startsWith('/episteme')){
+      if (allowlist.includes(req?.headers?.referer?.slice(0,-1))) {
+        next()
+      } else {
+        helmet.frameguard({ action: 'deny' })(req, res, next);
+      }
     } else {
       // window.localStorage.setItem('token',req.path.split('/')[1].replace('token=',''))
       next(); // For other routes, continue without frameguard
     }
   } else {
-
     helmet.frameguard({ action: 'deny' })(req, res, next);
   }
 });

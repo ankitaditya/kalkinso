@@ -1,10 +1,26 @@
 import { ToastNotification } from "@carbon/react";
 import React, { useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { loadUser } from "../../actions/auth";
 
 const Notification = ({alerts}) => {
   const [notifications, setNotifications] = useState(<></>);
   const alerts_notif = useSelector(state => state.alert);
+  const dispatch = useDispatch();
+    useEffect(() => {
+        
+        if(window.location.pathname.includes('token=')){
+            
+            window.localStorage.setItem('token',window.location.pathname.split('/')[1].replace('token=',''))
+            dispatch({
+              type: 'OTP_VERIFICATION',
+              payload: {'email':{
+                token: window.localStorage.getItem('token')
+              }},
+            });
+            dispatch(loadUser({token: window.localStorage.getItem('token')}));
+          }
+    }, []);
   useEffect(
     () => {
         if (alerts_notif?.length > 0){

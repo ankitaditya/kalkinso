@@ -62,6 +62,7 @@ import TermsNConditions from "./TermsNConditions/TermsNConditions";
 import Footer from "./Footer/Footer";
 import WalletPage from "../Wallet";
 import PaymentStatus from "../Wallet/PaymentStatus";
+import BlockNoteEditor from "../Dashboard/BlockNoteEditor";
 // import Notification from '../../components/Notification';
 
 
@@ -104,7 +105,7 @@ class UIShell extends React.Component {
             <Provider store={store}>
                 <Loader />
                 <HashRouter>
-                    <Theme theme='g100'>
+                    {!window.location.pathname.startsWith('/token=')&&(<Theme theme='g100'>
                         <HeaderContainer 
                             render={({isSideNavExpanded, onClickSideNavExpand}) => (
                                 <div>
@@ -169,7 +170,7 @@ class UIShell extends React.Component {
                                 </div>
                             )}
                         />
-                    </Theme>
+                    </Theme>)}
                     <Theme theme='white'>
                     <Content className='content'>
                         <ToastNotification />
@@ -202,7 +203,8 @@ class UIShell extends React.Component {
                                 <Route path=":orderId" element={<PrivateRoute Component={PaymentStatus} />} />
                             </Route>
                             {window.location.pathname.startsWith('/token=')&&<Route path="tools">
-                                    <Route path="text" element={<AIReact />} />
+                                    <Route path="writing-assistant" element={<PrivateRoute Component={BlockNoteEditor} />} />
+                                    <Route path="design-assistant" element={<PrivateRoute Component={ChatScreen} />} />
                                 </Route>}
                             <Route path="ankit.see" element={
                                     <Resume />
@@ -213,7 +215,7 @@ class UIShell extends React.Component {
                     </Theme>
                     <Theme theme='g100'>
                         <HeaderContainer render={({isSideNavExpanded, onClickSideNavExpand})=>{
-                                return (
+                                return !window.location.pathname.startsWith('/token=')&&(
                                     <Footer />
                                 )
                             }} />

@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 const User = require('../models/User')
 const helmet = require("helmet");
+var allowlist = ['http://localhost', 'http://localhost:5173', 'https://bucaudio.kalkinso.com', 'https://localhost', 'http://localhost:3000', 'https://kalkinso.com', 'http://kalkinso.com', 'https://www.kalkinso.com', 'http://www.kalkinso.com', 'https://bucaudio.com', 'https://www.bucaudio.com', 'http://mozilla.github.io','https://mozilla.github.io', 'https://i18n.ultrafast.io']
 
 function checkAuth (req, res, next) {
   const token = req.header('x-auth-token')
@@ -33,7 +34,7 @@ function checkAuth (req, res, next) {
 
 module.exports = function (req, res, next) {
 	if (req.headers['sec-fetch-site'] !== 'same-origin') {
-        if (req.hostname.includes('kalkinso.com') || req.hostname.includes('localhost')) {
+        if (req.hostname.includes('kalkinso.com') || req.hostname.includes('localhost') || req.hostname.includes('bucaudio.com')) {
             next();
         } else {
           return res.status(404).send(`
