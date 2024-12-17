@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   //   res.end();
   //   helmet.frameguard({ action: 'deny' })(req, res, next);
   // }
-  if (req.headers["user-agent"].includes("SuspiciousBot")) {
+  if (req.headers["user-agent"]?.includes("SuspiciousBot")) {
     res.status(403).send("Access Denied");
     return;
   }

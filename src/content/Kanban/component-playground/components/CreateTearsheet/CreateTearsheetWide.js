@@ -205,7 +205,6 @@ const MultiStepTearsheetWide = (props) => {
                 setCreateValues({
                   ...createValues,
                   [event.target.name]: event.target.value,
-                  short_description: event.target.value,
                 })
               }
             />
@@ -222,7 +221,6 @@ const MultiStepTearsheetWide = (props) => {
                 setCreateValues({
                   ...createValues,
                   [event.target.name]: event.target.value,
-                  short_description: event.target.value,
                 })
               }
             />
