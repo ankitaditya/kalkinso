@@ -11,6 +11,12 @@
     color: #2c2c2c;
   }
   
+  .landing-page {
+    position: relative;
+    height: 95vh;
+    overflow: auto;
+  }
+
   /* Hero Banner */
   .hero-banner {
     position: relative;
