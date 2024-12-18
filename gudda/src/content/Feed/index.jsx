@@ -130,16 +130,20 @@ const Feed = () => {
                 color: "#10a37f",
             }} onClick={()=>{
                 window.location.href = "/#/feed";
+                window.location.reload();
             }}>Feed</a></li>
             <li><a onClick={()=>{
                 window.location.href = "/#/release";
+                window.location.reload();
             }}>Release</a></li>
             <li><a onClick={()=>{
                 window.location.href = "/#/search";
+                window.location.reload();
             }}>Search</a></li>
             <li><a onClick={()=>{
                 window.localStorage.removeItem('auth');
                 window.location.href = "/#/login";
+                window.location.reload();
             }}>Logout</a></li>
             </ul>
         </Column>
