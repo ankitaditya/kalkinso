@@ -17,7 +17,8 @@
     "start": "react-scripts start",
     "build": "export NODE_OPTIONS=--max_old_space_size=4096 && export GENERATE_SOURCEMAP=false && react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "pm2 start ./server.sh --name www.kalkinso.org"
   },
   "eslintConfig": {
     "extends": [
