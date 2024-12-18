@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/static/css/main.33a59d4c.css",
+    "main.css": "/static/css/main.aca85386.css",
     "main.js": "/static/js/main.eaf300e7.js",
     "static/js/306.19f39c37.chunk.js": "/static/js/306.19f39c37.chunk.js",
     "static/media/IBMPlexSerif-SemiBoldItalic-Cyrillic.woff2": "/static/media/IBMPlexSerif-SemiBoldItalic-Cyrillic.2861a6629748147a32ea.woff2",
@@ -96,7 +96,7 @@
     "index.html": "/index.html"
   },
   "entrypoints": [
-    "static/css/main.33a59d4c.css",
+    "static/css/main.aca85386.css",
     "static/js/main.eaf300e7.js"
   ]
 }
