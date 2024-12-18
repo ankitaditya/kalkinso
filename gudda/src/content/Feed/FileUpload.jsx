@@ -1,15 +1,16 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
-const FileUpload = () => {
+const FileUpload = ({input, setImageInput}) => {
   const onDrop = useCallback((acceptedFiles) => {
-    console.log("Files dropped:", acceptedFiles);
+    setImageInput(URL.createObjectURL(acceptedFiles[0]));
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, fileRejections, acceptedFiles, isDragActive } = useDropzone({ onDrop, accept: {"image/*":[]} });
 
   return (
-    <div
+    <>
+    {acceptedFiles.length===0&&<div
       {...getRootProps()}
       style={{
         border: "2px dashed #10a37f",
@@ -26,7 +27,20 @@ const FileUpload = () => {
       ) : (
         <p>Drag & drop files here, or click to select files</p>
       )}
-    </div>
+    </div>}
+    {acceptedFiles.length>0&&<div>
+            {
+                acceptedFiles.map((file) => {
+                    return (
+                            <>
+                            {input}
+                            <img key={file.name} src={URL.createObjectURL(file)} alt={file.name} style={{margin:"10px", maxHeight:"100px"}} />
+                            </>
+                    )
+                })
+            }
+        </div>}
+    </>
   );
 };
 

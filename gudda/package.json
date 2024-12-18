@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@carbon/ibm-products": "^2.56.0",
     "@carbon/react": "^1.72.0",
     "cra-template": "1.2.0",
     "firebase": "^11.1.0",
