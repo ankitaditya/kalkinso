@@ -111,7 +111,10 @@ const Feed = () => {
             <li><a href="/#/feed">Feed</a></li>
             <li><a href="/#/release">Release</a></li>
             <li><a href="/#/search">Search</a></li>
-            <li><a href="/#/">Logout</a></li>
+            <li><a onClick={()=>{
+                window.localStorage.removeItem('auth');
+                window.location.href = "/#/login";
+            }}>Logout</a></li>
             </ul>
         </Column>
         <Column sm={4} md={8} lg={10}>

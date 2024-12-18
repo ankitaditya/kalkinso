@@ -17,14 +17,15 @@ const Login = () => {
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [verificationId, setVerificationId] = useState("");
+  const [recaptcha, setRecaptcha] = useState(null);
 
   // Google Sign-In Handler
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      alert(`Welcome, ${result.user.displayName}`);
-      console.log("User signed in: ", result.user);
+      localStorage.setItem("auth", JSON.stringify(result));
+      window.location.href = "/#/feed";
     } catch (error) {
       console.error("Google Sign-In Error:", error.message);
     }
@@ -36,10 +37,6 @@ const Login = () => {
       alert("Please enter a valid phone number.");
       return;
     }
-
-    const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "normal",
-    });
 
     signInWithPhoneNumber(auth, phoneNumber, recaptcha)
       .then((confirmationResult) => {
@@ -72,6 +69,13 @@ const Login = () => {
 
   // Three.js background effect
   useEffect(() => {
+    if(window.localStorage.getItem('auth')){
+        window.location.href = "/#/feed";
+    }
+    const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "normal",
+      });
+    setRecaptcha(recaptcha);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -134,7 +138,7 @@ const Login = () => {
           <h3>Login with OTP</h3>
           <input
             type="text"
-            placeholder="Enter phone number (+1234567890)"
+            placeholder="Enter phone number (+911234567890)"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
           />
