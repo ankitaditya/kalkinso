@@ -7,6 +7,8 @@ const PrivateRoute = ({ Component, ...rest }) => {
 	useEffect(() => {
 		if(!localStorage.getItem('auth')) {
 			setRedirect(<Navigate to='/login' />)
+		} else {
+			setRedirect(<Component {...rest} />)
 		}
 	}, [])
 
