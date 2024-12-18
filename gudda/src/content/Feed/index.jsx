@@ -128,9 +128,15 @@ const Feed = () => {
             <ul>
             <li><a style={{
                 color: "#10a37f",
-            }} href="/#/feed">Feed</a></li>
-            <li><a href="/#/release">Release</a></li>
-            <li><a href="/#/search">Search</a></li>
+            }} onClick={()=>{
+                window.location.href = "/#/feed";
+            }}>Feed</a></li>
+            <li><a onClick={()=>{
+                window.location.href = "/#/release";
+            }}>Release</a></li>
+            <li><a onClick={()=>{
+                window.location.href = "/#/search";
+            }}>Search</a></li>
             <li><a onClick={()=>{
                 window.localStorage.removeItem('auth');
                 window.location.href = "/#/login";
