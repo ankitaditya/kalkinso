@@ -1,0 +1,114 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  body {
+    background-color: black;
+    color: #2c2c2c;
+    overflow: hidden;
+  }
+  
+  .login-page {
+    position: relative;
+    background-color: none;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-start; 
+    align-items: center;
+    /* overflow: hidden; */
+    padding-left: 150px; /* Add some padding for spacing */
+  }
+
+  .globe-container > canvas {
+    position: absolute;
+    height: 100vh;
+    background: none;
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    overflow: hidden;
+    top: 0;
+    margin-left: 15vw; /* Add some padding for spacing */
+    z-index: 1;
+  }
+
+  .globe-container > canvas:hover {
+    cursor: pointer;
+  }
+
+  .globe-container {
+    background: none;
+  }
+  
+  #background-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .login-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left; /* Adjust text alignment for better readability */
+    z-index: 10;
+    max-width: 400px; /* Limit the width for a clean layout */
+  }
+  
+  .login-content h1 {
+    font-size: 2rem;
+    color: #10a37f;
+    margin-bottom: 20px;
+  }
+  
+  .google-button {
+    background-color: #10a37f;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .google-button:hover {
+    background-color: #0d896a;
+  }
+  
+  .login-section input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+  }
+  
+  .login-section button {
+    background-color: #10a37f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .login-section button:hover {
+    background-color: #0d896a;
+  }
+  
+  hr {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
+  }
+  

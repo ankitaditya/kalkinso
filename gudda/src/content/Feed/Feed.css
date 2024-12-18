@@ -1,0 +1,153 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  body {
+    background-color: #f3f4f6;
+    color: #2c2c2c;
+    overflow: hidden;
+  }
+  
+  .sidebar {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 95vh;
+    position: sticky;
+    top: 0;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.5rem;
+    color: #10a37f;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    margin-bottom: 15px;
+  }
+  
+  .sidebar ul li a {
+    text-decoration: none;
+    color: #2c2c2c;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+  
+  .sidebar ul li a:hover {
+    color: #10a37f;
+  }
+
+  .filters {
+    background-color: #ffffff;
+  }
+  
+  .filters h2 {
+    font-size: 1.5rem;
+    color: #10a37f;
+    margin-bottom: 20px;
+  }
+  
+
+  .feed-page {
+    position: relative;
+    height: 95vh;
+    background-color: #f1f1f1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    padding: 20px;
+  }
+  
+  #background-container-feed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+  }
+  
+  .create-post {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 20px;
+    z-index: 0;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    resize: none;
+  }
+  
+  .create-post-actions {
+    text-align: right;
+  }
+  
+  .post-button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .post-button:hover {
+    background-color: #2563eb;
+  }
+  
+  .feed {
+    width: 100%;
+    max-width: 800px;
+    max-height: 95vh;
+    overflow-y: auto;
+    z-index: 0;
+  }
+  
+  .post-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .post-header {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .post-content img {
+    max-width: 100%;
+    border-radius: 5px;
+  }
+  
+  .post-content p {
+    font-size: 0.9rem;
+    color: #4b5563;
+  }
+  

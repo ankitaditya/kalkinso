@@ -1,0 +1,59 @@
+@keyframes slideOut {
+    0% {
+      transform: translateY(100%);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #161616;
+    padding: 10px 0;
+    border-top: 1px solid #000000;
+    z-index: 0;
+  }
+  
+  .close-icon-button {
+    width: 100%;
+    border-radius: 100%;
+  }
+  
+  .open-icon-button {
+    position:absolute;
+    bottom: 10px;
+    right: 200px;
+    float: right;
+  }
+  
+  .close-icon-button > span {
+    position: relative;
+    bottom: 30px;
+    float: right;
+    margin-bottom: 5px;
+  }
+  
+  
+  
+  .footer-onhover {
+    animation: slideOut 0.5s;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .footer.center.links.a-tag {
+    color: #f4f4f4;
+    margin: 0 15px;
+    text-decoration: none;
+  }
+  
+  .footer.center.links.a-tag:hover {
+    text-decoration: underline;
+  }
+  
