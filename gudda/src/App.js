@@ -4,15 +4,18 @@ import Feed from './content/Feed';
 import Search from './content/Search';
 import Release from './content/Release';
 import Login from './content/Login';
-import { Route, Routes, HashRouter } from 'react-router-dom';
 import Footer from './content/Landing/Footer';
+import Live from './content/Live';
 import PrivateRoute from './content/routing/PrivateRoute';
+import { Route, Routes, HashRouter } from 'react-router-dom';
+
 
 const App = () => {
   return (
     <HashRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path='/live' element={<Live />} />
         <Route path='/feed' element={<PrivateRoute Component={Feed} />} />
         {/* <Route path='/advanced-feed' element={<AdvancedFeed />} /> */}
         <Route path='/search' element={<PrivateRoute Component={Search} />} />

@@ -5,11 +5,14 @@
   "dependencies": {
     "@carbon/ibm-products": "^2.56.0",
     "@carbon/react": "^1.72.0",
+    "@react-three/fiber": "^8.17.10",
     "cra-template": "1.2.0",
     "firebase": "^11.1.0",
+    "flv.js": "^1.6.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.5",
+    "react-player": "^2.16.0",
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
     "three": "^0.171.0"
