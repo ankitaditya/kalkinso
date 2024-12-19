@@ -5,9 +5,7 @@ const helmet = require('helmet')
 const jwt = require('jsonwebtoken')
 var cors = require('cors')
 const child_process = require("child_process");
-const axios = require("axios");
 const AWS = require("aws-sdk");
-const NodeMediaServer = require('node-media-server');
 const connectDB = require('../config/db');
 const auth = require('../middleware/auth');
 
@@ -224,23 +222,6 @@ const port = process.env.PORT ?? 80;
 app.listen(port, function() {
     console.info(`Server listening on http://localhost:${port}`);
 });
-
-const config = {
-  rtmp: {
-    port: 1935,
-    chunk_size: 60000,
-    gop_cache: true,
-    ping: 60,
-    ping_timeout: 30,
-  },
-  http: {
-    port: 8000,
-    allow_origin: allowlist,
-  },
-};
-
-const nms = new NodeMediaServer(config);
-nms.run();
 
 // var httpsServerOptions = {
 //   'key': fs.readFileSync('./https/key.pem'),
