@@ -7,6 +7,7 @@ import Login from './content/Login';
 import Footer from './content/Landing/Footer';
 import Live from './content/Live';
 import PrivateRoute from './content/routing/PrivateRoute';
+import Space from './content/Space';
 import { Route, Routes, HashRouter } from 'react-router-dom';
 
 
@@ -15,13 +16,14 @@ const App = () => {
     <HashRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path='/live' element={<Live />} />
+        <Route path='/live' element={<PrivateRoute Component={Live}/>} />
+        <Route path='/space' element={<PrivateRoute Component={Space}/>} />
         <Route path='/feed' element={<PrivateRoute Component={Feed} />} />
         {/* <Route path='/advanced-feed' element={<AdvancedFeed />} /> */}
         <Route path='/search' element={<PrivateRoute Component={Search} />} />
         <Route path='/release' element={<PrivateRoute Component={Release} />} />
-        <Route path='/login' element={<Login />} />
-        <Route path="*" element={<PrivateRoute Component={Feed} />} />
+        <Route path='/login' element={<PrivateRoute login={true} Component={Login} />} />
+        <Route path="*" element={<PrivateRoute Component={Space} />} />
       </Routes>
       <Footer />
     </HashRouter>

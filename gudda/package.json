@@ -5,6 +5,7 @@
   "dependencies": {
     "@carbon/ibm-products": "^2.56.0",
     "@carbon/react": "^1.72.0",
+    "@react-three/drei": "^9.120.4",
     "@react-three/fiber": "^8.17.10",
     "cra-template": "1.2.0",
     "firebase": "^11.1.0",

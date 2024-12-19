@@ -5,6 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import '@carbon/react/index.scss';
 import '@carbon/ibm-products/scss/index.scss';
+import '@carbon/ibm-products/css/index.css';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

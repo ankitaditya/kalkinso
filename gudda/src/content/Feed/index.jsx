@@ -66,13 +66,19 @@ const Feed = () => {
     },
   ]);
 
-  // Three.js Background Setup
   useEffect(() => {
     if(localStorage.getItem('auth')){
-        // User is logged in
+      // User is logged in
+      if(!auth.user) {
         const mainAuth = JSON.parse(localStorage.getItem('auth'));
         setAuth(mainAuth);
-    } 
+        
+      } 
+  } 
+  }, []);
+
+  // Three.js Background Setup
+  useEffect(() => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
