@@ -4,10 +4,11 @@ const path = require('path');
 const helmet = require('helmet')
 const jwt = require('jsonwebtoken')
 var cors = require('cors')
-const child_process = require("child_process");
+const { spawn } = require("child_process");
 const AWS = require("aws-sdk");
 const connectDB = require('../config/db');
 const auth = require('../middleware/auth');
+const os = require("os");
 
 // Configure AWS SDK for S3
 const s3 = new AWS.S3();
@@ -26,6 +27,69 @@ async function getVideoFiles() {
   ).map((file) => file.Key);
 }
 
+function getSystemLoad() {
+  // Get the average system load over 1 minute
+  return os.loadavg()[0] / os.cpus().length; // Normalize by the number of CPUs
+}
+
+function getFFmpegArgs(url, stream_key, reduceQuality = false) {
+  if (reduceQuality) {
+    // Lower quality parameters
+    return [
+      "-re",
+      "-i",
+      encodeURI(url),
+      "-c:v",
+      "libx264",
+      "-preset",
+      "veryfast", // Faster preset for reduced quality
+      "-crf",
+      "30", // Higher CRF value reduces quality (lower is better quality)
+      "-b:v",
+      "1M", // Limit video bitrate to 1 Mbps
+      "-c:a",
+      "aac",
+      "-b:a",
+      "128k", // Lower audio bitrate
+      "-f",
+      "flv",
+      "rtmp://rtmp.kalkinso.org/live/" + stream_key,
+    ];
+  }
+
+  // High-quality parameters
+  return [
+    "-re",
+    "-i",
+    encodeURI(url),
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "23", // Default quality
+    "-c:a",
+    "aac",
+    "-f",
+    "flv",
+    "rtmp://rtmp.kalkinso.org/live/" + stream_key,
+  ];
+}
+
+function startStreaming(url, stream_key) {
+  const load = getSystemLoad();
+  const reduceQuality = load > 0.7; // Reduce quality if system load exceeds 70%
+  console.log(
+    `System load: ${load.toFixed(2)} - ${reduceQuality ? "Reducing quality" : "Streaming at high quality"}`
+  );
+
+  const ffmpegArgs = getFFmpegArgs(url, stream_key, reduceQuality);
+
+  const ffmpeg = spawn("ffmpeg", ffmpegArgs);
+
+  return ffmpeg;
+}
+
 // Function to stream a single video file to ffmpeg
 async function streamVideo(fileKey, stream_key) {
   const url = `http://${bucketName}.s3-website.${bucketRegion}.amazonaws.com/${stream_key}/${fileKey.split('/').slice(-1)[0]}`;
@@ -34,18 +98,7 @@ async function streamVideo(fileKey, stream_key) {
 
   return new Promise((resolve, reject) => {
     // Spawn the FFmpeg process
-    const ffmpeg = child_process.spawn("ffmpeg", [
-      "-re",
-      "-i",
-      encodeURI(url),
-      "-c:v",
-      "libx264",
-      "-c:a",
-      "aac",
-      "-f",
-      "flv",
-      "rtmp://rtmp.kalkinso.org/live/" + stream_key,
-    ]);
+    const ffmpeg = startStreaming(url, stream_key);
 
     // Handle standard output
     ffmpeg.stdout.on("data", (data) => {
@@ -57,6 +110,9 @@ async function streamVideo(fileKey, stream_key) {
 
     // Handle standard error
     ffmpeg.stderr.on("data", (data) => {
+      if(stopPlayback){
+        ffmpeg.kill('SIGKILL')
+      }
       console.error(`FFmpeg stderr: ${data}`);
     });
 
