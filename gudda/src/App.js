@@ -16,7 +16,7 @@ const App = () => {
     <HashRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path='/live' element={<PrivateRoute Component={Live}/>} />
+        <Route path='/live' element={<Live />} />
         <Route path='/space' element={<PrivateRoute Component={Space}/>} />
         <Route path='/feed' element={<PrivateRoute Component={Feed} />} />
         {/* <Route path='/advanced-feed' element={<AdvancedFeed />} /> */}
