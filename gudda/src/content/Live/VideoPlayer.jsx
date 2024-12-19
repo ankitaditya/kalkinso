@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import ReactPlayer from "react-player";
+import React, { useEffect, useRef } from "react";
 import flv from 'flv.js';
 
 const VideoPlayer = ({ url }) => {
@@ -7,7 +6,7 @@ const VideoPlayer = ({ url }) => {
   const buildPlayer = () => {
     const player = flv.createPlayer({
       type: 'flv',
-      url: `http://localhost:8000/live/721WGd8tKQad5YAibSlms0TCD7u8KbGD.flv`,
+      url: `https://live.kalkinso.org/live/721WGd8tKQad5YAibSlms0TCD7u8KbGD.flv`,
     });
     player.attachMediaElement(playerRef.current);
     player.load();
