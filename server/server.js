@@ -14,147 +14,100 @@ const os = require("os");
 const s3 = new AWS.S3();
 const bucketName = "live-kalkinso"; // S3 bucket name
 const bucketRegion = "ap-south-1"; // Mumbai
+
 let stopPlayback = true; // Flag to control playback
 // Function to list all video files from the S3 bucket
-async function getVideoFiles() {
+async function getVideoFiles(stream_key) {
   const params = {
     Bucket: bucketName,
   };
 
   const data = await s3.listObjectsV2(params).promise();
   return data.Contents.filter((file) =>
-    file.Key.match(/\.(mp4|mkv|mov|avi|webm|flv)$/i)
+    file.Key.match(/\.(mp4|mkv|mov|avi|webm|flv)$/i)&&file.Key.includes(stream_key)
   ).map((file) => file.Key);
 }
 
-function getSystemLoad() {
-  // Get the average system load over 1 minute
-  return os.loadavg()[0] / os.cpus().length; // Normalize by the number of CPUs
-}
+function getFFmpegArgs(urls, streamKey) {
+  const inputArgs = urls.flatMap((url) => ["-i", encodeURI(url)]);
+  const concatFilter = urls
+    .map((_, index) => `[${index}:v:0][${index}:a:0]`)
+    .join("") + `concat=n=${urls.length}:v=1:a=1[outv][outa]`;
 
-function getFFmpegArgs(url, stream_key, reduceQuality = false) {
-  if (reduceQuality) {
-    // Lower quality parameters
-    return [
-      "-re",
-      "-i",
-      encodeURI(url),
-      "-c:v",
-      "libx264",
-      "-preset",
-      "veryfast", // Faster preset for reduced quality
-      "-crf",
-      "30", // Higher CRF value reduces quality (lower is better quality)
-      "-b:v",
-      "1M", // Limit video bitrate to 1 Mbps
-      "-c:a",
-      "aac",
-      "-b:a",
-      "128k", // Lower audio bitrate
-      "-f",
-      "flv",
-      "rtmp://rtmp.kalkinso.org/live/" + stream_key,
-    ];
-  }
-
-  // High-quality parameters
   return [
-    "-re",
-    "-i",
-    encodeURI(url),
+    ...inputArgs,
+    "-filter_complex",
+    concatFilter,
+    "-map",
+    "[outv]",
+    "-map",
+    "[outa]",
     "-c:v",
     "libx264",
     "-preset",
     "medium",
-    "-crf",
-    "23", // Default quality
     "-c:a",
     "aac",
     "-f",
     "flv",
-    "rtmp://rtmp.kalkinso.org/live/" + stream_key,
+    `rtmp://rtmp.kalkinso.org/live/${streamKey}`,
   ];
 }
 
-function startStreaming(url, stream_key) {
-  const load = getSystemLoad();
-  const reduceQuality = load > 0.7; // Reduce quality if system load exceeds 70%
-  console.log(
-    `System load: ${load.toFixed(2)} - ${reduceQuality ? "Reducing quality" : "Streaming at high quality"}`
-  );
-
-  const ffmpegArgs = getFFmpegArgs(url, stream_key, reduceQuality);
+async function streamFilesSequentially(files, bucket, streamKey) {
+  const ffmpegArgs = getFFmpegArgs(files.map((file)=>{
+    return `http://${bucket}.s3-website.${bucketRegion}.amazonaws.com/${streamKey}/${file.split('/').slice(-1)[0]}`
+    //  http://live-kalkinso.s3-website.ap-south-1.amazonaws.com
+  }), streamKey);
 
   const ffmpeg = spawn("ffmpeg", ffmpegArgs);
 
-  return ffmpeg;
+  ffmpeg.stderr.on("data", (data) => {
+    console.error(`FFmpeg stderr: ${data.toString()}`);
+  });
+
+  ffmpeg.on("close", (code) => {
+    console.log(`FFmpeg exited with code ${code}`);
+  });
+
+  ffmpeg.on("error", (error) => {
+    console.error(`FFmpeg error: ${error.message}`);
+  });
+
+  // for (const fileKey of files) {
+  //   console.log(`Streaming file: ${fileKey}`);
+  //   // await streamFileToFFmpeg(bucket, fileKey, ffmpeg.stdin);
+  // }
+
+  // ffmpeg.stdin.end();
 }
 
-// Function to stream a single video file to ffmpeg
-async function streamVideo(fileKey, stream_key) {
-  const url = `http://${bucketName}.s3-website.${bucketRegion}.amazonaws.com/${stream_key}/${fileKey.split('/').slice(-1)[0]}`;
-  
-  console.log(`Streaming file: ${encodeURI(url)}`);
-
+async function streamFileToFFmpeg(bucket, fileKey, writableStream) {
   return new Promise((resolve, reject) => {
-    // Spawn the FFmpeg process
-    const ffmpeg = startStreaming(url, stream_key);
+    const params = {
+      Bucket: bucket,
+      Key: fileKey,
+    };
 
-    // Handle standard output
-    ffmpeg.stdout.on("data", (data) => {
-      if(stopPlayback){
-        ffmpeg.kill('SIGKILL')
-      }
-      console.log(`FFmpeg stdout: ${data}`);
-    });
+    const s3Stream = s3.getObject(params).createReadStream();
 
-    // Handle standard error
-    ffmpeg.stderr.on("data", (data) => {
-      if(stopPlayback){
-        ffmpeg.kill('SIGKILL')
-      }
-      console.error(`FFmpeg stderr: ${data}`);
-    });
+    console.log('s3Stream', s3Stream)
 
-    // Handle process close event
-    ffmpeg.on("close", (code) => {
-      console.log(`FFmpeg process exited with code ${code}`);
-      resolve();
-    });
-
-    // Handle process error event
-    ffmpeg.on("error", (error) => {
-      console.error(`Error starting FFmpeg process: ${error.message}`);
-      reject(error);
-    });
+    s3Stream.pipe(writableStream, { end: false });
   });
 }
 
-// Main function to stream all videos in an infinite loop
-async function streamAllVideos(stream_key, videoFiles) {
-  while (!stopPlayback) {
-    try {
-      const thisVideoFiles = videoFiles;
-      console.log(`Found ${thisVideoFiles.length} video files in the bucket.`, thisVideoFiles);
-
-      if (!thisVideoFiles.length) {
-
-        console.log("No video files found in the bucket.");
-        return;
-      }
-
-      for (const fileKey of thisVideoFiles) {
-        if (stopPlayback) {
-          console.log("Playback stopped.");
-          return;
-        }
-        await streamVideo(fileKey, stream_key);
-      }
-
-      console.log("Restarting video playback from the beginning...");
-    } catch (error) {
-      console.error("Error during video playback:", error);
+async function startStreaming(streamKey) {
+  try {
+    const files = await getVideoFiles(streamKey);
+    if (files.length === 0) {
+      console.log("No files found in the folder.");
+      return;
     }
+    console.log(`Files to stream: ${files.join(", ")}`);
+    await streamFilesSequentially(files, bucketName, streamKey);
+  } catch (error) {
+    console.error("Error during streaming:", error.message);
   }
 }
 
@@ -257,9 +210,7 @@ app.get("/stream/start", (req, res) => {
   const { stream_key } = req.query;
   if (stopPlayback) {
     stopPlayback = false;
-     getVideoFiles().then((videoFiles) => {
-      streamAllVideos(stream_key, videoFiles);
-     });
+    startStreaming(stream_key);
     res.send("Playback started.");
   } else {
     res.send("Playback is already running.");
