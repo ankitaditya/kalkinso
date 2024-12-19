@@ -55,10 +55,12 @@ function getFFmpegArgs(urls, streamKey) {
 }
 
 async function streamFilesSequentially(files, bucket, streamKey) {
-  const ffmpegArgs = getFFmpegArgs(files.map((file)=>{
-    return `http://${bucket}.s3-website.${bucketRegion}.amazonaws.com/${streamKey}/${file.split('/').slice(-1)[0]}`
-    //  http://live-kalkinso.s3-website.ap-south-1.amazonaws.com
-  }), streamKey);
+  let newFiles = []
+  for (const file of files) {
+    newFiles.push(`http://${bucket}.s3-website.${bucketRegion}.amazonaws.com/kalkinso/logo-promo.mp4`)
+    newFiles.push(`http://${bucket}.s3-website.${bucketRegion}.amazonaws.com/${streamKey}/${file.split('/').slice(-1)[0]}`)
+  }
+  const ffmpegArgs = getFFmpegArgs(newFiles, streamKey);
 
   const ffmpeg = spawn("ffmpeg", ffmpegArgs);
 
@@ -80,21 +82,6 @@ async function streamFilesSequentially(files, bucket, streamKey) {
   // }
 
   // ffmpeg.stdin.end();
-}
-
-async function streamFileToFFmpeg(bucket, fileKey, writableStream) {
-  return new Promise((resolve, reject) => {
-    const params = {
-      Bucket: bucket,
-      Key: fileKey,
-    };
-
-    const s3Stream = s3.getObject(params).createReadStream();
-
-    console.log('s3Stream', s3Stream)
-
-    s3Stream.pipe(writableStream, { end: false });
-  });
 }
 
 async function startStreaming(streamKey) {
