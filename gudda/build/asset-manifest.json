@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.66232949.css",
-    "main.js": "/static/js/main.5d719114.js",
+    "main.js": "/static/js/main.e901d039.js",
     "static/js/306.cdcccb06.chunk.js": "/static/js/306.cdcccb06.chunk.js",
     "static/media/IBMPlexSerif-SemiBoldItalic-Cyrillic.woff2": "/static/media/IBMPlexSerif-SemiBoldItalic-Cyrillic.2861a6629748147a32ea.woff2",
     "static/media/IBMPlexSerif-SemiBoldItalic-Latin1.woff2": "/static/media/IBMPlexSerif-SemiBoldItalic-Latin1.6305238484fd3cc045b0.woff2",
@@ -97,6 +97,6 @@
   },
   "entrypoints": [
     "static/css/main.66232949.css",
-    "static/js/main.5d719114.js"
+    "static/js/main.e901d039.js"
   ]
 }

@@ -49,6 +49,7 @@
     "greenlock-express": "^4.0.3",
     "helmet": "^7.1.0",
     "html2canvas": "^1.4.1",
+    "https": "^1.0.0",
     "interweave": "^13.1.0",
     "jsonwebtoken": "^8.5.1",
     "jspdf": "^2.5.2",

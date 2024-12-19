@@ -6,7 +6,14 @@ import { Close, IbmWatsonDiscovery } from "@carbon/react/icons/index";
 
 const VideoPlayer = ({ url }) => {
   const playerRef = useRef(null);
-  const [search, setSearch] = React.useState(null);
+  const [search, setSearch] = React.useState(false);
+  const [component, setComponent] = React.useState(<video
+    ref={playerRef}
+    width="100%"
+    height="50%"
+    controls={true}
+    autoPlay={true}
+  />);
   const buildPlayer = () => {
     const player = flv.createPlayer({
       type: 'flv',
@@ -32,33 +39,22 @@ const VideoPlayer = ({ url }) => {
                 color: 'white',
             }} kind="ghost" onClick={()=>{
                 if(search) {
-                    setSearch(null);
+                    setSearch(true);
+                    setComponent(<video
+                        ref={playerRef}
+                        width="100%"
+                        height="90%"
+                        controls={true}
+                        autoPlay={true}
+                      />);
                 } else {
-                    setSearch(<Search />);
+                    setSearch(true);
+                    setComponent(<Search />);
                 }
             }}>
                 {search?<Close />:<IbmWatsonDiscovery />}
             </Button>
-        {search?<div style={{
-            position: 'absolute',
-            zIndex: 10000,
-            width: '100%',
-            height: '20%',
-            top: '0',
-            alignItems: 'center',
-            background: "none",
-        }}>
-        {
-            search
-        }
-      </div>
-      :<video
-        ref={playerRef}
-        width="100%"
-        height="100%"
-        controls={true}
-        autoPlay={true}
-      />}
+        {component}
       </Theme>
     </div>
   );
