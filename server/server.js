@@ -81,20 +81,22 @@ async function streamFilesSequentially(files, bucket, streamKey) {
   //   // await streamFileToFFmpeg(bucket, fileKey, ffmpeg.stdin);
   // }
 
-  // ffmpeg.stdin.end();
+  ffmpeg.stdin.end();
 }
 
 async function startStreaming(streamKey) {
-  try {
-    const files = await getVideoFiles(streamKey);
-    if (files.length === 0) {
-      console.log("No files found in the folder.");
-      return;
+  while(!stopPlayback){
+    try {
+      const files = await getVideoFiles(streamKey);
+      if (files.length === 0) {
+        console.log("No files found in the folder.");
+        return;
+      }
+      console.log(`Files to stream: ${files.join(", ")}`);
+      await streamFilesSequentially(files, bucketName, streamKey);
+    } catch (error) {
+      console.error("Error during streaming:", error.message);
     }
-    console.log(`Files to stream: ${files.join(", ")}`);
-    await streamFilesSequentially(files, bucketName, streamKey);
-  } catch (error) {
-    console.error("Error during streaming:", error.message);
   }
 }
 
