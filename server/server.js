@@ -22,13 +22,10 @@ async function getVideoFiles() {
   };
 
   const data = await s3.listObjectsV2(params).promise();
-  videoFiles = data.Contents.filter((file) =>
+  return data.Contents.filter((file) =>
     file.Key.match(/\.(mp4|mkv|mov|avi|webm|flv)$/i)
   ).map((file) => file.Key);
-  return videoFiles;
 }
-
-let videoFiles = [];
 
 function getSystemLoad() {
   // Get the average system load over 1 minute
@@ -134,13 +131,14 @@ async function streamVideo(fileKey, stream_key) {
 }
 
 // Main function to stream all videos in an infinite loop
-async function streamAllVideos(stream_key) {
+async function streamAllVideos(stream_key, videoFiles) {
   while (!stopPlayback) {
     try {
       const thisVideoFiles = videoFiles;
-      console.log(`Found ${videoFiles.length} video files in the bucket.`, videoFiles);
+      console.log(`Found ${thisVideoFiles.length} video files in the bucket.`, thisVideoFiles);
 
-      if (!videoFiles.length) {
+      if (!thisVideoFiles.length) {
+
         console.log("No video files found in the bucket.");
         return;
       }
@@ -259,8 +257,9 @@ app.get("/stream/start", (req, res) => {
   const { stream_key } = req.query;
   if (stopPlayback) {
     stopPlayback = false;
-     getVideoFiles();
-    streamAllVideos(stream_key);
+     getVideoFiles().then((videoFiles) => {
+      streamAllVideos(stream_key, videoFiles);
+     });
     res.send("Playback started.");
   } else {
     res.send("Playback is already running.");
@@ -270,12 +269,6 @@ app.get("/stream/start", (req, res) => {
 // API endpoint to stop playback
 app.get("/stream/stop", async (req, res) => {
   stopPlayback = true;
-  res.send("Playback stopped.");
-});
-
-// API endpoint to stop playback
-app.get("/stream/reload", async (req, res) => {
-  getVideoFiles();
   res.send("Playback stopped.");
 });
 
