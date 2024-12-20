@@ -24,7 +24,7 @@ export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') 
         });
         dispatch(setLoading(false));
     } catch (err) {
-        // console.log(err);
+        console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
             payload: { msg: err?.response?.statusText, status: err?.response?.status },

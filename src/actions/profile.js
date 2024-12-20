@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import { setAlert } from './alert'
 import * as actionTypes from './types'
+import { setLoading } from './auth'
 
 export const getCurrentProfile = () => async (dispatch) => {
 	try {
@@ -10,6 +11,7 @@ export const getCurrentProfile = () => async (dispatch) => {
 			type: actionTypes.GET_PROFILE,
 			payload: res.data,
 		})
+		dispatch(setLoading(false))
 	} catch (err) {
 		dispatch({
 			type: actionTypes.PROFILE_ERROR,
