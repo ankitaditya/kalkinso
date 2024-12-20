@@ -243,7 +243,10 @@ router.post('/delete', ipAuth, auth, async (req, res) => {
 
 router.post('/', auth, ipAuth, async (req, res) => {
   try {
-    const kits = await Kits.findOne({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}` }).sort({ date: -1 });
+    // const kits = await Kits.findOne({ id: `${req.user.id}-s3://${req.body.bucketName}/${req.body.Prefix}` }).sort({ date: -1 });
+    const regex = new RegExp(req.user.id, 'g')
+    await Kits.deleteMany({ id: { $regex: regex } });
+    const kits = null;
     let kitsRecords = null;
     let result = [];
     let now = new Date();
