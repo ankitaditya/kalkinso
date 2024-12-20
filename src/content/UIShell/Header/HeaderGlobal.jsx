@@ -1,16 +1,14 @@
 import { NotificationsPanel } from "@carbon/ibm-products";
 import { HeaderGlobalAction, HeaderGlobalBar, Theme } from "@carbon/react"
 import { AiGenerate, Notification, UserProfile } from "@carbon/react/icons"
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import SidePanelChat from "../SidePanelChat/SidePanelChat";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SidePanel from "../SidePanel/SidePanel";
 import { sampleData } from "../sampleData";
-import { loadUser, setLoading } from "../../../actions/auth";
 
 const HeaderGlobal = () => {
     const { isAuthenticated } = useSelector((state) => state.auth);
-    const dispatch = useDispatch();
     const [state, setState] = useState({
         activeTab: 0,
         isSideNavExpanded: false,
@@ -22,22 +20,6 @@ const HeaderGlobal = () => {
         newState.notificationsData = data;
         setState({...newState});
     }
-    const auth = useSelector((state) => state.auth);
-
-    useEffect(() => {
-        // console.log('isAuthenticated:', auth);
-        if(!isAuthenticated&&localStorage.getItem('token')) {
-            if(
-                (window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))
-            ){
-                localStorage.setItem('token', window.location.pathname.split('/')[1].replace('token=',''))
-            }
-            dispatch(setLoading(true));
-            if(localStorage.getItem('token')){
-                dispatch(loadUser({token: localStorage.getItem('token')}));
-            }
-        }
-    },[])
     return (
 
         isAuthenticated&&!(window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))?(<><HeaderGlobalBar kind="secondary">

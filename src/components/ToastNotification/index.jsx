@@ -1,26 +1,27 @@
 import { ToastNotification } from "@carbon/react";
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { loadUser } from "../../actions/auth";
+import { loadUser, setLoading } from "../../actions/auth";
 
 const Notification = ({alerts}) => {
   const [notifications, setNotifications] = useState(<></>);
   const alerts_notif = useSelector(state => state.alert);
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
     useEffect(() => {
-        
-        if(window.location.pathname.includes('token=')){
-            
-            window.localStorage.setItem('token',window.location.pathname.split('/')[1].replace('token=',''))
-            dispatch({
-              type: 'OTP_VERIFICATION',
-              payload: {'email':{
-                token: window.localStorage.getItem('token')
-              }},
-            });
-            dispatch(loadUser({token: window.localStorage.getItem('token')}));
-          }
-    }, []);
+        // console.log('isAuthenticated:', auth);
+        if(!isAuthenticated&&localStorage.getItem('token')) {
+            if(
+                (window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))
+            ){
+                localStorage.setItem('token', window.location.pathname.split('/')[1].replace('token=',''))
+            }
+            dispatch(setLoading(true));
+            if(localStorage.getItem('token')){
+                dispatch(loadUser({token: localStorage.getItem('token')}));
+            }
+        }
+    },[])
   useEffect(
     () => {
         if (alerts_notif?.length > 0){
