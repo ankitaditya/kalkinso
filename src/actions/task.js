@@ -42,7 +42,7 @@ export const getTasks = (taskPath=null, from_cache=true) => async dispatch => {
         type: GET_TASKS,
         payload: taskPath&&taskPath!=='create'?res?.data.filter((card, index) => card.parentTasks.length === 0||sub_tasks.includes(card._id)):res?.data.filter((card, index) => card.parentTasks.length === 0),
       };
-      window.localStorage.setItem('__data', JSON.stringify(data));
+      // window.localStorage.setItem('__data', JSON.stringify(data));
       dispatch({
         type: GET_TASKS,
         payload: taskPath&&taskPath!=='create'?res?.data.filter((card, index) => card.parentTasks.length === 0||sub_tasks.includes(card._id)):res?.data.filter((card, index) => card.parentTasks.length === 0),

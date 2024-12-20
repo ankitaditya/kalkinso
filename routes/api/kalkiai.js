@@ -34,8 +34,17 @@ router.post(
       }
       const { payload } = req.body;
       let result_has_task_list = false;
-      console.log("This is my payload: ", payload);
-      let result = await invoke("kalki-AIStack", payload);
+      let newPayload = {
+        request: {
+          ...payload.request,
+          api_key: process.env.REACT_APP_OPENAI_API_KEY,
+          },
+        session: {
+          ...payload.session,
+        }
+        };
+      console.log("This is my payload: ", newPayload);
+      let result = await invoke("kalki-AIStack", newPayload);
       let new_result = null;
       result_has_task_list = result_has_task_list || (Array.isArray(result) && result.some((res) => typeof res['content'] === 'object' && Array.isArray(res['content']?.task_list)));
       let new_session = await ChatSession.findById(payload.session.session_id);
