@@ -15,7 +15,7 @@ export const getPosts = () => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -33,7 +33,7 @@ export const addLike = (postId) => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -51,7 +51,7 @@ export const removeLike = (postId) => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -71,7 +71,7 @@ export const deletePost = (id) => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -97,7 +97,7 @@ export const addPost = (formData) => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -115,7 +115,7 @@ export const getPost = (id) => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -144,7 +144,7 @@ export const addComment = (postId, formData) => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -163,7 +163,7 @@ export const deleteComment = (postId, commentId) => async (dispatch) => {
 			type: actionTypes.POST_ERROR,
 			payload: {
 				msg: err,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}

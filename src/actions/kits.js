@@ -27,7 +27,7 @@ export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') 
         // console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
-            payload: { msg: err?.response?.statusText, status: err.response.status },
+            payload: { msg: err?.response?.statusText, status: err?.response?.status },
         });
     }
   };
@@ -92,7 +92,7 @@ export const deleteFile = (bucketName="kalkinso.com", Prefix='', isTask=false) =
         // console.log(err);
         dispatch({
             type: actionTypes.TASK_ERROR,
-            payload: { msg: err.response?.statusText, status: err.response.status },
+            payload: { msg: err.response?.statusText, status: err?.response?.status },
         });
     }
   };

@@ -68,7 +68,7 @@ export const getTask = (task_id) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -103,7 +103,7 @@ export const addTask = (taskData, task_id=null, Prefix=null) => async dispatch =
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -123,7 +123,7 @@ export const updateTask = (id, taskData) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -143,7 +143,7 @@ export const deleteTask = (id) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -199,7 +199,7 @@ export const getSubTasks = (task_id) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
     dispatch(setLoading(false));
   }
@@ -222,7 +222,7 @@ export const addComment = (task_id, commentObject) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -237,7 +237,7 @@ export const addReaction = (task_id, reactionObject) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -252,7 +252,7 @@ export const addAttachment = (task_id, attachmentObject) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -267,7 +267,7 @@ export const deleteAttachment = (task_id, attachment) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -282,7 +282,7 @@ export const addReply = (task_id, comment_id, replyObject) => async dispatch => 
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -297,7 +297,7 @@ export const deleteComment = (task_id, comment_id) => async dispatch => {
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -312,7 +312,7 @@ export const deleteReply = (task_id, comment_id, reply_id) => async dispatch => 
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -327,7 +327,7 @@ export const updateComment = (task_id, comment_id, commentObject) => async dispa
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -342,7 +342,7 @@ export const updateReply = (task_id, comment_id, reply_id, replyObject) => async
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -357,7 +357,7 @@ export const addCommentReaction = (task_id, comment_id, reactionObject) => async
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };
@@ -372,7 +372,7 @@ export const deleteCommentReaction = (task_id, comment_id) => async dispatch => 
   } catch (err) {
     dispatch({
       type: TASKS_ERROR,
-      payload: { msg: err?.response?.statusText, status: err.response.status },
+      payload: { msg: err?.response?.statusText, status: err?.response?.status },
     });
   }
 };

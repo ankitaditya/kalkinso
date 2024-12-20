@@ -15,7 +15,7 @@ export const getCurrentProfile = () => async (dispatch) => {
 			type: actionTypes.PROFILE_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -43,7 +43,7 @@ export const saveProfile = (profileFields) => async (dispatch) => {
 			type: actionTypes.PROFILE_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -63,7 +63,7 @@ export const getProfiles = () => async (dispatch) => {
 			type: actionTypes.PROFILE_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -83,7 +83,7 @@ export const getProfileById = (userId) => async (dispatch) => {
 			type: actionTypes.PROFILE_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -101,7 +101,7 @@ export const getKitsUrl = (url) => async (dispatch) => {
 			type: actionTypes.PROFILE_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -137,7 +137,7 @@ export const createProfile = (formData, history, edit = false) => async (
 			type: actionTypes.PROFILE_ERROR,
 			payload: {
 				msg: err?.response?.statusText,
-				status: err.response.status,
+				status: err?.response?.status,
 			},
 		})
 	}
@@ -156,7 +156,7 @@ export const deleteAccount = () => async (dispatch) => {
 				type: actionTypes.PROFILE_ERROR,
 				payload: {
 					msg: err?.response?.statusText,
-					status: err.response.status,
+					status: err?.response?.status,
 				},
 			})
 		}
