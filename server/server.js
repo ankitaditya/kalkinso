@@ -91,8 +91,7 @@ function startStreaming(url, stream_key) {
 }
 
 // Function to stream a single video file to ffmpeg
-async function streamVideo(fileKey, stream_key) {
-  const url = `http://${bucketName}.s3-website.${bucketRegion}.amazonaws.com/${stream_key}/${fileKey.split('/').slice(-1)[0]}`;
+async function streamVideo(url, stream_key) {
   
   console.log(`Streaming file: ${encodeURI(url)}`);
 
@@ -148,7 +147,10 @@ async function streamAllVideos(stream_key, videoFiles) {
           console.log("Playback stopped.");
           return;
         }
-        await streamVideo(fileKey, stream_key);
+        const urlPromo = `http://${bucketName}.s3-website.${bucketRegion}.amazonaws.com/kalkinso/logo-promo.mp4`;
+        await streamVideo(urlPromo, stream_key);
+        const url = `http://${bucketName}.s3-website.${bucketRegion}.amazonaws.com/${stream_key}/${fileKey.split('/').slice(-1)[0]}`;
+        await streamVideo(url, stream_key);
       }
 
       console.log("Restarting video playback from the beginning...");
