@@ -36,7 +36,7 @@ export const cache = (action, dispatch) => {
             // clear cache for specific action
             let data = window.localStorage.getItem('__data');
             delete data[action.payload];
-            window.localStorage.setItem('__data', data);
+            // window.localStorage.setItem('__data', data);
             return true;
         }
         // clear cache

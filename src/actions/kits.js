@@ -17,7 +17,7 @@ export const getSelectedTasks = (bucketName="kalkinso.com", Prefix='ankit.see') 
             type: actionTypes.GET_SELECTED_TASK,
             payload: res.data,
         };
-        window.localStorage.setItem('__data', JSON.stringify(data));
+        // window.localStorage.setItem('__data', JSON.stringify(data));
         dispatch({
             type: actionTypes.GET_SELECTED_TASK,
             payload: res.data,
