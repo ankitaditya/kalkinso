@@ -4,14 +4,14 @@ import Search from "../Search";
 import { Button, Theme } from "@carbon/react";
 import { Close, IbmWatsonDiscovery } from "@carbon/react/icons/index";
 
-const VideoPlayer = ({ url }) => {
+const VideoPlayer = ({ url, type }) => {
   const playerRef = useRef(null);
   const [search, setSearch] = React.useState(false);
   const [component, setComponent] = React.useState(null);
   const buildPlayer = () => {
     const player = flv.createPlayer({
-      type: 'flv',
-      url: `https://live.kalkinso.org/live/721WGd8tKQad5YAibSlms0TCD7u8KbGD.flv`,
+      type,
+      url,
     });
     player.attachMediaElement(playerRef.current);
     player.load();

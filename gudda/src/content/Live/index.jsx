@@ -5,7 +5,7 @@ import "./Live.scss";
 
 function Live() {
   return (
-    <VideoPlayer url="https://www.w3schools.com/html/mov_bbb.mp4" />
+    <VideoPlayer url={`https://live.kalkinso.org/live/721WGd8tKQad5YAibSlms0TCD7u8KbGD.flv`} type={'flv'} />
   );
 }
 
