@@ -1,3 +1,0 @@
-User-agent: *
-Disallow: /
-Sitemap: https://apparels.kalkinso.com/sitemap.xml
