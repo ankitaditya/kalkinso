@@ -7,7 +7,7 @@ export const register = async ({email, first_name, last_name}) => {
 		},
         baseURL: 'https://www.kalkinso.com',
 	}
-	const body = JSON.stringify({ first_name, last_name, email, mobile: null, upi: null, adhar: null, terms_conditions: true, password: null, user_role: null })
+	const body = JSON.stringify({ first_name, last_name, email, mobile: "", upi: "", adhar: "", terms_conditions: true, password: "", user_role: "" })
     try {
         const res = await axios.post('/api/users', body, config)
         return res.data

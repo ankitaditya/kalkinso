@@ -35,51 +35,41 @@ const ProfileSchema = new mongoose.Schema({
 		email: {
 			value: { 
 				type: String,
-				required: true,
 			},
 			isVerified: {
 				type: String,
-				required: true,
 			},
 		},
 		phone: {
 			value: { 
 				type: String,
-				required: true,
 			},
 			isVerified: {
 				type: String,
-				required: true,
 			},
 		},
 		pan: {
 			value: { 
 				type: String,
-				required: true,
 			},
 			isVerified: {
 				type: String,
-				required: true,
 			},
 		},
 		upi: {
 			value: { 
 				type: String,
-				required: true,
 			},
 			isVerified: {
 				type: String,
-				required: true,
 			},
 		},
 		adhar: {
 			value: { 
 				type: String,
-				required: true,
 			},
 			isVerified: {
 				type: String,
-				required: true,
 			},
 		},
 	},

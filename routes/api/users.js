@@ -55,7 +55,7 @@ router.post(
 						value:email,
 						isVerified:true
 					}
-				} else if(key === 'phone' && mobile){
+				} else if(key === 'mobile' && mobile){
 					verification_status[key] = {
 						value:mobile,
 						isVerified:true
@@ -75,8 +75,15 @@ router.post(
 						value:adhar,
 						isVerified:true
 					}
+				} else if(!['first_name', 'last_name', 'user_role', 'terms_conditions', 'password'].includes(key)){
+					verification_status[key] = {
+						value:req.body[key],
+						isVerified:false
 				}
 			}
+			}
+
+			console.log('verification_status:', verification_status)
 
 			user = new User({
 				first_name, 
