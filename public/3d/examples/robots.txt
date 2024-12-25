@@ -1,4 +1,13 @@
+User-agent: Googlebot
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
 User-agent: *
-Disallow:
+Disallow: /
 
 Sitemap: https://www.kalkinso.com/sitemap.xml
