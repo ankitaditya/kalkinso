@@ -34,7 +34,7 @@ function checkAuth (req, res, next) {
 
 module.exports = function (req, res, next) {
 	if (req.headers['sec-fetch-site'] !== 'same-origin') {
-        if (req.hostname.includes('kalkinso.com') || req.hostname.includes('bucaudio.com')) {
+        if (req.hostname.includes('kalkinso.com') || req.hostname.includes('kalkinso.org') || req.hostname.includes('bucaudio.com')) {
             next();
         } else {
           return res.status(404).send(`

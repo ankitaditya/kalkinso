@@ -30,8 +30,8 @@ const Login = () => {
       if(res.error) {
         console.error(res.error);
       }
-      // window.location.href = "/#/space";
-      // window.location.reload();
+      window.location.href = "/#/space";
+      window.location.reload();
     } catch (error) {
       console.error("Google Sign-In Error:", error.message);
     }
