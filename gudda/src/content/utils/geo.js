@@ -1,6 +1,5 @@
 export const getPlace = async (lat, lon) => {
   const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
-  console.log("url: ", url);
   try {
     const response = await fetch(url);
     const data = await response.json();
