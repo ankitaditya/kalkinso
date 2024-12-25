@@ -23,15 +23,7 @@ router.post(
 		body('first_name', 'Name is required').not().isEmpty(),
 		body('last_name', 'Name is required').not().isEmpty(),
 		body('email', 'Please include a valid email').isEmail(),
-		body('mobile', 'Please include a valid mobile number').isMobilePhone(),
-		body('upi', 'Please include a valid UPI').not().isEmpty(),
-		body('user_role', 'Please include a valid user_role').not().isEmpty(),
-		body('adhar', 'Please include a valid last 4 digit of your Adhar number').not().isEmpty(),
 		body('terms_conditions', 'Please accept the terms and conditions').not().isEmpty(),
-		body(
-			'password',
-			'Please enter a password with 8 or more characters'
-		).isLength({ min: 8 }),
 	],
 	async (req, res) => {
 		const errors = validationResult(req)
@@ -45,7 +37,7 @@ router.post(
 			let user = await User.findOne({ email })
 			if (user) {
 				return res
-					.status(400)
+					.status(403)
 					.json([{ msg: 'User already exists' }])
 			}
 
@@ -54,6 +46,37 @@ router.post(
 				r: 'pg',
 				d: 'mm',
 			})
+
+			let verification_status = {}
+
+			for (let key in req.body) {
+				if(key === 'email' && email){
+					verification_status[key] = {
+						value:email,
+						isVerified:true
+					}
+				} else if(key === 'phone' && mobile){
+					verification_status[key] = {
+						value:mobile,
+						isVerified:true
+					}
+				} else if(key === 'pan' && adhar){
+					verification_status[key] = {
+						value:adhar,
+						isVerified:true
+					}
+				} else if(key === 'upi' && upi){
+					verification_status[key] = {
+						value:upi,
+						isVerified:true
+					}
+				} else if(key === 'adhar' && adhar){
+					verification_status[key] = {
+						value:adhar,
+						isVerified:true
+					}
+				}
+			}
 
 			user = new User({
 				first_name, 
@@ -72,29 +95,8 @@ router.post(
 				first_name:first_name,
 				last_name:last_name,
 				username: `${first_name.toLocaleLowerCase()}.${last_name.toLocaleLowerCase()}${`${user._id}`.slice(-4)}`,
-				user_role:user_role,
-				verification_status:{
-					email:{
-						value:email,
-						isVerified:true
-					},
-					phone:{
-						value:mobile,
-						isVerified:true
-					},
-					pan:{
-						value:adhar,
-						isVerified:true
-					},
-					upi:{
-						value:upi,
-						isVerified:true
-					},
-					adhar:{
-						value:adhar,
-						isVerified:true
-					}
-				},
+				user_role:user_role?user_role:'Explorer',
+				verification_status,
 			  isActive:true,
 			})
 

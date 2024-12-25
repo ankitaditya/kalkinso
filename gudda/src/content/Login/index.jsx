@@ -11,6 +11,7 @@ import {
 } from "./FirebaseConfig";
 import * as THREE from "three";
 import Mudda from "./Mudda";
+import { register } from "../utils/users";
 
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -25,6 +26,10 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       localStorage.setItem("auth", JSON.stringify(result));
+      const res = await register({email: result.user.email, first_name: result.user.displayName.split(' ')[0], last_name: result.user.displayName.split(' ')[1]});
+      if(res.error) {
+        console.error(res.error);
+      }
       window.location.href = "/#/space";
       window.location.reload();
     } catch (error) {

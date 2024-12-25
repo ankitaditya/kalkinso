@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PageHeader, UserAvatar } from '@carbon/ibm-products';
 import { Menu, MenuItem, Theme } from '@carbon/react';
+import { getPlace } from '../utils';
 
 const Navbar = () => {
   const [location, setLocation] = useState(null);
@@ -13,7 +14,7 @@ const Navbar = () => {
         <UserAvatar onClick={(e)=>{
             setMenuPosition({ x: ref.current.getBoundingClientRect().x+ref.current.getBoundingClientRect().width, y: ref.current.getBoundingClientRect().y+ref.current.getBoundingClientRect().height });
             setMenu(!menu);
-        }} tooltipText={auth?.user?.displayName} ref={ref} imageDescription='image-profile' image='https://lh3.googleusercontent.com/a/ACg8ocItBJ1RBjei9hBbalvMFSYlm4QeR627Bd6ShKtT49tmdHHgW1bq=s576-c-no' />
+        }} tooltipText={auth?.user?.displayName} ref={ref} imageDescription='image-profile' image={auth?.user?.photoURL} />
     </>
   )
   useEffect(() => {
@@ -27,16 +28,8 @@ const Navbar = () => {
     }
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const url = `https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`;
-        fetch(url).then((response) => response.json()).then((data) => {
-            if (data && data.display_name) {
-                setLocation(data.display_name);
-            } else {
-                setLocation("Location Not found");
-            }
-        }).catch((error) => {
-            console.error("Error fetching location:", error);
-            setLocation("Error fetching location");
+        getPlace(position.coords.latitude, position.coords.longitude).then((res) => {
+          setLocation(res);
         });
       },
       () => alert("Unable to fetch location")

@@ -11,19 +11,19 @@ const UserSchema = new mongoose.Schema({
 	},
 	email: {
 		type: String,
-		required: true,
 		unique: true,
 	},
 	mobile: {
 		type: String,
-		required: true,
 		unique: true,
 	},
 	upi: {
 		type: String,
+		unique: true,
 	},
 	adhar: {
 		type: String,
+		unique: true,
 	},
 	terms_conditions: {
 		type: String,
