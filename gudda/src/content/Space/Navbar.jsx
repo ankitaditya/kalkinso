@@ -45,6 +45,7 @@ const Navbar = () => {
         <MenuItem label={"Logout"} onClick={()=>{
             localStorage.removeItem('auth');
             window.location.href = "/#/login";
+            window.location.reload();
         }} />
     </Menu>
     <PageHeader
