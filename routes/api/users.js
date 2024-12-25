@@ -85,17 +85,25 @@ router.post(
 
 			console.log('verification_status:', verification_status)
 
-			user = new User({
+			let userObject = {
 				first_name, 
 				last_name, 
-				email, 
-				mobile,
-				upi,
-				adhar, 
+				email:email?email:null,	 
+				mobile:mobile?mobile:null,
+				upi: upi?upi:null,
+				adhar: adhar?adhar:null, 
 				terms_conditions,
 				avatar,
 				password,
-			})
+			}
+
+			for (let key in userObject) {
+				if(!userObject[key]){
+					delete userObject[key]
+				}
+			}
+
+			user = new User(userObject)
 
 			let profile = new Profile({
 				user: user._id,

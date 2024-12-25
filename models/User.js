@@ -15,15 +15,12 @@ const UserSchema = new mongoose.Schema({
 	},
 	mobile: {
 		type: String,
-		unique: true,
 	},
 	upi: {
 		type: String,
-		unique: true,
 	},
 	adhar: {
 		type: String,
-		unique: true,
 	},
 	terms_conditions: {
 		type: String,
