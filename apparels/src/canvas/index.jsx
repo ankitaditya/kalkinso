@@ -42,19 +42,19 @@ const CanvasModel = () => {
   const [ menuItems, setMenuItems ] = useState(apparels);
   const searchRef = useRef();
   useEffect(() => {
-    // if(Object.keys(apparels).includes(selectedApparel)){
-    //   setApparel(apparels[selectedApparel]);
-    // }
-    if(localStorage.getItem('finalDesigns')){
-      let finalDesigns = JSON.parse(localStorage.getItem('finalDesigns'))
-      if(Object.keys(finalDesigns).includes(selectedApparel)){
-        if(selectedApparel.includes('shirt')){
-          setApparel(selectedApparel==='shirt'?<Shirt />:<CustomShirt texture={finalDesigns[selectedApparel].texture.base} color={finalDesigns[selectedApparel].color} />)
-        } else {
-          setApparel(selectedApparel==='hoodie'?<Mindfull />:<CommonCustomHoodie texture={finalDesigns[selectedApparel].texture.base} color={finalDesigns[selectedApparel].color} />)
-        }
-      }
+    if(Object.keys(apparels).includes(selectedApparel)){
+      setApparel(apparels[selectedApparel]);
     }
+    // if(localStorage.getItem('finalDesigns')){
+    //   let finalDesigns = JSON.parse(localStorage.getItem('finalDesigns'))
+    //   if(Object.keys(finalDesigns).includes(selectedApparel)){
+    //     if(selectedApparel.includes('shirt')){
+    //       setApparel(selectedApparel==='shirt'?<Shirt />:<CustomShirt texture={finalDesigns[selectedApparel].texture.base} color={finalDesigns[selectedApparel].color} />)
+    //     } else {
+    //       setApparel(selectedApparel==='hoodie'?<Mindfull />:<CommonCustomHoodie texture={finalDesigns[selectedApparel].texture.base} color={finalDesigns[selectedApparel].color} />)
+    //     }
+    //   }
+    // }
   }, [selectedApparel]);
 
   useEffect(() => {
