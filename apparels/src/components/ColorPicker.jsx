@@ -1,17 +1,42 @@
 import React from "react";
-import { SketchPicker } from "react-color";
+import { CirclePicker } from "react-color";
 import { useSnapshot } from "valtio";
 import state from "../store";
 
 const ColorPicker = () => {
   const snap = useSnapshot(state);
   return (
-    <div className="absolute left-full ml-3">
-      <SketchPicker
-        color={snap.color[snap.selectedApparel]}
+    <div className="absolute left-full ml-3" style={{
+      background: "white",
+      padding: "1rem",
+      borderRadius: "1.5rem"
+    }}>
+      <CirclePicker
+        color={snap.color[snap.selectedApparel.split('-')[0]]}
         disableAlpha
-        onChange={(color) => (state.color[snap.selectedApparel] = color.hex)}
-        //presetColors={[]}
+        onChange={(color) => (state.color[snap.selectedApparel.split('-')[0]] = color.hex)}
+        colors={[
+          {
+            color: "#2f344a",
+            title: "blue"
+          },
+          {
+            color: "#cac8c2",
+            title: "white/gray"
+          },
+          {
+            color: "#772522",
+            title: "red"
+          },
+          {
+            color: "#2c2c2c",
+            title: "black"
+          },
+          {
+            color: "#cf9583",
+            title: "swirl"
+          }
+        ].map(value=>value.color)}
       />
     </div>
   );

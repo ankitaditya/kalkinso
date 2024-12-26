@@ -1,40 +1,31 @@
 import React from "react";
 
 import CustomButton from "./CustomButton";
+import { useSnapshot } from "valtio";
+import state from "../store";
 
 const FilePicker = ({ file, setFile, readFile }) => {
+  const snap = useSnapshot(state)
+  const styles = [
+ "./styles/1B_025.png",                              "./styles/I_008.png",                               "./styles/Picsart_24-12-25_18-34-59-490.png",
+ "./styles/1E_016.png",                              "./styles/I_027.png",                               "./styles/Picsart_24-12-25_19-05-28-594.png",
+ "./styles/A_024.png",                               "./styles/P_005.png",                               "./styles/Picsart_24-12-25_19-08-26-881.png",
+ "./styles/F_008.png",                               "./styles/P_089.png",                               "./styles/Picsart_24-12-25_19-12-06-351.png",
+ "./styles/F_039.png",                               "./styles/P_106.png",                               "./styles/Picsart_24-12-25_19-16-58-200.png",
+ "./kalkinso.png"
+  ]
+
   return (
     <div className="filepicker-container">
-      <div className="flex-1 flex flex-col">
-        <input
-          id="file-upload"
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
-        <label htmlFor="file-upload" className="filepicker-label">
-          Upload File
-        </label>
-
-        <p className="mt-2 text-gray-500 text-xs truncate">
-          {file === "" ? "No file selected" : file.name}
-        </p>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-3">
-        <CustomButton
-          type="outline"
-          title="Logo"
-          handleClick={() => readFile("logo")}
-          customStyles="text-xs"
-        />
-        <CustomButton
-          type="filled"
-          title="Full"
-          handleClick={() => readFile("full")}
-          customStyles="text-xs"
-        />
-      </div>
+      {
+        styles.map(imgs=><div onClick={()=>{
+          state.logoDecal = imgs
+          state.baseDecal = imgs
+          state.fullDecal = imgs
+        }} className="image flex-1 flex flex-col">
+          <img src={imgs} />
+        </div>)
+      }
     </div>
   );
 };

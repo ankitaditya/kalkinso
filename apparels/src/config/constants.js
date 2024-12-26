@@ -1,4 +1,4 @@
-import { swatch, fileIcon, ai, logoShirt, stylishShirt } from "../assets";
+import { swatch, fileIcon, ai, logoShirt, stylishShirt, xl, l, m, xs, s, xxl } from "../assets";
 
 export const EditorTabs = [
   {
@@ -9,10 +9,29 @@ export const EditorTabs = [
     name: "filepicker",
     icon: fileIcon,
   },
+  // {
+  //   name: "aipicker",
+  //   icon: ai,
+  // },
+];
+
+export const SizeTabs = [
   {
-    name: "aipicker",
-    icon: ai,
+    name: "XL",
+    icon: xl,
   },
+  {
+    name: "L",
+    icon: l,
+  },
+  {
+    name: "M",
+    icon: m,
+  },
+  // {
+  //   name: "aipicker",
+  //   icon: ai,
+  // },
 ];
 
 export const FilterTabs = [
@@ -21,9 +40,13 @@ export const FilterTabs = [
     icon: logoShirt,
   },
   {
-    name: "stylishShirt",
+    name: "baseShirt",
     icon: stylishShirt,
   },
+  // {
+  //   name: "stylishShirt",
+  //   icon: stylishShirt,
+  // },
 ];
 
 export const DecalTypes = {
@@ -34,5 +57,9 @@ export const DecalTypes = {
   full: {
     stateProperty: "fullDecal",
     filterTab: "stylishShirt",
+  },
+  base: {
+    stateProperty: "baseDecal",
+    filterTab: "baseShirt",
   },
 };

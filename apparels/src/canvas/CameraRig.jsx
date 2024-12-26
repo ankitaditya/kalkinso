@@ -4,14 +4,14 @@ import { easing } from "maath";
 import { useSnapshot } from "valtio";
 import state from "../store";
 
-const CameraRig = ({ children }) => {
+const CameraRig = ({ children, defaultPosition=[-0.4, 0, 2] }) => {
   const group = useRef();
   const snap = useSnapshot(state);
   useFrame((state, delta) => {
     const isBreakpoint = window.innerWidth <= 1260;
     const isMobile = window.innerWidth <= 600;
 
-    let targetPosition = [-0.4, 0, 2];
+    let targetPosition = defaultPosition;
     if (snap.intro) {
       if (isBreakpoint) targetPosition = [0, 0, 2];
       if (isMobile) targetPosition = [0, 0.2, 2.5];

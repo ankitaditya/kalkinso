@@ -4,12 +4,14 @@ import { useSnapshot } from "valtio";
 import { useFrame } from "@react-three/fiber";
 import { Decal, useGLTF, useTexture } from "@react-three/drei";
 import state from "../store";
+import './shirt.css'
 
 const Shirt = () => {
   const snap = useSnapshot(state);
   const { nodes, materials } = useGLTF("/shirt_baked.glb");
   const logoTexture = useTexture(snap.logoDecal);
   const fullTexture = useTexture(snap.fullDecal);
+  const baseTexture = useTexture(snap.baseDecal);
 
   useFrame((state, delta) =>
     easing.dampC(materials.lambert1.color, snap.color['shirt'], 0.15, delta)
@@ -24,6 +26,17 @@ const Shirt = () => {
         material-roughness={1}
         dispose={null}
       >
+        {snap.isBaseTexture && (
+          <Decal
+            position={[-0.01, 0.03, 0.10]}
+            rotation={[0, 0, 0]}
+            scale={0.23}
+            map={baseTexture}
+            map-anisotropy={16}
+            depthTest={false}
+            depthWrite={true}
+          ></Decal>
+        )}
         {snap.isFullTexture && (
           <Decal
             position={[0, 0, 0]}

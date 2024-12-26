@@ -4,9 +4,9 @@ import { useSnapshot } from "valtio";
 
 import config from "../config/config";
 import state from "../store";
-import { download } from "../assets";
+import { download, shopping } from "../assets";
 import { downloadCanvasToImage, reader } from "../config/helpers";
-import { EditorTabs, FilterTabs, DecalTypes } from "../config/constants";
+import { EditorTabs, FilterTabs, DecalTypes, SizeTabs } from "../config/constants";
 import { fadeAnimation, slideAnimation } from "../config/motion";
 import {
   AIPicker,
@@ -15,9 +15,52 @@ import {
   FilePicker,
   Tab,
 } from "../components";
+import Tab2 from "../components/Tab2";
+import Buy from "./Buy";
+import { useCart } from "./Cart/cart-context";
 
-const Customizer = () => {
+const Customizer = ({setItems, items}) => {
   const snap = useSnapshot(state);
+  const { addProduct } = useCart();
+  const [size, setSize] = useState('M');
+  const productFormat = {
+    shirt: {
+      id: 'shirt-1',
+      sku: items[0].icon(),
+      title: "Shirt",
+      description: "Elevate your wardrobe with our classic shirt, tailored for a perfect fit and crafted with premium, breathable fabric. Ideal for both formal and casual occasions, this shirt ensures you stay stylish and comfortable all day.",
+      availableSizes: [size],
+      style: 'Quality',
+      price: 550,
+      color: snap.color['shirt'],
+      isLogoTexture: snap.isLogoTexture,
+      isBaseTexture: snap.isBaseTexture,
+      texture: snap.baseDecal,
+      installments: '1',
+      currencyId: 'INR',
+      currencyFormat: '₹',
+      isFreeShipping: false,
+      quantity: 1
+    },
+    hoodie: {
+      id: 'hoodie-1',
+      sku: items[1].icon(),
+      title: "Hoodie",
+      description: "Stay warm and cozy in our stylish hoodie, designed to keep you comfortable in all weather conditions. Made with premium fabric, this hoodie is perfect for casual outings and everyday wear.",
+      availableSizes: [size],
+      style: 'Quality',
+      price: 900,
+      color: snap.color['hoodie'],
+      isLogoTexture: snap.isLogoTexture,
+      isBaseTexture: snap.isBaseTexture,
+      texture: snap.baseDecal,
+      installments: '1',
+      currencyId: 'INR',
+      currencyFormat: '₹',
+      isFreeShipping: false,
+      quantity: 1
+    }
+  }
 
   const [file, setFile] = useState("");
 
@@ -26,8 +69,8 @@ const Customizer = () => {
 
   const [activeEditorTab, setActiveEditorTab] = useState("");
   const [activeFilterTab, setActiveFilterTab] = useState({
-    logoShirt: true,
-    stylishShirt: false,
+    logoShirt: false,
+    baseShirt: true,
   });
 
   // show tab content depending on the activeTab
@@ -98,9 +141,13 @@ const Customizer = () => {
       case "stylishShirt":
         state.isFullTexture = !activeFilterTab[tabName];
         break;
+      case "baseShirt":
+          state.isBaseTexture = !activeFilterTab[tabName];
+          break;
       default:
-        state.isLogoTexture = true;
+        state.isLogoTexture = false;
         state.isFullTexture = false;
+        state.isBaseTexture = true;
         break;
     }
 
@@ -121,7 +168,7 @@ const Customizer = () => {
     });
   };
 
-  return (
+  return !snap.buy&&(
     <AnimatePresence>
       {!snap.intro && (
         <>
@@ -146,26 +193,48 @@ const Customizer = () => {
           </motion.div>
 
           <motion.div
+            key="custom"
+            className="absolute top-0 right-0 z-10"
+            {...slideAnimation("right")}
+          >
+            <div className="flex items-center min-h-screen">
+              <div className="editortabs-container tabs">
+                {SizeTabs.map((tab) => (
+                  <Tab2
+                    key={tab.name}
+                    tab={tab}
+                    selectedSize={size}
+                    handleClick={() => {setSize(tab.name)}}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
             className="absolute z-10 top-5 right-5"
             {...fadeAnimation}
           >
+            <div className="w-fit px-4 py-2.5 font-bold text-sm">
+            <Buy />
+            </div>
             <CustomButton
               type="filled"
               title="Go Back"
               handleClick={() => (state.intro = true)}
               customStyles="w-fit px-4 py-2.5 font-bold text-sm"
+              style={{
+                position: "absolute",
+                right: "88vw",
+                top: "1rem",
+                minWidth: "8rem"
+              }}
             />
             <CustomButton
               type="filled"
-              title="Buy"
-              handleClick={() => (state.intro = true)}
-              customStyles="w-fit px-4 py-2.5 font-bold text-sm ml-2"
-            />
-            <CustomButton
-              type="filled"
-              title="Sell"
-              handleClick={() => (state.intro = true)}
-              customStyles="w-fit px-4 py-2.5 font-bold text-sm ml-2"
+              title="Add"
+              handleClick={() => addProduct(productFormat[snap.selectedApparel])}
+              customStyles="w-fit px-4 py-2.5 font-bold text-sm mr-20"
             />
           </motion.div>
 

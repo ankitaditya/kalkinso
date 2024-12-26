@@ -13,24 +13,60 @@ import { useSnapshot } from 'valtio';
 
 export function Mindfull(props) {
   const snap = useSnapshot(state);
-  const { nodes, materials } = useGLTF('/hoodie-mindfull-transformed.glb')
+  const { nodes, materials } = useGLTF('/hoodie.glb')
+  const logoTexture = useTexture(snap.logoDecal);
+  const fullTexture = useTexture(snap.fullDecal);
+  const baseTexture = useTexture(snap.baseDecal);
   useFrame((state, delta) =>
     {
-      easing.dampC(materials['Material_0.002'].color, snap.color['hoodie'], 0.25, delta)
+      easing.dampC(nodes.mesh_0.material.color, snap.color['hoodie'], 0.1, delta)
     }
   );
   const stateString = JSON.stringify(snap);
   return (
-    <group {...props} key={stateString}>
-      <mesh 
+    <group {...props} dispose={null} key={stateString}>
+    <mesh
       castShadow
-      geometry={nodes.Mesh_0002.geometry} 
-      material={materials['Material_0.002']} 
-      scale={0.4}
+      // receiveShadow
       material-roughness={1}
-      dispose={null} />
-    </group>
+      geometry={nodes.mesh_0.geometry}
+      material={nodes.mesh_0.material}
+      dispose={null}
+      scale={0.7}
+    >
+      {snap.isBaseTexture && (
+          <Decal
+            position={[-0.01, 0.03, 0.10]}
+            rotation={[0, 0, 0]}
+            scale={0.4}
+            map={baseTexture}
+            map-anisotropy={16}
+            depthTest={false}
+            depthWrite={true}
+          ></Decal>
+        )}
+        {snap.isFullTexture && (
+          <Decal
+            position={[0, 0, 0]}
+            rotation={[0, 0, 0]}
+            scale={1}
+            map={fullTexture}
+          ></Decal>
+        )}
+        {snap.isLogoTexture && (
+          <Decal
+            position={[0.11, 0.18, 0.10]}
+            rotation={[0, 0, 0]}
+            scale={0.15}
+            map={logoTexture}
+            map-anisotropy={16}
+            depthTest={false}
+            depthWrite={true}
+          ></Decal>
+        )}
+    </mesh>
+  </group>
   )
 }
 
-useGLTF.preload('/hoodie-mindfull-transformed.glb')
+useGLTF.preload('/hoodie.glb')
