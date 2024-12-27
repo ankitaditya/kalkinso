@@ -27,7 +27,7 @@ const CartProduct = ({ product }) => {
         onClick={handleRemoveProduct}
         title="remove product from cart"
       />
-      {sku}
+      {sku(title)}
       <S.Details>
         <S.Title>{title}</S.Title>
         <S.Desc>

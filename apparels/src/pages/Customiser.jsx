@@ -18,6 +18,8 @@ import {
 import Tab2 from "../components/Tab2";
 import Buy from "./Buy";
 import { useCart } from "./Cart/cart-context";
+import CustomShirt from "../canvas/CommonCustomT";
+import { CommonCustomHoodie } from "../canvas/CommonCustomHoodie";
 
 const Customizer = ({setItems, items}) => {
   const snap = useSnapshot(state);
@@ -233,7 +235,7 @@ const Customizer = ({setItems, items}) => {
             <CustomButton
               type="filled"
               title="Add"
-              handleClick={() => addProduct(productFormat[snap.selectedApparel])}
+              handleClick={() => addProduct({...productFormat[snap.selectedApparel], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})}
               customStyles="w-fit px-4 py-2.5 font-bold text-sm mr-20"
             />
           </motion.div>
