@@ -71,7 +71,7 @@ const CanvasModel = () => {
       key={selectedApparel}
       shadows
       camera={{ position: [0, 0, 0], fov: 25 }}
-      gl={{ preserveDrawingBuffer: true }}
+      // gl={{ preserveDrawingBuffer: true }}
       className="w-full max-w-full h-full transition-all ease-in"
     >
       {/* <ambientLight intensity={1.5} /> */}
