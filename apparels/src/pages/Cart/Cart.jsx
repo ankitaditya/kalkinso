@@ -4,22 +4,10 @@ import CartProducts from './CartProducts';
 import { useCart } from './cart-context';
 
 import * as S from './style';
+import state from '../../store';
 
 const Cart = () => {
   const { products, total, isOpen, openCart, closeCart } = useCart();
-
-  const handleCheckout = () => {
-    if (total.productQuantity) {
-      alert(
-        `Checkout - Subtotal: ${total.currencyFormat} ${formatPrice(
-          total.totalPrice,
-          total.currencyId
-        )}`
-      );
-    } else {
-      alert('Add some product in the cart!');
-    }
-  };
 
   const handleToggleCart = (isOpen) => () =>
     isOpen ? closeCart() : openCart();
@@ -69,7 +57,7 @@ const Cart = () => {
                 ) : null}
               </S.SubPriceInstallment>
             </S.SubPrice>
-            <S.CheckoutButton onClick={handleCheckout}>
+            <S.CheckoutButton onClick={()=>{state.buy = true}}>
               Checkout
             </S.CheckoutButton>
           </S.CartFooter>

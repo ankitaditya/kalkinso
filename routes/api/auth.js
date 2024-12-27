@@ -13,6 +13,10 @@ const ipAuth = require('../../middleware/ipAuth');
 const AWS = require('aws-sdk');
 const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const {OAuth2Client} = require('google-auth-library');
+
+
+const oauthclient = new OAuth2Client();
 
 const router = express.Router()
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
@@ -43,6 +47,7 @@ router.get('/', ipAuth, auth, async (req, res) => {
 			adhar: user.adhar,
 			terms_conditions: user.terms_conditions,
 			avatar: user.avatar,
+			access: user.access
 		})
 	} catch (err) {
 		console.error(err.message)
@@ -101,20 +106,79 @@ router.post(
 	'/login/email',
 	[
 		body('email', 'Please include a valid email').isEmail(),
-		body('password', 'Password is required').exists(),
+		// body('password', 'Password is required').exists(),
 	],
 	async (req, res) => {
 		const errors = validationResult(req)
 		if (!errors.isEmpty()) {
+			
 			return res.status(400).json({ errors: errors.array() })
 		}
-
+		const googleToken = req.header('x-google-token')
 		const { email, password } = req.body
+		if(googleToken) {
+			
+			try {
+				// const ticket = await oauthclient.verifyIdToken({
+				// 	idToken: googleToken,
+				// 	audience: process.env.GOOGLE_CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+				// 	// Or, if multiple clients access the backend:
+				// 	//[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+				// });
+				// const payload = ticket.getPayload();
+				// const userid = payload['sub'];
+				try {
+					
+					let user = await User.findOne({ email: email })
+		
+					if (!user) {
+						return res
+							.status(401)
+							.json({ errors: [{ msg: 'Invalid Credentials' }] })
+					}
+		
+					const payload = {
+						user: {
+							id: user._id,
+						},
+					}
+					let jwt_result = {}
+					jwt.sign(
+						payload,
+						process.env.REACT_APP_JWT_SECRET,
+						{ expiresIn: '48 hours' },
+						async (err, token) => {
+							if (err) {
+								throw err
+							}
+							if (!user.sessions) {
+								user.sessions = []
+							}
+							jwt_result['token'] = token
+							user.sessions.push(jwt_result)
+							user = await User.findOneAndUpdate(
+								{ email },
+								{ $set: user },
+								{ new: true }
+							)
+							const user_session = user.sessions.sort((a,b)=>b.created_at-a.created_at)[0]
+							await res.json({ ...jwt_result, session_id: user_session._id, first_name:user.first_name, last_name:user.last_name })
+						}
+					)
+					return
+				} catch (err) {
+					return res.status(500).send('Server error')
+				}
+			} catch (error) {
+				return res.status(401).json([{"msg": "Unauthorized Access!"}])
+			}
+		}
 
 		try {
 			let user = await User.findOne({ email })
 
 			if (!user) {
+				
 				return res
 					.status(400)
 					.json({ errors: [{ msg: 'Invalid Credentials' }] })
@@ -122,6 +186,7 @@ router.post(
 
 			const isMatch = await bcrypt.compare(password, user.password)
 			if (!isMatch) {
+				
 				return res
 					.status(400)
 					.json({ errors: [{ msg: 'Invalid Credentials' }] })
@@ -129,7 +194,7 @@ router.post(
 
 			const payload = {
 				user: {
-					id: user.id,
+					id: user._id,
 				},
 			}
 			let jwt_result = {}
@@ -157,7 +222,7 @@ router.post(
 			)
 		} catch (err) {
 			console.error(err.message)
-			res.status(500).send('Server error')
+			return res.status(500).send('Server error')
 		}
 	}
 )

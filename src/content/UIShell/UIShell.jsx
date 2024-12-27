@@ -62,6 +62,8 @@ import TermsNConditions from "./TermsNConditions/TermsNConditions";
 import Footer from "./Footer/Footer";
 import WalletPage from "../Wallet";
 import PaymentStatus from "../Wallet/PaymentStatus";
+import OrdersPage from "../Orders";
+import OrdersPaymentStatus from "../Orders/PaymentStatus";
 import BlockNoteEditor from "../Dashboard/BlockNoteEditor";
 // import Notification from '../../components/Notification';
 
@@ -81,6 +83,12 @@ class UIShell extends React.Component {
         notificationOpen: false,
         notificationsData: sampleData,
       };
+    }
+
+    componentDidMount = () => {
+        if(window.location.search.includes('token')){
+            localStorage.setItem('token', window.location.search.replace('?token=',''))
+        }
     }
 
     handleChange = (e) => {
@@ -190,21 +198,25 @@ class UIShell extends React.Component {
                             </Route>
                             <Route path="Register" element={<SignUp />} />
                             <Route path="home">
-                                <Route path="" element={<PrivateRoute Component={DashboardScreen} />} />
-                                <Route path=":taskPath" element={<PrivateRoute Component={Kanban} />} />
+                                <Route path="" element={<PrivateRoute access_page={'HOME'} Component={DashboardScreen} />} />
+                                <Route path=":taskPath" element={<PrivateRoute access_page={'DASH'} Component={Kanban} />} />
                             </Route>
-                            <Route path="chat" element={<PrivateRoute Component={ChatScreen} />} />
+                            <Route path="chat" element={<PrivateRoute access_page={'AI'} Component={ChatScreen} />} />
                             <Route path="Contact" element={<ContactPage />} />
                             <Route path="how-to" element={<HowToPage />} />
-                            <Route path="test-component" element={<PrivateRoute Component={AIReact} config={AIReactChatConfig} />} />
-                            <Route path="test-dashboard" element={<PrivateRoute Component={AIReact} config={AIReactDashboardConfig} />} />
+                            <Route path="test-component" element={<PrivateRoute access_page={'DASH'} Component={AIReact} config={AIReactChatConfig} />} />
+                            <Route path="test-dashboard" element={<PrivateRoute access_page={'DASH'} Component={AIReact} config={AIReactDashboardConfig} />} />
                             <Route path="wallet">
-                                <Route path="" element={<PrivateRoute Component={WalletPage} />} />
-                                <Route path=":orderId" element={<PrivateRoute Component={PaymentStatus} />} />
+                                <Route path="" element={<PrivateRoute access_page={'WALLET'} Component={WalletPage} />} />
+                                <Route path=":orderId" element={<PrivateRoute access_page={'WALLET'} Component={PaymentStatus} />} />
+                            </Route>
+                            <Route path="orders">
+                                <Route path="" element={<PrivateRoute access_page={'ORDERS'} Component={OrdersPage} />} />
+                                <Route path=":orderId" element={<PrivateRoute access_page={'ORDERS'} Component={OrdersPaymentStatus} />} />
                             </Route>
                             {window.location.pathname.startsWith('/token=')&&<Route path="tools">
-                                    <Route path="writing-assistant" element={<PrivateRoute Component={BlockNoteEditor} />} />
-                                    <Route path="design-assistant" element={<PrivateRoute Component={ChatScreen} />} />
+                                    <Route path="writing-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={BlockNoteEditor} />} />
+                                    <Route path="design-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={ChatScreen} />} />
                                 </Route>}
                             <Route path="ankit.see" element={
                                     <Resume />

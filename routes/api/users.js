@@ -31,7 +31,7 @@ router.post(
 			return res.status(400).json({ errors: errors.array() })
 		}
 
-		const { first_name, last_name, email, mobile, upi, user_role,adhar, terms_conditions, password } = req.body
+		const { first_name, last_name, email, mobile, upi, user_role,adhar, terms_conditions, password, access } = req.body
 
 		try {
 			let user = await User.findOne({ email })
@@ -93,6 +93,7 @@ router.post(
 				upi: upi?upi:null,
 				adhar: adhar?adhar:null, 
 				terms_conditions,
+				access,
 				avatar,
 				password,
 			}
@@ -129,7 +130,7 @@ router.post(
 			jwt.sign(
 				payload,
 				process.env.REACT_APP_JWT_SECRET,
-				{ expiresIn: "2000" },
+				{ expiresIn: "48 hours" },
 				(err, token) => {
 					if (err) {
 						throw err

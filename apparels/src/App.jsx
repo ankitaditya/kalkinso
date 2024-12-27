@@ -23,6 +23,7 @@ import { CommonCustomHoodie } from "./canvas/CommonCustomHoodie";
 import { CartProvider } from "./pages/Cart/cart-context";
 import { ThemeProvider } from "./pages/Cart/commons/style/styled-components";
 import { theme } from "./pages/Cart/commons/style/theme";
+import Checkout from "./pages/Checkout";
 
 function App() {
   const snap = useSnapshot(state)
@@ -79,6 +80,7 @@ function App() {
           <ProductHome />
           <Canvas />
           <Customizer setItems={setItems} items={items} />
+          {snap.buy&&<Checkout />}
         </main>
       </CartProvider>
       </ThemeProvider>

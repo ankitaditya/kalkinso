@@ -66,7 +66,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 	}
 }
 
-export const register = ({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, confirm_password, user_role }) => async (dispatch) => {
+export const register = ({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, confirm_password, user_role, access }) => async (dispatch) => {
 	// console.log('register is clicked!')
 	setAuthToken(null)
 	dispatch(saveUserDeviceInfo())
@@ -75,7 +75,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 			'Content-Type': 'application/json',
 		},
 	}
-	const body = JSON.stringify({ first_name, last_name, email, mobile, upi, adhar: adhar.slice(-4), terms_conditions, password, user_role })
+	const body = JSON.stringify({ first_name, last_name, email, mobile, upi, adhar: adhar.slice(-4), terms_conditions, password, user_role, access: ["DASH","HOME","ORDERS","AI","WALLET"] })
 	try {
 		const res = await axios.post('/api/users', body, config)
 		// console.log('RESULT: ', res)

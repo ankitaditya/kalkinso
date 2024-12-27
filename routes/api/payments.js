@@ -14,9 +14,9 @@ Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
 // Create an order and initiate payment
 router.post('/create-order', ipAuth, auth, async (req, res) => {
   try {
-    const { amount, name, email, phone } = req.body;
+    const { amount, name, email, phone, id } = req.body;
     const user_id = req.user.id;
-    const order_id = `ORDER_${Date.now()}`;
+    const order_id = `ORDER_${user_id}_${id}_${Date.now()}`;
 
     const paymentSession = await Cashfree.PGCreateOrder('2022-09-01', {
       order_id,
