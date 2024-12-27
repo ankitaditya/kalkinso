@@ -77,14 +77,12 @@ const CanvasModel = () => {
       {/* <ambientLight intensity={1.5} /> */}
       {/* <Sky /> */}
       <Environment files="canary_wharf_1k.hdr" />
-      <Bvh firstHitOnly>
       <CameraRig>
         <Backdrop />
         <Center>
           {apparel}
         </Center>
       </CameraRig>
-      </Bvh>
     </Canvas>
     {intro&&(<div className="nav">
       {/* <Link onClick={()=>{state.selectedApparel='shirt'}}>shirt</Link>

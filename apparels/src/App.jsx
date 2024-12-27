@@ -41,15 +41,13 @@ function App() {
       className="w-full max-w-full h-full transition-all ease-in"
     >
       {/* <ambientLight intensity={1.5 * Math.PI} /> */}
-      <Sky />
+      {/* <Sky /> */}
       <Environment files="canary_wharf_1k.hdr" />
-      <Bvh firstHitOnly>
       <CameraRig defaultPosition={[0,0,2]}>
         <Center>
           <Shirt />
         </Center>
       </CameraRig>
-      </Bvh>
     </MainCanvas>},
     {label: "hoodie",
       command: () => {
@@ -64,15 +62,13 @@ function App() {
     className="w-full max-w-full h-full transition-all ease-in"
   >
     {/* <ambientLight intensity={1.5 * Math.PI} /> */}
-    <Sky />
+    {/* <Sky /> */}
     <Environment files="canary_wharf_1k.hdr" />
-    <Bvh firstHitOnly>
     <CameraRig defaultPosition={[0,0,2]}>
       <Center>
         <Mindfull />
       </Center>
     </CameraRig>
-    </Bvh>
   </MainCanvas>}
   ])
   return (
