@@ -13,7 +13,7 @@ const ADMINS = ['6721232c99a0e2bf67b02ff4', '66a78e7a638c8006d29f7678']
 Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID;
 Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET;
 // Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
-Cashfree.XEnvironment = Cashfree.Environment.SANDBOX
+Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
 
 // Create a new order
 router.post('/orders', ipAuth, auth, async (req, res) => {
@@ -40,7 +40,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
     });
 
     const paymentSession = await Cashfree.PGCreateOrder('2022-09-01', {
-      order_id: order._id,
+      order_id: order_id,
       order_amount: total_amount,
       customer_details: {
         customer_id: req.user.id,
@@ -55,7 +55,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
     });
     const cashfree_payment = new CashfreePayment({
       user: req.user.id,
-      orderId: order._id,
+      orderId: order_id,
       paymentSessionId: paymentSession.data.payment_session_id,
       description: order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n'),
       amount:total_amount,
@@ -98,7 +98,7 @@ router.get('/payment-status/:orderId', ipAuth, auth, async (req, res) => {
   try {
     const { orderId } = req.params;
     let payment = await Orders.findById(orderId);
-    const paymentStatus = await Cashfree.PGFetchOrder("2022-09-01", orderId)
+    const paymentStatus = await Cashfree.PGFetchOrder("2022-09-01", payment.payment.transaction_id)
     if (!payment||!paymentStatus) {
       return res.status(404).json({ error: 'Order not found' });
     }
