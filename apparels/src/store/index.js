@@ -12,9 +12,9 @@ const state = proxy({
   isLogoTexture: false, //is logo currently displayed
   isFullTexture: false,
   isBaseTexture: true,
-  logoDecal: "./I_008.png",
-  fullDecal: "./I_008.png",
-  baseDecal: "./I_008.png",
+  logoDecal: "./styles/I_008.png",
+  fullDecal: "./styles/I_008.png",
+  baseDecal: "./styles/I_008.png",
 });
 
 export default state;
