@@ -12,8 +12,8 @@ const ADMINS = ['6721232c99a0e2bf67b02ff4', '66a78e7a638c8006d29f7678']
 // Initialize Cashfree Payout
 Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID;
 Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET;
-// Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
-Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+// Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
 
 // Create a new order
 router.post('/orders', ipAuth, auth, async (req, res) => {
