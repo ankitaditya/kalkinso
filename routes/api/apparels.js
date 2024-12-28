@@ -20,7 +20,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
     const { customer, order_items, payment, total_amount } = req.body;
-    const order_id = `ORDER_${order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n')}_${req.user.id}_${Date.now()}`;
+    const order_id = `ORDER_${order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n')}_${req.user.id}_${Date.now()}`.replace(' ','_');
 
     const order = new Orders({
       customer: {
