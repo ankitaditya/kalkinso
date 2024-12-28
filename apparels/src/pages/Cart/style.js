@@ -34,7 +34,7 @@ export const Container = styled.div`
   height: 100%;
   background-color: ${({ theme }) => theme.colors.primary};
   box-sizing: border-box;
-  z-index: 99;
+  z-index: 999999999999999999999999999999999;
 
   transition: right 0.2s;
 

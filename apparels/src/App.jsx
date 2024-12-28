@@ -92,7 +92,7 @@ function App() {
         </main>
       </CartProvider>
       </ThemeProvider>
-      {!snap.buy&&<Dock model={items} position="top" />}
+      {!snap.buy&&<Dock model={items} position="bottom" />}
       </PrimeReactProvider>
   );
 }

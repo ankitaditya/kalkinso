@@ -161,7 +161,7 @@ export default function Checkout() {
 
                 <MDBInput label='Country' type='text' onChange={(e)=>setAddress({...address, country: e.target.value})} className="mb-4" />
                 <MDBInput label='Street' type='text' onChange={(e)=>setAddress({...address, street: e.target.value})} className="mb-4" />
-                <MDBInput label='Phone' type='text' onChange={(e)=>setPhone(e.target.value)} className="mb-4" />
+                <MDBInput label='Phone' type='text' maxLength={10} onChange={(e)=>setPhone(e.target.value)} className="mb-4" />
                 <MDBTextArea label='Additional information' rows={4} className="mb-4" />
 
                 <div className="d-flex justify-content-center">

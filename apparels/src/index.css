@@ -25,7 +25,7 @@ html {
 }
 
 .p-dock {
-  z-index: 1000;
+  z-index: 10;
 }  
 
 .app {
@@ -60,7 +60,7 @@ html {
 }
 
 .head-text {
-  @apply xl:text-[9rem] text-[6rem] xl:leading-[11rem] leading-[7rem] font-black text-black;
+  @apply xl:text-[4rem] text-[4rem] xl:leading-[9rem] leading-[5rem] font-black text-black ml-5;
 }
 
 .download-btn {

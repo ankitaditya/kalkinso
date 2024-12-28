@@ -90,16 +90,16 @@ const ProductHome = () => {
             <motion.div
               className="flex flex-col gap-5"
             >
-            <ul className="mt-4 text-gray-600 text-sm">
+            <ul className="mt-0 text-black text-sm">
                 <li><strong>Price:</strong> Starting at ₹ {prices[snap.selectedApparel.split('-')[0]]}</li>
                 <li><strong>Key Features:</strong></li>
-                <p style={{maxWidth:"40rem"}}>
+                <p style={{maxWidth:"20rem"}}>
                 {descriptions[snap.selectedApparel.split('-')[0]]}
                 </p>
             </ul>
               <CustomButton
                 type="filled"
-                title="Buy"
+                title="Start"
                 disabled={!value}
                 handleClick={() => {
                   state.intro = false;
