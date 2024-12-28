@@ -3,7 +3,7 @@ import { CirclePicker } from "react-color";
 import { useSnapshot } from "valtio";
 import state from "../store";
 
-const ColorPicker = () => {
+const ColorPicker = ({setActiveEditorTab}) => {
   const snap = useSnapshot(state);
   return (
     <div className="absolute left-full ml-3" style={{
@@ -14,7 +14,7 @@ const ColorPicker = () => {
       <CirclePicker
         color={snap.color[snap.selectedApparel.split('-')[0]]}
         disableAlpha
-        onChange={(color) => (state.color[snap.selectedApparel.split('-')[0]] = color.hex)}
+        onChange={(color) => {state.color[snap.selectedApparel.split('-')[0]] = color.hex; setActiveEditorTab("");}}
         colors={[
           {
             color: "#2f344a",

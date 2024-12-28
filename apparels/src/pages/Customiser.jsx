@@ -79,9 +79,9 @@ const Customizer = ({setItems, items}) => {
   const generateTabContent = () => {
     switch (activeEditorTab) {
       case "colorpicker":
-        return <ColorPicker />;
+        return <ColorPicker setActiveEditorTab={setActiveEditorTab} />;
       case "filepicker":
-        return <FilePicker file={file} setFile={setFile} readFile={readFile} />;
+        return <FilePicker setActiveEditorTab={setActiveEditorTab} file={file} setFile={setFile} readFile={readFile} />;
       case "aipicker":
         return (
           <AIPicker

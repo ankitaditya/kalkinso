@@ -4,7 +4,7 @@ import CustomButton from "./CustomButton";
 import { useSnapshot } from "valtio";
 import state from "../store";
 
-const FilePicker = ({ file, setFile, readFile }) => {
+const FilePicker = ({ file, setFile, readFile, setActiveEditorTab }) => {
   const snap = useSnapshot(state)
   const styles = [
  "./styles/1B_025.png",                              "./styles/I_008.png",                               "./styles/Picsart_24-12-25_18-34-59-490.png",
@@ -22,6 +22,7 @@ const FilePicker = ({ file, setFile, readFile }) => {
           state.logoDecal = imgs
           state.baseDecal = imgs
           state.fullDecal = imgs
+          setActiveEditorTab("")
         }} className="image flex-1 flex flex-col">
           <img src={imgs} />
         </div>)
