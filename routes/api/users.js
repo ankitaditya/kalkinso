@@ -4,6 +4,7 @@ const gravatar = require('gravatar')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
+const { v4: uuidv4 } = require('uuid');
 
 // Assuming you have some method to generate OTP
 const { generateOTP, verifyOTP } = require('../../utils/otpUtils');
@@ -90,7 +91,7 @@ router.post(
 				last_name, 
 				email:email?email:null,	 
 				mobile:mobile?mobile:null,
-				upi: upi?upi:null,
+				upi: upi?upi:uuidv4().slice(0,6),
 				adhar: adhar?adhar:null, 
 				terms_conditions,
 				access,
