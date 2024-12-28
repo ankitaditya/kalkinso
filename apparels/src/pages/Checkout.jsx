@@ -27,7 +27,7 @@ export default function Checkout() {
             "first_name": auth.first_name,
             "last_name": auth.last_name,
             "email": auth.email,
-            "mobile": auth.mobile,
+            "mobile": phone,
             "address": address
           },
           order_items: products.map(prod=>{
@@ -97,7 +97,7 @@ export default function Checkout() {
         },
         baseURL: "https://www.kalkinso.com"
       }
-      const body = JSON.stringify({ first_name: result.user.displayName.split(' ')[0], last_name: result.user.displayName.split(' ')[1], email: result.user.email, mobile:"", upi:"", adhar: "", terms_conditions:true, password:"", user_role: "Explorer", access: ["ORDERS"] })
+      const body = JSON.stringify({ first_name: result.user.displayName.split(' ')[0], last_name: result.user.displayName.split(' ')[1], email: result.user.email, mobile:phone, upi:"", adhar: "", terms_conditions:true, password:"", user_role: "Explorer", access: ["ORDERS"] })
       try {
         let res = await axios.post("/api/users", body, config)
         localStorage.setItem('token', res.data.token)

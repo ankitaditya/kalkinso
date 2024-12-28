@@ -9,8 +9,9 @@ import s from "./s.png";
 import xxl from "./xxl.png";
 import m from "./m.png";
 import shopping from "./shopping.png"
+import buyNow from "./buy-now.png"
 
 import logoShirt from "./logo-tshirt.png";
 import stylishShirt from "./stylish-tshirt.png";
 
-export { l, xl, m, xs, s, xxl, ai, fileIcon, swatch, download, logoShirt, stylishShirt, shopping };
+export { l, xl, m, xs, s, xxl, ai, fileIcon, swatch, download, logoShirt, stylishShirt, shopping, buyNow };

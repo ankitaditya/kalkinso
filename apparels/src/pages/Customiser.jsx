@@ -82,8 +82,6 @@ const Customizer = ({setItems, items}) => {
         return <ColorPicker />;
       case "filepicker":
         return <FilePicker file={file} setFile={setFile} readFile={readFile} />;
-      case "addToCart":
-        return null
       case "aipicker":
         return (
           <AIPicker
@@ -184,7 +182,7 @@ const Customizer = ({setItems, items}) => {
             <div className="flex items-center min-h-screen">
               <div className="editortabs-container tabs">
                 {EditorTabs.map((tab) => (
-                  <Tab
+                  <div style={{float: "left"}}><Tab
                     key={tab.name}
                     tab={tab}
                     handleClick={() => {
@@ -196,6 +194,9 @@ const Customizer = ({setItems, items}) => {
                       }
                       if(tab.name==='addToCart'){
                         addProduct({...productFormat[snap.selectedApparel], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})
+                      }
+                      if(tab.name==='buyNow'){
+                        addProduct({...productFormat[snap.selectedApparel], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})
                         openCart()
                       }
                       if(['logoShirt', 'baseShirt'].includes(tab.name)){
@@ -204,6 +205,10 @@ const Customizer = ({setItems, items}) => {
                     }
                   }
                   />
+                  <center><span style={{
+                    fontSize: "10px"
+                  }}>{tab.display}</span></center>
+                  </div>
                 ))}
 
                 {generateTabContent()}
@@ -211,10 +216,9 @@ const Customizer = ({setItems, items}) => {
             </div>
           </motion.div>
 
-          <motion.div
+          {!snap.intro&&<motion.div
             key="custom"
-            className="absolute top-0 right-0 z-10"
-            {...slideAnimation("right")}
+            className="absolute bottom-32 right-0 z-10"
           >
             <div className="flex items-center min-h-screen">
               <div className="editortabs-container tabs">
@@ -228,26 +232,19 @@ const Customizer = ({setItems, items}) => {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </motion.div>}
 
           <motion.div
-            className="absolute z-10 top-5 right-5"
-            {...fadeAnimation}
+            className="absolute z-10 top-10 right-0"
           >
             <div className="w-fit px-4 py-2.5 font-bold text-sm">
             <Buy />
             </div>
             <CustomButton
               type="filled"
-              title="Go Back"
+              title="← Back"
               handleClick={() => (state.intro = true)}
               customStyles="w-fit px-4 py-2.5 font-bold text-sm"
-              style={{
-                position: "absolute",
-                right: "88vw",
-                top: "1rem",
-                minWidth: "8rem"
-              }}
             />
           </motion.div>
         </>

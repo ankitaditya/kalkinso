@@ -72,8 +72,8 @@ const ProductHome = () => {
   return !snap.buy&&(
     <AnimatePresence>
       {snap.intro && (
-        <motion.section className="home" {...slideAnimation("left")}>
-          <motion.header {...slideAnimation("down")}>
+        <motion.section className="home">
+          <motion.header>
             <img
               src="./kalkinso.png"
               alt="logo"
@@ -81,14 +81,13 @@ const ProductHome = () => {
             ></img>
           </motion.header>
 
-          <motion.div className="home-content" {...headContainerAnimation}>
-            <motion.div {...headTextAnimation}>
+          <motion.div className="home-content">
+            <motion.div>
               <h1 className="head-text">
                 {snap.selectedApparel.split('-')[0].slice(0,1).toLocaleUpperCase()+snap.selectedApparel.split('-')[0].slice(1).toLocaleLowerCase()}
               </h1>
             </motion.div>
             <motion.div
-              {...headContentAnimation}
               className="flex flex-col gap-5"
             >
             <ul className="mt-4 text-gray-600 text-sm">
@@ -111,10 +110,9 @@ const ProductHome = () => {
           </motion.div>
         </motion.section>
       )}
-          <motion.div
+          {snap.intro&&<motion.div
             key="custom"
             className="absolute top-0 right-0 z-10"
-            {...slideAnimation("right")}
           >
             <div className="flex items-center min-h-screen">
               <div className="editortabs-container tabs">
@@ -128,7 +126,7 @@ const ProductHome = () => {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </motion.div>}
     </AnimatePresence>
   );
 };

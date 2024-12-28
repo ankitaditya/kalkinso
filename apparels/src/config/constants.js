@@ -1,25 +1,35 @@
-import { swatch, fileIcon, ai, logoShirt, shopping, stylishShirt, xl, l, m, xs, s, xxl } from "../assets";
+import { swatch, fileIcon, ai, logoShirt, shopping, stylishShirt, xl, l, m, xs, s, xxl, buyNow } from "../assets";
 
 export const EditorTabs = [
   {
     name: "colorpicker",
     icon: swatch,
+    display: "Pick Color"
   },
   {
     name: "filepicker",
     icon: fileIcon,
+    display: "Pick Design"
   },
   {
     name: "logoShirt",
-    icon: logoShirt
+    icon: logoShirt,
+    display: "Logo"
   },
   {
     name: "baseShirt",
-    icon: stylishShirt
+    icon: stylishShirt,
+    display: "Base"
   },
   {
     name: "addToCart",
-    icon: shopping
+    icon: shopping,
+    display: "Add To Cart"
+  },
+  {
+    name: "buyNow",
+    icon: buyNow,
+    display: "Buy"
   },
   
   // {
