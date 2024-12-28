@@ -134,8 +134,14 @@ const OrdersPage = () => {
             />
             <TextInput
               id="transaction-description"
-              labelText="Description"
+              labelText="Address"
               value={Object.values(selectedTransaction.customer.address).join(', ')}
+              readOnly
+            />
+            <TextInput
+              id="transaction-description"
+              labelText="Quantity"
+              value={selectedTransaction.order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n')}
               readOnly
             />
             <NumberInput
@@ -156,13 +162,13 @@ const OrdersPage = () => {
               <TextInput
                 id="transaction-gst"
                 labelText="GST (18%)"
-                value={(selectedTransaction.total_amount * 0.18).toFixed(2)}
+                value={selectedTransaction.total_amount}
                 readOnly
               />
               <TextInput
                 id="transaction-total"
                 labelText="Total Amount"
-                value={(selectedTransaction.total_amount * 1.18).toFixed(2)}
+                value={selectedTransaction.total_amount}
                 readOnly
               />
             </div>

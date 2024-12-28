@@ -76,7 +76,7 @@ const PaymentStatus = () => {
           <Tile className="payment-status-tile" style={{ padding: '2rem', textAlign: 'center' }}>
             <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {paymentStatus?.error?<CloseFilled style={{ marginRight: '0.5rem', color: "red" }} size={20} />
-              :(paymentStatus?.paymentStatus==='Pending'?<InformationFilled size={20} style={{ marginRight: '0.5rem', color: "black" }} />:<CheckmarkFilled size={20} style={{ marginRight: '0.5rem', color: "green" }} />)} Payment Status
+              :(paymentStatus?.payment.status==='ACTIVE'?<InformationFilled size={20} style={{ marginRight: '0.5rem', color: "black" }} />:<CheckmarkFilled size={20} style={{ marginRight: '0.5rem', color: "green" }} />)} Payment Status
             </h2>
             {localLoading && (
               <InlineLoading description="Loading..." />
@@ -87,10 +87,10 @@ const PaymentStatus = () => {
                   <p style={{ color: 'red', fontWeight: 'bold' }}>{paymentStatus.error}</p>
                 ) : (
                   <div style={{ textAlign: 'left' }}>
-                    <p><strong>Order ID:</strong> {paymentStatus.orderId}</p>
-                    <p><strong>Status:</strong> {paymentStatus.paymentStatus}</p>
-                    <p><strong>Description:</strong> {paymentStatus.description}</p>
-                    <p><strong>Amount:</strong> ₹{paymentStatus.amount}</p>
+                    <p><strong>Order ID:</strong> {paymentStatus.payment.transaction_id}</p>
+                    <p><strong>Status:</strong> {paymentStatus.payment.status}</p>
+                    <p><strong>Description:</strong> {paymentStatus.order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n')}</p>
+                    <p><strong>Amount:</strong> ₹{paymentStatus.total_amount}</p>
                   </div>
                 )}
               </div>

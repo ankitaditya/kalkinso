@@ -100,7 +100,7 @@ const ProductHome = () => {
             </ul>
               <CustomButton
                 type="filled"
-                title="Check"
+                title="Buy"
                 disabled={!value}
                 handleClick={() => {
                   state.intro = false;
@@ -111,20 +111,6 @@ const ProductHome = () => {
           </motion.div>
         </motion.section>
       )}
-      <motion.div
-            className="filtertabs-container"
-            {...slideAnimation("up")}
-          >
-            {FilterTabs.map((tab) => (
-              <Tab
-                key={tab.name}
-                tab={tab}
-                isFilterTab
-                isActiveTab={activeFilterTab[tab.name]}
-                handleClick={() => handleActiveFilterTab(tab.name)}
-              />
-            ))}
-          </motion.div>
           <motion.div
             key="custom"
             className="absolute top-0 right-0 z-10"

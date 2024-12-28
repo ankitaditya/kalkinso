@@ -23,7 +23,7 @@ import { CommonCustomHoodie } from "../canvas/CommonCustomHoodie";
 
 const Customizer = ({setItems, items}) => {
   const snap = useSnapshot(state);
-  const { addProduct } = useCart();
+  const { addProduct, openCart } = useCart();
   const [size, setSize] = useState('M');
   const productFormat = {
     shirt: {
@@ -82,6 +82,8 @@ const Customizer = ({setItems, items}) => {
         return <ColorPicker />;
       case "filepicker":
         return <FilePicker file={file} setFile={setFile} readFile={readFile} />;
+      case "addToCart":
+        return null
       case "aipicker":
         return (
           <AIPicker
@@ -185,7 +187,22 @@ const Customizer = ({setItems, items}) => {
                   <Tab
                     key={tab.name}
                     tab={tab}
-                    handleClick={() => {if(activeEditorTab==""){setActiveEditorTab(tab.name); console.log("moose")}else{setActiveEditorTab("")}}}
+                    handleClick={() => {
+                      if(activeEditorTab==""){
+                        setActiveEditorTab(tab.name); 
+                        console.log("moose")
+                      }else{
+                        setActiveEditorTab("")
+                      }
+                      if(tab.name==='addToCart'){
+                        addProduct({...productFormat[snap.selectedApparel], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})
+                        openCart()
+                      }
+                      if(['logoShirt', 'baseShirt'].includes(tab.name)){
+                        handleActiveFilterTab(tab.name)
+                      }
+                    }
+                  }
                   />
                 ))}
 
@@ -232,27 +249,6 @@ const Customizer = ({setItems, items}) => {
                 minWidth: "8rem"
               }}
             />
-            <CustomButton
-              type="filled"
-              title="Add"
-              handleClick={() => addProduct({...productFormat[snap.selectedApparel], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})}
-              customStyles="w-fit px-4 py-2.5 font-bold text-sm mr-20"
-            />
-          </motion.div>
-
-          <motion.div
-            className="filtertabs-container"
-            {...slideAnimation("up")}
-          >
-            {FilterTabs.map((tab) => (
-              <Tab
-                key={tab.name}
-                tab={tab}
-                isFilterTab
-                isActiveTab={activeFilterTab[tab.name]}
-                handleClick={() => handleActiveFilterTab(tab.name)}
-              />
-            ))}
           </motion.div>
         </>
       )}

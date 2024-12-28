@@ -1,4 +1,4 @@
-import { swatch, fileIcon, ai, logoShirt, stylishShirt, xl, l, m, xs, s, xxl } from "../assets";
+import { swatch, fileIcon, ai, logoShirt, shopping, stylishShirt, xl, l, m, xs, s, xxl } from "../assets";
 
 export const EditorTabs = [
   {
@@ -9,6 +9,19 @@ export const EditorTabs = [
     name: "filepicker",
     icon: fileIcon,
   },
+  {
+    name: "logoShirt",
+    icon: logoShirt
+  },
+  {
+    name: "baseShirt",
+    icon: stylishShirt
+  },
+  {
+    name: "addToCart",
+    icon: shopping
+  },
+  
   // {
   //   name: "aipicker",
   //   icon: ai,

@@ -7,7 +7,7 @@
 
 html {
   font-family: "Inter", sans-serif;
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
 }
 
 @supports (font-variation-settings: normal) {
@@ -76,8 +76,10 @@ html {
 }
 
 .filtertabs-container {
-  @apply absolute z-[9] bottom-5 right-0 left-0 w-full flex justify-center items-center flex-wrap gap-4;
+  @apply absolute z-[10] bottom-5 right-0 left-0 w-full flex justify-center items-center gap-4;
+  @apply md:flex-wrap lg:gap-6; /* For larger screens, adjust gap and layout */
 }
+
 
 .aipicker-container {
   @apply absolute left-full ml-3 glassmorphism p-3 w-[195px] h-[220px] rounded-md flex flex-col gap-4;
