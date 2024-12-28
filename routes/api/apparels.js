@@ -81,10 +81,11 @@ router.get('/orders', ipAuth, auth, async (req, res) => {
     }
     if(ADMINS.includes(req.user.id)){
       let orders = await Orders.find();  
-      orders = orders.filter(order=>order.payment.status==="Completed")
+      orders = orders.filter(order=>order.payment.status==="PAID")
       res.status(200).json({ orders });  
     }
     let orders = await Orders.find({ 'customer.email': user.email });
+    orders = orders.filter(order=>order.payment.status==="PAID")
     res.status(200).json({ orders });
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -96,7 +97,7 @@ router.get('/orders', ipAuth, auth, async (req, res) => {
 router.get('/payment-status/:orderId', ipAuth, auth, async (req, res) => {
   try {
     const { orderId } = req.params;
-    let payment = await Orders.findById(orderId);
+    let payment = await Orders.find({'payment.transaction_id': orderId});
     const paymentStatus = await Cashfree.PGFetchOrder("2022-09-01", orderId)
     if (!payment||!paymentStatus) {
       return res.status(404).json({ error: 'Order not found' });
