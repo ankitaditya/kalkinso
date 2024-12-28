@@ -91,8 +91,8 @@ const OrdersPage = () => {
                 <TableBody>
                   {orders.map((order) => (
                     <TableRow key={order._id} onClick={() => openModal(order)} style={{ cursor: 'pointer' }}>
+                      <TableCell>{order.placed_at}</TableCell>
                       <TableCell>{order.order_status}</TableCell>
-                      <TableCell>{order._id}</TableCell>
                       <TableCell>{Object.values(order.customer.address).join(', ')}</TableCell>
                       <TableCell>{order.order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n')}</TableCell>
                       <TableCell>{STATUS_ICONS[order.payment.status.toLocaleUpperCase()]}</TableCell>

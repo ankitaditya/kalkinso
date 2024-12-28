@@ -73,11 +73,11 @@ function App() {
   </MainCanvas>}
   ])
   useEffect(()=>{
-    if(window.location.pathname!=='/'){
-      state.selectedApparel = window.location.pathname.replace('/','').split('_')[0].toLocaleLowerCase()
-      state.color[state.selectedApparel] = '#'+window.location.pathname.replace('/').split('_')[1].toLocaleLowerCase()
-      state.baseDecal = './'+window.location.pathname.replace('/').split('_')[3]+'.png'
-      state.logoDecal = './'+window.location.pathname.replace('/').split('_')[3]+'.png'
+    if(window.location.search){
+      state.selectedApparel = window.location.search.replace('?apparel=','').split('_')[0].toLocaleLowerCase()
+      state.color[state.selectedApparel] = '#'+window.location.search.replace('?apparel=').split('_')[1].toLocaleLowerCase()
+      state.baseDecal = './'+window.location.search.replace('?apparel=').split('_')[3]+'.png'
+      state.logoDecal = './'+window.location.search.replace('?apparel=').split('_')[3]+'.png'
     }
   },[])
   return (

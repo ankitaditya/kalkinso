@@ -47,7 +47,8 @@ const ApparelsOrderSchema = new mongoose.Schema({
       color: { type: String },
       quantity: { type: Number, required: true, min: 1 },
       price: { type: Number, required: true, min: 0 },
-      texture: { type: String }
+      texture: { type: String, required: true },
+      placement: { type: String, required: true }
     },
   ],
   payment: {

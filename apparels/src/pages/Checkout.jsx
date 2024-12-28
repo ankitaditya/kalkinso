@@ -37,7 +37,9 @@ export default function Checkout() {
               size: prod.availableSizes[0],
               color: prod.color,
               quantity: prod.quantity,
-              price: prod.price
+              price: prod.price,
+              texture: prod.texture,
+              placement: prod.isLogoTexture?"LOGO":"BASE"
             }
           }),
           "payment": {
