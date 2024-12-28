@@ -12,7 +12,8 @@ const ADMINS = ['6721232c99a0e2bf67b02ff4', '66a78e7a638c8006d29f7678']
 // Initialize Cashfree Payout
 Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID;
 Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET;
-Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+// Cashfree.XEnvironment = Cashfree.Environment.PRODUCTION;
+Cashfree.XEnvironment = Cashfree.Environment.SANDBOX
 
 // Create a new order
 router.post('/orders', ipAuth, auth, async (req, res) => {
@@ -46,7 +47,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
       },
       order_currency: 'INR',
       order_meta: {
-        "return_url": `https://www.kalkinso.com/#/orders?token=${req.header('x-auth-token')}`
+        "return_url": `https://www.kalkinso.com/#/orders/${order_id}?token=${req.header('x-auth-token')}`
       }
     });
     const cashfree_payment = new CashfreePayment({
@@ -60,7 +61,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
     await cashfree_payment.save();
 
     const savedOrder = await order.save();
-    res.status(201).json({ order: savedOrder, paymentSessionId: paymentSession.data.payment_session_id, orderId: order_id, returnUrl: `https://www.kalkinso.com/#/orders?token=${req.header('x-auth-token')}` });
+    res.status(201).json({ order: savedOrder, paymentSessionId: paymentSession.data.payment_session_id, orderId: order_id, returnUrl: `https://www.kalkinso.com/#/orders/${order_id}?token=${req.header('x-auth-token')}` });
   } catch (error) {
     console.error('Error creating order:', error);
     res.status(500).json({ error: 'Failed to create order' });
@@ -77,6 +78,7 @@ router.get('/orders', ipAuth, auth, async (req, res) => {
     }
     if(ADMINS.includes(req.user.id)){
       let orders = await Orders.find();  
+      orders = orders.filter(order=>order.payment.status==="Completed")
       res.status(200).json({ orders });  
     }
     let orders = await Orders.find({ 'customer.email': user.email });
@@ -84,6 +86,28 @@ router.get('/orders', ipAuth, auth, async (req, res) => {
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+});
+
+// Get payment status
+router.get('/payment-status/:orderId', ipAuth, auth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    let payment = await Orders.findById(orderId);
+    const paymentStatus = await Cashfree.PGFetchOrder("2022-09-01", orderId)
+    if (!payment||!paymentStatus) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    payment.payment.status = paymentStatus.data.order_status
+    payment.order_status = "Processing"
+    const newPayment = await Orders.findOneAndUpdate(
+        { _id:orderId }, 
+        { ...payment }, 
+        { new: true });
+    res.status(200).json({ order:newPayment });
+  } catch (error) {
+    console.error('Error fetching payment status:', error);
+    res.status(500).json({ error: 'Failed to fetch payment status' });
   }
 });
 

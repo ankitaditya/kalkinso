@@ -18,9 +18,7 @@ import {
   NumberInput,
   ButtonSet,
 } from '@carbon/react';
-import { load } from '@cashfreepayments/cashfree-js';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 import { CheckmarkFilled, CloseFilled, InformationFilled, InformationSquareFilled } from '@carbon/react/icons';
 
 const OrdersPage = () => {
@@ -31,7 +29,7 @@ const OrdersPage = () => {
       axios.get('/api/apparels/orders', {
           headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          'x-auth-token': `${localStorage.getItem('token')}`,
           },
       }).then((response) => {
           setOrders(response.data.orders.reverse());
@@ -43,10 +41,7 @@ const OrdersPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(null);
   const invoiceRef = useRef(null);
-  const { user } = useSelector((state) => state.auth);
-  const [ amount, setAmount ] = useState(0);
   const STATUS_ICONS = {
     PAID: <CheckmarkFilled style={{ color: 'green' }} />,
     PENDING: <InformationFilled style={{ color: 'black' }} />,
@@ -76,46 +71,6 @@ const OrdersPage = () => {
     setSelectedTransaction(null);
   };
 
-  const closePaymentModal = () => {
-    setIsPaymentModalOpen(false);
-  };
-
-  const handlePayment = async (option) => {
-    try {
-      // Fetch the payment session ID from your backend
-      let url = option === 'ADD' ? '/api/payments/wallet/top-up' : '/api/payments/wallet/withdraw';
-      const response = await axios.post(url, {
-        amount: amount,
-        description: option === 'ADD' ? 'Wallet Top-up' : 'Wallet Withdrawal',
-      },
-    {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-    });
-      const { paymentSessionId, returnUrl, orderId } = await response.data;
-
-      // Load Cashfree SDK
-      const cashfree = await load({ mode: 'production' }); // Use 'production' in live environment
-
-      // Configure payment options
-      const paymentOptions = {
-        paymentSessionId,
-        returnUrl,
-        // Additional options as required
-      };
-
-      // Trigger the payment
-      const result = await cashfree.checkout(paymentOptions);
-      if (result.redirect){
-        console.log('Redirecting to Cashfree Checkout');
-      }
-    } catch (error) {
-      console.error('Error initiating payment:', error);
-    }
-  };
-
   return (
     <Grid fullWidth>
         <Column lg={12} md={8} sm={4}>
@@ -126,8 +81,8 @@ const OrdersPage = () => {
                 <TableHead>
                   <TableRow>
                     <TableHeader>Date</TableHeader>
-                    <TableHeader>Order Id</TableHeader>
-                    <TableHeader>Description</TableHeader>
+                    <TableHeader>Order Status</TableHeader>
+                    <TableHeader>Address</TableHeader>
                     <TableHeader>Quantity</TableHeader>
                     <TableHeader>Status</TableHeader>
                     <TableHeader>Amount (₹)</TableHeader>
@@ -136,7 +91,7 @@ const OrdersPage = () => {
                 <TableBody>
                   {orders.map((order) => (
                     <TableRow key={order._id} onClick={() => openModal(order)} style={{ cursor: 'pointer' }}>
-                      <TableCell>{order.placed_at}</TableCell>
+                      <TableCell>{order.order_status}</TableCell>
                       <TableCell>{order._id}</TableCell>
                       <TableCell>{Object.values(order.customer.address).join(', ')}</TableCell>
                       <TableCell>{order.order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n')}</TableCell>

@@ -29,9 +29,15 @@ const PaymentStatus = () => {
         setTimeout(() => {
             dispatch(setLoading(true));
             setTimeout(() => {
-                navigate('/wallet');
-                window.location.reload();
-                dispatch(setLoading(false));
+                if(paymentStatus.payment.status==="PAID"){
+                    navigate('/orders');
+                    window.location.reload();
+                    dispatch(setLoading(false));
+                } else {
+                  window.location.href = "https://apparels.kalkinso.com"
+                  window.location.reload();
+                  dispatch(setLoading(false));
+                }
             }, 1000);
         }, 5000);
     }
@@ -40,12 +46,15 @@ const PaymentStatus = () => {
   const checkPaymentStatus = async () => {
     setLocalLoading(true);
     setPaymentStatus(null);
+    if(window.location.search.includes('token')){
+      localStorage.setItem('token', window.location.search.replace('?token=',''))
+    }
     try {
-      const response = await axios.get(`/api/payments/payment-status/${orderId}`, 
+      const response = await axios.get(`/api/apparels/payment-status/${orderId}`, 
                                 {
                                     headers: {
                                         'Content-Type': 'application/json',
-                                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                                        'x-auth-token': `${localStorage.getItem('token')}`,
                                     },
                                 });
       if (response?.data?.order) {

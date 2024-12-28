@@ -59,7 +59,7 @@ const ApparelsOrderSchema = new mongoose.Schema({
     status: {
       type: String,
       required: true,
-      enum: ['Pending', 'Completed', 'Failed', 'Refunded'],
+      enum: ['ACTIVE', 'PAID', 'EXPIRED', 'TERMINATED', 'TERMINATION_REQUESTED'],
       default: 'Pending',
     },
     transaction_id: { type: String },

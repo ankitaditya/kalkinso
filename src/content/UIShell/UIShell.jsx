@@ -211,8 +211,8 @@ class UIShell extends React.Component {
                                 <Route path=":orderId" element={<PrivateRoute access_page={'WALLET'} Component={PaymentStatus} />} />
                             </Route>
                             <Route path="orders">
-                                <Route path="" element={<PrivateRoute access_page={'ORDERS'} Component={OrdersPage} />} />
-                                <Route path=":orderId" element={<PrivateRoute access_page={'ORDERS'} Component={OrdersPaymentStatus} />} />
+                                <Route path="" element={<OrdersPage  />} />
+                                <Route path=":orderId" element={<OrdersPaymentStatus />} />
                             </Route>
                             {window.location.pathname.startsWith('/token=')&&<Route path="tools">
                                     <Route path="writing-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={BlockNoteEditor} />} />
