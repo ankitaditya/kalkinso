@@ -33,7 +33,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
       order_items,
       payment,
       total_amount,
-      order_status: 'Pending',
+      order_status: 'ACTIVE',
     });
 
     const paymentSession = await Cashfree.PGCreateOrder('2022-09-01', {
