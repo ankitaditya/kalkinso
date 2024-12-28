@@ -193,7 +193,7 @@ export default function Checkout() {
                       <p className="mb-0">(including (12%) GST)</p>
                     </strong>
                   </div>
-                  <span><strong>{total.currencyFormat} {total.totalPrice+total.totalPrice*0.12}</strong></span>
+                  <span><strong>{total.currencyFormat} {total.totalPrice}</strong></span>
                 </MDBListGroupItem>
               </MDBListGroup>
 
