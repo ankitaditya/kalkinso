@@ -37,8 +37,11 @@ class LandingPage extends Component {
       <Grid className="landing-page" fullWidth>
         <Column lg={16} md={8} sm={4} className="landing-page__banner">
           <HeroSection ButtonComponent={this.props?.auth?.isAuthenticated?<FluidForm style={{marginTop:"35px"}}>
-            <IconButton style={{minWidth:"212px"}} href='/#/register' label="3d designer" kind="primary">
-              <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Designer</span>
+            <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
+              <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
+            </IconButton>
+            <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
+              <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
             </IconButton>
           </FluidForm>:<><FluidForm style={{marginTop:"35px"}}>
             <Button href='/#/register'>Sign Up</Button>
@@ -48,7 +51,7 @@ class LandingPage extends Component {
             <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
               <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
             </IconButton>
-            <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="secondary">
+            <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
               <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
             </IconButton>
           </FluidForm>
@@ -121,9 +124,14 @@ class LandingPage extends Component {
                     <TaskCarousel component={<HeroSection ButtonComponent={<FluidForm style={{marginTop:"35px"}}>
                                               <Button href='/#/register'>SignUp</Button>
                                               <Button kind="secondary" href='/#/login'>Login</Button>
-                                              <IconButton href='/#/register' kind="secondary">
-                                                <WatsonHealth3DSoftware />
+                                              <FluidForm style={{marginTop:"35px"}}>
+                                              <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
+                                                <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
                                               </IconButton>
+                                              <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
+                                                <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
+                                              </IconButton>
+                                            </FluidForm>
                                             </FluidForm>}/>} />
                   </Column>
                 </Grid>
