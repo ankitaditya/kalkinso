@@ -1,29 +1,12 @@
-# Allow all search engines to index the public website
+User-agent: Googlebot
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
 User-agent: *
-Disallow:
-
-# Block access to sensitive directories
-Disallow: /admin/
-Disallow: /login/
-Disallow: /signup/
-Disallow: /cart/
-Disallow: /checkout/
-Disallow: /user-profile/
-Disallow: /backend/
-
-# Block access to specific file types
-Disallow: /*.php$
-Disallow: /*.cgi$
-Disallow: /*.aspx$
-Disallow: /*.jsp$
-
-# Prevent indexing of URLs with query parameters (optional)
-Disallow: /*?
-
-# Block temporary files and test environments
-Disallow: /temp/
-Disallow: /staging/
-Disallow: /test/
-
-# Ensure search engines know the location of your sitemap
-Sitemap: https://www.example.com/sitemap.xml
+Disallow: /
+Sitemap: https://apparels.kalkinso.com/sitemap.xml

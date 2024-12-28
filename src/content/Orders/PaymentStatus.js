@@ -35,8 +35,6 @@ const PaymentStatus = () => {
                     dispatch(setLoading(false));
                 } else {
                   window.location.href = "https://apparels.kalkinso.com"
-                  window.location.reload();
-                  dispatch(setLoading(false));
                 }
             }, 1000);
         }, 5000);
