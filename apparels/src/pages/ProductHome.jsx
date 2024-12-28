@@ -21,9 +21,9 @@ const ProductHome = () => {
   const snap = useSnapshot(state);
   const [value, setValue] = useState('M');
   const prices = {
-    shirt: 1200,
+    shirt: 560,
     tsports: 800,
-    hoodie: 1500,
+    hoodie: 899,
     jeans: 2000,
   }
   const descriptions = {
