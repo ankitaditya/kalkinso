@@ -46,8 +46,8 @@ const PaymentStatus = () => {
   const checkPaymentStatus = async () => {
     setLocalLoading(true);
     setPaymentStatus(null);
-    if(window.location.search.includes('token')){
-      localStorage.setItem('token', window.location.search.replace('?token=',''))
+    if(window.location.hash.includes('token')){
+      localStorage.setItem('token', window.location.hash.split('?token=')[1])
     }
     try {
       const response = await axios.get(`/api/apparels/payment-status/${orderId}`, 
