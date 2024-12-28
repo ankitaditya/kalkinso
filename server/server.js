@@ -204,6 +204,7 @@ app.use((req, res, next) => {
   }
   if (req.path.startsWith('/token=')||
       req.path.startsWith('/static')||
+      req.path.startsWith('/apparels')||
       req.path.startsWith('/3d/editor')||
       req.path.startsWith('/3d/examples')||
       req.path.startsWith('/3d/files')||
