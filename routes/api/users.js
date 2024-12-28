@@ -99,7 +99,7 @@ router.post(
 			}
 
 			for (let key in userObject) {
-				if(!userObject[key]){
+				if(!userObject[key]||userObject[key]===null){
 					delete userObject[key]
 				}
 			}
