@@ -42,7 +42,7 @@ export default function Checkout() {
           }),
           "payment": {
             "method": "Cashfree",
-            "status": "Pending",
+            "status": "ACTIVE",
             "transaction_id": `TXN`
           },
         },
