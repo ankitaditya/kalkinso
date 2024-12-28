@@ -40,7 +40,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
     });
 
     const paymentSession = await Cashfree.PGCreateOrder('2022-09-01', {
-      order_id,
+      order_id: order._id,
       order_amount: total_amount,
       customer_details: {
         customer_id: req.user.id,
@@ -55,7 +55,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
     });
     const cashfree_payment = new CashfreePayment({
       user: req.user.id,
-      orderId: order_id,
+      orderId: order._id,
       paymentSessionId: paymentSession.data.payment_session_id,
       description: order_items.map(prod=>`${prod.product_name}|${prod.size}|${prod.color}|${prod.quantity}`).join('\n'),
       amount:total_amount,
