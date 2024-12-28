@@ -50,7 +50,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
       },
       order_currency: 'INR',
       order_meta: {
-        "return_url": `https://www.kalkinso.com/#/orders/${order_id}?token=${req.header('x-auth-token')}`
+        "return_url": `https://www.kalkinso.com/#/orders/${order._id}?token=${req.header('x-auth-token')}`
       }
     });
     const cashfree_payment = new CashfreePayment({
@@ -64,7 +64,7 @@ router.post('/orders', ipAuth, auth, async (req, res) => {
     await cashfree_payment.save();
 
     const savedOrder = await order.save();
-    res.status(201).json({ order: savedOrder, paymentSessionId: paymentSession.data.payment_session_id, orderId: order_id, returnUrl: `https://www.kalkinso.com/#/orders/${order_id}?token=${req.header('x-auth-token')}` });
+    res.status(201).json({ order: savedOrder, paymentSessionId: paymentSession.data.payment_session_id, orderId: order_id, returnUrl: `https://www.kalkinso.com/#/orders/${order._id}?token=${req.header('x-auth-token')}` });
   } catch (error) {
     console.error('Error creating order:', error);
     res.status(500).json({ error: 'Failed to create order' });
@@ -97,7 +97,7 @@ router.get('/orders', ipAuth, auth, async (req, res) => {
 router.get('/payment-status/:orderId', ipAuth, auth, async (req, res) => {
   try {
     const { orderId } = req.params;
-    let payment = await Orders.find({'payment.transaction_id': orderId});
+    let payment = await Orders.findById(orderId);
     const paymentStatus = await Cashfree.PGFetchOrder("2022-09-01", orderId)
     if (!payment||!paymentStatus) {
       return res.status(404).json({ error: 'Order not found' });
