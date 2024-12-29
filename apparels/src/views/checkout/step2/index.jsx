@@ -83,12 +83,12 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
           localStorage.setItem('user', JSON.stringify(auth.data))
         } catch (err) {
           let res = await axios.post("/api/auth/login/email", {
-              email: result.user.email, password: ""
+              email: shipping.email, password: ""
           },{
               headers: {
                 ...config.headers,
                 "x-auth-token": `${localStorage.getItem('token')}`,
-                "x-google-token": `${result._tokenResponse.idToken}`
+                "x-google-token": `true`
               },
               baseURL: config.baseURL
             })

@@ -11,7 +11,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 3000",
     "build": "vite build  && cd dist && cp index.html 404.html",
     "serve": "vite preview",
     "test": "cross-env NODE_ENV=test jest --config=jest.config.json"
@@ -57,7 +57,7 @@
     "@cashfreepayments/cashfree-js": "^1.0.5",
     "@fortawesome/fontawesome-free": "^6.7.2",
     "axios": "^1.7.9",
-    "firebase": "8.4.3",
+    "firebase": "^8.4.3",
     "formik": "^2.2.6",
     "history": "^4.10.0",
     "mdb-react-ui-kit": "^9.0.0",
