@@ -2,7 +2,7 @@
   "name": "ecommerce-react",
   "version": "1.2.0",
   "main": "index.js",
-  "author": "Julius Guevarra",
+  "author": "Ankit Aditya",
   "keywords": [
     "react-webpack",
     "boilerplate",
@@ -55,10 +55,12 @@
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@cashfreepayments/cashfree-js": "^1.0.5",
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "axios": "^1.7.9",
-    "firebase": "^8.4.3",
+    "firebase": "8.4.3",
     "formik": "^2.2.6",
     "history": "^4.10.0",
+    "mdb-react-ui-kit": "^9.0.0",
     "moment": "^2.29.1",
     "normalize.css": "^8.0.1",
     "prop-types": "^15.7.2",

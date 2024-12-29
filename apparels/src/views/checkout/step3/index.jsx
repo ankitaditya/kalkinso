@@ -55,6 +55,7 @@ const Payment = ({ shipping, payment, subtotal, basket }) => {
         // isRecommended: PropType.bool,
         // availableColors: PropType.arrayOf(PropType.string)
         let url = '/api/apparels/orders';
+        console.log(shipping.mobile, typeof shipping.mobile)
         const response = await axios.post(url, {
           total_amount: subtotal,
           customer: {
