@@ -114,7 +114,7 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
               "street": form.address,
               "city": form.city,
               "state": form.state,
-              "country": form.country,
+              "country": shipping.mobile.country,
               "zip_code": form.zip,
             }
           },
