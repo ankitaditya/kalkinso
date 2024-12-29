@@ -44,6 +44,35 @@ const ShippingForm = () => {
           </div>
         </div>
         <div className="checkout-fieldset">
+          <div className="d-block checkout-field">
+            <Field
+              name="city"
+              type="text"
+              label="* City"
+              placeholder="Enter City"
+              component={CustomInput}
+            />
+          </div>
+          <div className="d-block checkout-field">
+            <Field
+              name="state"
+              type="text"
+              label="* State"
+              placeholder="Enter State"
+              component={CustomInput}
+            />
+          </div>
+          <div className="d-block checkout-field">
+            <Field
+              name="zip"
+              type="text"
+              label="* ZIP Code"
+              placeholder="Enter ZIP CODE"
+              component={CustomInput}
+            />
+          </div>
+        </div>
+        <div className="checkout-fieldset">
           <Field name="isInternational">
             {({ field, form, meta }) => (
               <div className="checkout-field">

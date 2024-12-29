@@ -41,7 +41,7 @@ const FormSchema = Yup.object().shape({
 });
 
 const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
-  const handleCheckout = async () => {
+  const handleCheckout = async (form) => {
     if (subtotal && shipping) {
       try {
         // Fetch the payment session ID from your backend
@@ -110,7 +110,13 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
             "last_name": shipping.fullname.split(' ')[1],
             "email": shipping.email,
             "mobile": shipping.mobile.value.replace(shipping.mobile.dialCode,''),
-            "address": shipping.address
+            "address": {
+              "street": form.address,
+              "city": form.city,
+              "state": form.state,
+              "country": form.country,
+              "zip_code": form.zip,
+            }
           },
           order_items: basket.map(prod=>{
             return {
@@ -186,7 +192,7 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
       isInternational: form.isInternational,
       isDone: true
     }));
-    await handleCheckout();
+    await handleCheckout(form);
   };
 
   return (
