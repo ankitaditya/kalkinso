@@ -5,6 +5,7 @@ import { useCart } from './cart-context';
 
 import * as S from './style';
 import state from '../../store';
+import { updateUrl } from '../../App';
 
 const Cart = () => {
   const { products, total, isOpen, openCart, closeCart } = useCart();
@@ -57,7 +58,7 @@ const Cart = () => {
                 ) : null}
               </S.SubPriceInstallment>
             </S.SubPrice>
-            <S.CheckoutButton onClick={()=>{state.buy = true}}>
+            <S.CheckoutButton onClick={()=>{state.buy = true; updateUrl()}}>
               Checkout
             </S.CheckoutButton>
           </S.CartFooter>

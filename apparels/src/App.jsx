@@ -25,6 +25,10 @@ import { ThemeProvider } from "./pages/Cart/commons/style/styled-components";
 import { theme } from "./pages/Cart/commons/style/theme";
 import Checkout from "./pages/Checkout";
 
+export const updateUrl = () => {
+  window.location.search = `?apparel=${state.selectedApparel}&&color=${state.color[state.selectedApparel].replace('#','')}&&style=${state.baseDecal.replace('./styles/','')}&&placement=${state.isLogoTexture?'logo':'base'}&&intro=${state.intro}&&size=${state.size}&&purchase=${state.buy}`
+}
+
 function App() {
   const colors = [
     {
@@ -64,7 +68,8 @@ function App() {
   const [ items, setItems ]  = useState([
     {label: "shirt",
       command: () => {
-        state.selectedApparel="shirt"
+        state.selectedApparel="shirt";
+        updateUrl()
       },
       icon: ()=><MainCanvas
       // onClick={() => {setMenuOpen(false)}}
@@ -85,7 +90,8 @@ function App() {
     </MainCanvas>},
     {label: "hoodie",
       command: () => {
-        state.selectedApparel="hoodie"
+        state.selectedApparel="hoodie";
+        updateUrl()
       },
       icon: () => <MainCanvas
     // onClick={() => {setMenuOpen(false)}}
@@ -232,7 +238,7 @@ function App() {
         }
       }
     } else {
-      window.location.search = `?apparel=${snap.selectedApparel}&&color=${snap.color[snap.selectedApparel].replace('#','')}&&style=${state.baseDecal.replace('./styles/','')}&&placement=${state.isLogoTexture?'logo':'base'}&&intro=${snap.intro}&&size=${snap.size}`
+      window.location.search = `?apparel=${snap.selectedApparel}&&color=${snap.color[snap.selectedApparel].replace('#','')}&&style=${state.baseDecal.replace('./styles/','')}&&placement=${snap.isLogoTexture?'logo':'base'}&&intro=${snap.intro}&&size=${snap.size}&&purchase=${snap.buy}`
     }
   },[window.location.search])
   return (

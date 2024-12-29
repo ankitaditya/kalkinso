@@ -3,6 +3,7 @@ import React from "react";
 import CustomButton from "./CustomButton";
 import { useSnapshot } from "valtio";
 import state from "../store";
+import { updateUrl } from "../App";
 
 const FilePicker = ({ file, setFile, readFile, setActiveEditorTab }) => {
   const snap = useSnapshot(state)
@@ -23,6 +24,7 @@ const FilePicker = ({ file, setFile, readFile, setActiveEditorTab }) => {
           state.baseDecal = imgs
           state.fullDecal = imgs
           setActiveEditorTab("")
+          updateUrl()
         }} className="image flex-1 flex flex-col">
           <img src={imgs} />
         </div>)

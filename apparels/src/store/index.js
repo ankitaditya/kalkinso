@@ -3,6 +3,7 @@ import { proxy } from "valtio";
 const state = proxy({
   intro: false,
   purchase: false,
+  buy: false,
   size: 'L',
   color: {
     "shirt":"#2f344a",

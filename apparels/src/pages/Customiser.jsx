@@ -20,6 +20,7 @@ import Buy from "./Buy";
 import { useCart } from "./Cart/cart-context";
 import CustomShirt from "../canvas/CommonCustomT";
 import { CommonCustomHoodie } from "../canvas/CommonCustomHoodie";
+import { updateUrl } from "../App";
 
 const Customizer = ({setItems, items}) => {
   const snap = useSnapshot(state);
@@ -198,6 +199,7 @@ const Customizer = ({setItems, items}) => {
                       if(tab.name==='buyNow'){
                         addProduct({...productFormat[snap.selectedApparel], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})
                         state.buy = true
+                        updateUrl()
                       }
                       if(['logoShirt', 'baseShirt'].includes(tab.name)){
                         handleActiveFilterTab(tab.name)
