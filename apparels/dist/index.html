@@ -1,64 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Explore custom apparels and personalize your wardrobe with KALKINSO. Unique, high-quality designs tailored to your style."
-    />
-    <meta
-      name="keywords"
-      content="custom apparels, KALKINSO apparels, personalized clothing, high-quality designs, fashion, unique styles"
-    />
-    <meta name="author" content="KALKINSO Software (OPC) Private Limited" />
-    <meta property="og:title" content="KALKINSO | Custom Apparels" />
-    <meta property="og:image" content="%PUBLIC_URL%/logo-apparels.png" />
-    <meta
-      property="og:description"
-      content="Discover unique and high-quality custom apparels designed to fit your style with KALKINSO."
-    />
-    <title>KALKINSO | Custom Apparels</title>
 
-    <!-- Prompt to install app on mobile -->
-    <script>
-      if ('serviceWorker' in navigator && 'Notification' in window) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then((registration) => {
-            console.log('Service Worker registered with scope:', registration.scope);
-          });
-        });
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Kalkinso - Apparels Store</title>
+    <link rel="icon" type="image/png" href="/assets/favicon.74d233b9.png" />
+  <script type="module" crossorigin src="/assets/index.5ebf76d4.js"></script>
+  <link rel="stylesheet" href="/assets/index.413688eb.css">
+</head>
 
-        if (navigator.standalone === false || !window.matchMedia('(display-mode: standalone)').matches) {
-          const promptInstall = document.createElement('div');
-          promptInstall.innerHTML = `
-            <div style="position: fixed; bottom: 0; width: 100%; background: #000; color: #fff; text-align: center; padding: 10px; z-index: 9999;">
-              <p>Install our app for a better experience!</p>
-              <button onclick="installApp()" style="background: #fff; color: #000; border: none; padding: 8px 16px; cursor: pointer;">Install</button>
-            </div>
-          `;
-          document.body.appendChild(promptInstall);
+<body>
+    <div id="app"></div>
 
-          function installApp() {
-            const installPromptEvent = window.deferredPrompt;
-            if (installPromptEvent) {
-              installPromptEvent.prompt();
-              installPromptEvent.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                  console.log('User accepted the app installation prompt.');
-                }
-                window.deferredPrompt = null;
-              });
-            }
-          }
-        }
-      }
-    </script>
-    <script type="module" crossorigin src="/assets/index-78e03b60.js"></script>
-    <link rel="stylesheet" href="/assets/index-e28fdd20.css">
-  </head>
-  <body>
-    <div id="root"></div>
     
-  </body>
+</body>
+
 </html>
