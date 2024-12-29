@@ -15,7 +15,7 @@ const ColorPicker = ({setActiveEditorTab}) => {
       <CirclePicker
         color={snap.color[snap.selectedApparel.split('-')[0]]}
         disableAlpha
-        onChange={(color) => {state.color[snap.selectedApparel.split('-')[0]] = color.hex; setActiveEditorTab(""); updateUrl()}}
+        onChange={(color) => {state.color[snap.selectedApparel.split('-')[0]] = color.hex; setActiveEditorTab(""); updateUrl();}}
         colors={[
           {
             color: "#2f344a",

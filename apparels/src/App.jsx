@@ -150,7 +150,7 @@ function App() {
     }
   }
   useEffect(()=>{
-    const queryParams = window.location.search
+    let queryParams = window.location.search
       .replace('?', '')
       .split('&&')
       .reduce((acc, val) => {
@@ -165,7 +165,7 @@ function App() {
               }
               case 'color': {
                 if(colors.includes(value)){
-                  acc[key] = value
+                  acc[key] = '#'+value
                 }
                 return acc
               }
@@ -208,8 +208,8 @@ function App() {
         return acc;
       }, {});
     if(Object.keys(queryParams).length>0){
-      if(queryParams.apparel) state.selectedApparel = queryParams.apparel
-      if(queryParams.color) state.color[state.selectedApparel] = queryParams.color
+      if(queryParams.apparel) {state.selectedApparel = queryParams.apparel}
+      if(queryParams.color) {state.color[state.selectedApparel] = queryParams.color}
       if(queryParams.style) {
         state.baseDecal = queryParams.style
         state.logoDecal = queryParams.style
@@ -238,9 +238,9 @@ function App() {
         }
       }
     } else {
-      window.location.search = `?apparel=${snap.selectedApparel}&&color=${snap.color[snap.selectedApparel].replace('#','')}&&style=${state.baseDecal.replace('./styles/','')}&&placement=${snap.isLogoTexture?'logo':'base'}&&intro=${snap.intro}&&size=${snap.size}&&purchase=${snap.buy}`
+      updateUrl()
     }
-  },[window.location.search])
+  },[])
   return (
     <PrimeReactProvider>
       <ThemeProvider theme={theme}>
