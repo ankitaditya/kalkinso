@@ -8,9 +8,10 @@ import {
   signInWithPopup,
 } from "./Cart/utils/FirebaseConfig";
 import axios from 'axios';
+import * as S from './Cart/CartProducts/CartProduct/style'
 
 export default function Checkout() {
-    const { products, total } = useCart();
+    const { products, total, increaseProductQuantity, decreaseProductQuantity } = useCart();
     const [ phone, setPhone ] = useState(null)
     const [ address, setAddress ] = useState({})
 
@@ -178,10 +179,18 @@ export default function Checkout() {
             </MDBCardHeader>
             <MDBCardBody>
               <MDBListGroup flush>
-                {products.map(prod=>{
+                {products.map((prod, index)=>{
                     return <MDBListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0 pb-0">
                     {prod.title} ({prod.availableSizes.join(', ')})
-                    <span>{prod.currencyFormat} {prod.price} x {prod.quantity}</span>
+                    <span>{prod.currencyFormat} {prod.price} x <S.ChangeQuantity
+                      onClick={()=>decreaseProductQuantity(prod)}
+                      disabled={prod.quantity === 1 ? true : false}
+                    >
+                      -
+                    </S.ChangeQuantity>
+                    <S.ChangeQuantity onClick={()=>increaseProductQuantity(prod)}>
+                      +
+                    </S.ChangeQuantity></span>
                   </MDBListGroupItem>
                 })}
                 <MDBListGroupItem className="d-flex justify-content-between align-items-center px-0">

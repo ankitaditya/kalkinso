@@ -24,7 +24,7 @@ import { CommonCustomHoodie } from "../canvas/CommonCustomHoodie";
 const Customizer = ({setItems, items}) => {
   const snap = useSnapshot(state);
   const { addProduct, openCart } = useCart();
-  const [size, setSize] = useState('M');
+  const [size, setSize] = useState(snap.size);
   const productFormat = {
     shirt: {
       id: 'shirt-1',
@@ -197,7 +197,7 @@ const Customizer = ({setItems, items}) => {
                       }
                       if(tab.name==='buyNow'){
                         addProduct({...productFormat[snap.selectedApparel], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})
-                        openCart()
+                        state.buy = true
                       }
                       if(['logoShirt', 'baseShirt'].includes(tab.name)){
                         handleActiveFilterTab(tab.name)
@@ -227,7 +227,7 @@ const Customizer = ({setItems, items}) => {
                     key={tab.name}
                     tab={tab}
                     selectedSize={size}
-                    handleClick={() => {setSize(tab.name)}}
+                    handleClick={() => {setSize(tab.name); state.size = tab.name;}}
                   />
                 ))}
               </div>

@@ -20,13 +20,46 @@ import { useSnapshot } from "valtio";
 import state from "./store/index";
 import CustomShirt from "./canvas/CommonCustomT";
 import { CommonCustomHoodie } from "./canvas/CommonCustomHoodie";
-import { CartProvider } from "./pages/Cart/cart-context";
+import { useCart } from "./pages/Cart/cart-context";
 import { ThemeProvider } from "./pages/Cart/commons/style/styled-components";
 import { theme } from "./pages/Cart/commons/style/theme";
 import Checkout from "./pages/Checkout";
 
 function App() {
+  const colors = [
+    {
+      color: "#2f344a",
+      title: "blue"
+    },
+    {
+      color: "#cac8c2",
+      title: "white/gray"
+    },
+    {
+      color: "#772522",
+      title: "red"
+    },
+    {
+      color: "#2c2c2c",
+      title: "black"
+    },
+    {
+      color: "#cf9583",
+      title: "swirl"
+    }
+  ].map(value=>value.color.replace('#',''))
+
+  const styles = [
+    "1B_025.png",                              "I_008.png",                               "Picsart_24-12-25_18-34-59-490.png",
+    "1E_016.png",                              "I_027.png",                               "Picsart_24-12-25_19-05-28-594.png",
+    "A_024.png",                               "P_005.png",                               "Picsart_24-12-25_19-08-26-881.png",
+    "F_008.png",                               "P_089.png",                               "Picsart_24-12-25_19-12-06-351.png",
+    "F_039.png",                               "P_106.png",                               "Picsart_24-12-25_19-16-58-200.png",
+    "kalkinso.png"
+     ]
+  const apparel = ['shirt', 'hoodie']
   const snap = useSnapshot(state)
+  const { isOpen, addProduct } = useCart()
   let designs = JSON.parse(localStorage.getItem('finalDesigns'))
   const [ items, setItems ]  = useState([
     {label: "shirt",
@@ -72,27 +105,147 @@ function App() {
     </CameraRig>
   </MainCanvas>}
   ])
-  useEffect(()=>{
-    if(window.location.search){
-      state.selectedApparel = window.location.search.replace('?apparel=','').split('_')[0].toLocaleLowerCase()
-      state.color[state.selectedApparel] = '#'+window.location.search.replace('?apparel=').split('_')[1].toLocaleLowerCase()
-      state.baseDecal = './'+window.location.search.replace('?apparel=').split('_')[3]+'.png'
-      state.logoDecal = './'+window.location.search.replace('?apparel=').split('_')[3]+'.png'
+  const productFormat = {
+    shirt: {
+      id: 'shirt-1',
+      sku: items[0].icon(),
+      title: "Shirt",
+      description: "Elevate your wardrobe with our classic shirt, tailored for a perfect fit and crafted with premium, breathable fabric. Ideal for both formal and casual occasions, this shirt ensures you stay stylish and comfortable all day.",
+      availableSizes: [],
+      style: 'Quality',
+      price: 560,
+      color: snap.color['shirt'],
+      isLogoTexture: snap.isLogoTexture,
+      isBaseTexture: snap.isBaseTexture,
+      texture: snap.baseDecal,
+      installments: '1',
+      currencyId: 'INR',
+      currencyFormat: '₹',
+      isFreeShipping: false,
+      quantity: 1
+    },
+    hoodie: {
+      id: 'hoodie-1',
+      sku: items[1].icon(),
+      title: "Hoodie",
+      description: "Stay warm and cozy in our stylish hoodie, designed to keep you comfortable in all weather conditions. Made with premium fabric, this hoodie is perfect for casual outings and everyday wear.",
+      availableSizes: [],
+      style: 'Quality',
+      price: 899,
+      color: snap.color['hoodie'],
+      isLogoTexture: snap.isLogoTexture,
+      isBaseTexture: snap.isBaseTexture,
+      texture: snap.baseDecal,
+      installments: '1',
+      currencyId: 'INR',
+      currencyFormat: '₹',
+      isFreeShipping: false,
+      quantity: 1
     }
-  },[])
+  }
+  useEffect(()=>{
+    const queryParams = window.location.search
+      .replace('?', '')
+      .split('&&')
+      .reduce((acc, val) => {
+        const [key, value] = val.split('=');
+          if(key && ['apparel','color', 'style', 'intro', 'purchase', 'size'].includes(key)){
+            switch (key){
+              case 'apparel': {
+                if(apparel.includes(value)){
+                  acc[key] = value
+                }
+                return acc
+              }
+              case 'color': {
+                if(colors.includes(value)){
+                  acc[key] = value
+                }
+                return acc
+              }
+              case 'style': {
+                if(styles.includes(value)){
+                  acc[key] = `./styles/${value}`
+                }
+                return acc
+              }
+              case 'placement': {
+                if(['logo', 'base'].includes(value)){
+                  acc[key] = `./styles/${value}`
+                }
+                return acc
+              }
+              case 'intro': {
+                if(['true', 'false'].includes(value.toLocaleLowerCase())){
+                  acc[key] = value
+                }
+                return acc
+              }
+              case 'purchase': {
+                if(['true', 'false'].includes(value.toLocaleLowerCase())){
+                  acc[key] = value
+                }
+                return acc
+              }
+              case 'size': {
+                if(['M', 'L', 'XL'].includes(value.toLocaleUpperCase())){
+                  acc[key] = value
+                }
+                return acc
+              }
+              default: {
+                return acc
+              }
+            }
+            
+          }
+        return acc;
+      }, {});
+    if(Object.keys(queryParams).length>0){
+      if(queryParams.apparel) state.selectedApparel = queryParams.apparel
+      if(queryParams.color) state.color[state.selectedApparel] = queryParams.color
+      if(queryParams.style) {
+        state.baseDecal = queryParams.style
+        state.logoDecal = queryParams.style
+        state.fullDecal = queryParams.style
+      }
+      if(queryParams.placement){
+        if(queryParams.placement==='logo'){
+          state.isLogoTexture = true
+          state.isBaseTexture = false
+        } else {
+          state.isLogoTexture = false
+          state.isBaseTexture = true
+        }
+      }
+      if(queryParams.intro!==null){
+        state.intro = queryParams.intro==='true'
+      }
+      if(queryParams.size){
+        state.size = queryParams.size
+      }
+      if(queryParams.purchase!==null){
+        state.purchase = queryParams.purchase==='true'
+        if(queryParams.purchase==='true'){
+          addProduct({...productFormat[snap.selectedApparel], availableSizes: [snap.size], title: productFormat[snap.selectedApparel].title + ` ${productFormat[snap.selectedApparel].texture.split('/').slice(-1)[0].replace('.png','')}`, id: `PROD-${productFormat[snap.selectedApparel].title.toLocaleUpperCase()}-${productFormat[snap.selectedApparel].availableSizes[0]}-${productFormat[snap.selectedApparel].color.replace('#','')}-${productFormat[snap.selectedApparel].texture}`, sku: (title)=> {if(title.toLocaleUpperCase()==="SHIRT"){return <CustomShirt texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}else{<CommonCustomHoodie texture={productFormat[snap.selectedApparel].texture} color={productFormat[snap.selectedApparel].color} />}}})
+          state.buy = true 
+        }
+      }
+    } else {
+      window.location.search = `?apparel=${snap.selectedApparel}&&color=${snap.color[snap.selectedApparel].replace('#','')}&&style=${state.baseDecal.replace('./styles/','')}&&placement=${state.isLogoTexture?'logo':'base'}&&intro=${snap.intro}&&size=${snap.size}`
+    }
+  },[window.location.search])
   return (
     <PrimeReactProvider>
       <ThemeProvider theme={theme}>
-      <CartProvider>
         <main className="app transition-all ease-in">
           <ProductHome />
           <Canvas />
           <Customizer setItems={setItems} items={items} />
           {snap.buy&&<Checkout />}
         </main>
-      </CartProvider>
       </ThemeProvider>
-      {!snap.buy&&<Dock model={items} position="bottom" />}
+      {!snap.buy&&!isOpen&&<Dock model={items} position="bottom" />}
       </PrimeReactProvider>
   );
 }
