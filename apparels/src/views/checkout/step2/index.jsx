@@ -69,7 +69,7 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
           },
           baseURL: "https://www.kalkinso.com"
         }
-        const body = JSON.stringify({ first_name: shipping.fullname.split(' ')[0], last_name: shipping.fullname.split(' ')[1], email: shipping.email, mobile:shipping.mobile, upi:"", adhar: "", terms_conditions:true, password:"", user_role: "Explorer", access: ["ORDERS"] })
+        const body = JSON.stringify({ first_name: shipping.fullname.split(' ')[0], last_name: shipping.fullname.split(' ')[1], email: shipping.email, mobile:shipping.mobile.value.replace(shipping.mobile.dialCode,''), upi:"", adhar: "", terms_conditions:true, password:"", user_role: "Explorer", access: ["ORDERS"] })
         try {
           let res = await axios.post("/api/users", body, config)
           localStorage.setItem('token', res.data.token)
@@ -103,14 +103,13 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
           localStorage.setItem('user', JSON.stringify(auth.data))
         }
         let url = '/api/apparels/orders';
-        console.log(shipping.mobile, typeof shipping.mobile)
         const response = await axios.post(url, {
           total_amount: subtotal,
           customer: {
             "first_name": shipping.fullname.split(' ')[0],
             "last_name": shipping.fullname.split(' ')[1],
             "email": shipping.email,
-            "mobile": shipping.mobile,
+            "mobile": shipping.mobile.value.replace(shipping.mobile.dialCode,''),
             "address": shipping.address
           },
           order_items: basket.map(prod=>{
