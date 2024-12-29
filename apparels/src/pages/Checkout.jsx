@@ -180,9 +180,14 @@ export default function Checkout() {
             <MDBCardBody>
               <MDBListGroup flush>
                 {products.map((prod, index)=>{
-                    return <MDBListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                    return <><MDBListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0 pb-0">
                     {prod.title} ({prod.availableSizes.join(', ')})
-                    <span>{prod.currencyFormat} {prod.price} x <S.ChangeQuantity
+                    <span>{prod.currencyFormat} {prod.price} x {prod.quantity}<br /></span>
+                  </MDBListGroupItem>
+                  <MDBListGroupItem className="d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                    Quantity Change
+                    <span>
+                  <S.ChangeQuantity
                       onClick={()=>decreaseProductQuantity(prod)}
                       disabled={prod.quantity === 1 ? true : false}
                     >
@@ -190,8 +195,10 @@ export default function Checkout() {
                     </S.ChangeQuantity>
                     <S.ChangeQuantity onClick={()=>increaseProductQuantity(prod)}>
                       +
-                    </S.ChangeQuantity></span>
-                  </MDBListGroupItem>
+                    </S.ChangeQuantity>
+                    </span>
+                    </MDBListGroupItem>
+                  </>
                 })}
                 <MDBListGroupItem className="d-flex justify-content-between align-items-center px-0">
                   Shipping
