@@ -36,6 +36,12 @@ const FormSchema = Yup.object().shape({
       value: Yup.string().required('Mobile number is required')
     })
     .required('Mobile number is required.'),
+  city: Yup.string()
+    .required('Shipping address is required.'),
+  state: Yup.string()
+    .required('Shipping address is required.'),
+  zip: Yup.string()
+    .required('Shipping address is required.'),
   isInternational: Yup.boolean(),
   isDone: Yup.boolean()
 });
@@ -70,6 +76,7 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
           baseURL: "https://www.kalkinso.com"
         }
         const body = JSON.stringify({ first_name: shipping.fullname.split(' ')[0], last_name: shipping.fullname.split(' ')[1], email: shipping.email, mobile:shipping.mobile.value.replace(shipping.mobile.dialCode,''), upi:"", adhar: "", terms_conditions:true, password:"", user_role: "Explorer", access: ["ORDERS"] })
+        console.log(form)
         try {
           let res = await axios.post("/api/users", body, config)
           localStorage.setItem('token', res.data.token)
