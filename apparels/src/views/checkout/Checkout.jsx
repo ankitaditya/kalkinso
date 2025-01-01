@@ -149,19 +149,19 @@ export default function Checkout() {
               <form>
                 <MDBRow className="mb-4">
                   <MDBCol>
-                    <MDBInput label='City' onChange={(e)=>setAddress({...address, city: e.target.value})} type='text' />
+                    <MDBInput label='City' onChange={(e)=>setAddress({...address, city: e.target.value.trim()})} type='text' />
                   </MDBCol>
                   <MDBCol>
-                    <MDBInput label='State' onChange={(e)=>setAddress({...address, state: e.target.value})} type='text' />
+                    <MDBInput label='State' onChange={(e)=>setAddress({...address, state: e.target.value.trim()})} type='text' />
                   </MDBCol>
                   <MDBCol>
-                    <MDBInput label='ZIP Code' onChange={(e)=>setAddress({...address, zip_code: e.target.value})} type='text' />
+                    <MDBInput label='ZIP Code' onChange={(e)=>setAddress({...address, zip_code: e.target.value.trim()})} type='text' />
                   </MDBCol>
                 </MDBRow>
 
-                <MDBInput label='Country' type='text' onChange={(e)=>setAddress({...address, country: e.target.value})} className="mb-4" />
-                <MDBInput label='Street' type='text' onChange={(e)=>setAddress({...address, street: e.target.value})} className="mb-4" />
-                <MDBInput label='Phone' type='text' maxLength={10} onChange={(e)=>setPhone(e.target.value)} className="mb-4" />
+                <MDBInput label='Country' type='text' onChange={(e)=>setAddress({...address, country: e.target.value.trim()})} className="mb-4" />
+                <MDBInput label='Street' type='text' onChange={(e)=>setAddress({...address, street: e.target.value.trim()})} className="mb-4" />
+                <MDBInput label='Phone' type='text' maxLength={10} onChange={(e)=>setPhone(e.target.value.trim())} className="mb-4" />
                 <MDBTextArea label='Additional information' rows={4} className="mb-4" />
 
                 <div className="d-flex justify-content-center">
@@ -214,7 +214,7 @@ export default function Checkout() {
                 </MDBListGroupItem>
               </MDBListGroup>
 
-              <MDBBtn size="lg" block onClick={()=>handleGoogleSignIn(address, phone)}>
+              <MDBBtn size="lg" block onClick={()=>handleGoogleSignIn(address.trim(), phone.trim())}>
                 Make purchase
               </MDBBtn>
             </MDBCardBody>
