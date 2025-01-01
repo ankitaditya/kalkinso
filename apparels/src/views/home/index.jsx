@@ -38,8 +38,8 @@ const Home = () => {
               <strong>Clarity</strong>
             </h1>
             <p>
-              Buying eyewear should leave you happy and good-looking, with money in your pocket.
-              Glasses, sunglasses, and contacts—we’ve got your eyes covered.
+              Buying hoodies should leave you feeling stylish, cozy, and confident, without emptying your wallet.
+              Classic designs, bold statements, and ultimate comfort—we’ve got your style covered.
             </p>
             <br />
             <Link to={SHOP} className="button">
