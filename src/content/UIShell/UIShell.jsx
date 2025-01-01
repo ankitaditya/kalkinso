@@ -64,7 +64,7 @@ import WalletPage from "../Wallet";
 import PaymentStatus from "../Wallet/PaymentStatus";
 import OrdersPage from "../Orders";
 import OrdersPaymentStatus from "../Orders/PaymentStatus";
-import BlockNoteEditor from "../Dashboard/BlockNoteEditor";
+import AIPromptEditor from "./AIPromptEditor";
 // import Notification from '../../components/Notification';
 
 
@@ -214,10 +214,10 @@ class UIShell extends React.Component {
                                 <Route path="" element={<OrdersPage  />} />
                                 <Route path=":orderId" element={<OrdersPaymentStatus />} />
                             </Route>
-                            {window.location.pathname.startsWith('/token=')&&<Route path="tools">
-                                    <Route path="writing-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={BlockNoteEditor} />} />
-                                    <Route path="design-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={ChatScreen} />} />
-                                </Route>}
+                            <Route path="tools">
+                                    <Route path="writing-assistant" element={<AIPromptEditor />} />
+                                    <Route path="design-assistant" element={<ChatScreen />} />
+                            </Route>
                             <Route path="ankit.see" element={
                                     <Resume />
                                 } />
