@@ -206,6 +206,8 @@ app.use((req, res, next) => {
       req.path.startsWith('/static')||
       req.path.startsWith('/apparels')||
       req.path.startsWith('/assets')||
+      req.path.startsWith('/supercraft')||
+      req.path.startsWith('/imgs')||
       req.path.startsWith('/styles')||
       req.path.startsWith('/3d/editor')||
       req.path.startsWith('/3d/examples')||
