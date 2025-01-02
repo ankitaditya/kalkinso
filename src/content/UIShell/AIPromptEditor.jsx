@@ -27,13 +27,13 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import TurndownService from 'turndown';
-import { convertToMarkdown, formatToMarkdown } from "../Dashboard/utils";
+import { convertToMarkdown, exportToPDF, formatToMarkdown } from "../Dashboard/utils";
 import { setLoading } from "../../actions/auth";
 import { deleteFile, save } from "../../actions/kits";
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { Close, Download, MathCurve, Save } from "@carbon/react/icons";
-import { ActionBar } from "@carbon/ibm-products";
+import { ActionBar, EditInPlace } from "@carbon/ibm-products";
 
 const turndownService = new TurndownService();
 
@@ -288,16 +288,16 @@ function AiPromptButton() {
 export default function BlockNoteEditor(
   {
     initialContent, 
-    setContent, 
     item_id,
     bucket,
-    setIsChanged,
     onKeyDown,
     markdown=false,
     ...rest
   }
 ) {
   const profile = useSelector((state) => state.profile);
+  const [fileName, setFileName] = useState("Untitled Document");
+  const [ isChanged, setIsChanged ] = useState(false);
   const dispatch = useDispatch();
   const editor = useCreateBlockNote({
     schema: schema,
@@ -372,7 +372,16 @@ export default function BlockNoteEditor(
     return result;
   };
 
-  return <><ActionBar
+  return <><strong style={{
+    fontSize: "1.5rem",
+  }}><EditInPlace value={fileName} onChange={(e)=>setFileName(e)} onSave={(e)=>{
+    if(profile.user && fileName) {
+      dispatch(setLoading(true));
+      dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document)));
+      setIsChanged(false);
+      // setContent(null);
+    }
+  }} /></strong><ActionBar
   actions={[
     {
       id: 'save',
@@ -380,11 +389,11 @@ export default function BlockNoteEditor(
       renderIcon: ()=><Save />,
       label: 'Save',
       iconDescription: 'Save',
-      // disabled: !isChanged,
+      disabled: !isChanged,
       onClick: () => {
-        // dispatch(setLoading(true));
-        // dispatch(save('kalkinso.com', item.id, JSON.stringify(content)));
-        // setIsChanged(false);
+        dispatch(setLoading(true));
+        dispatch(save('kalkinso.com', `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document)));
+        setIsChanged(false);
         // setContent(null);
       }
     },
@@ -395,39 +404,39 @@ export default function BlockNoteEditor(
       label: 'Download',
       iconDescription: 'Download',
       onClick: () => {
-        // if (item.fileType === 'txt') {
-        //   dispatch(setLoading(true));
-        //   exportToPDF(content, item.title)
-        //     .then(() => {
-        //       dispatch(setLoading(false));
-        //     })
-        //     .catch((error) => {
-        //       dispatch(setLoading(false));
-        //       console.error(error);
-        //     })
-        //     .finally(() => {
-        //       dispatch(setLoading(false));
-        //     });
-        // } else {
-        //   const aTag = document.createElement("a");
-        //   aTag.href = item.signedUrl;
-        //   aTag.download = item.title;
-        //   document.body.appendChild(aTag);
-        //   aTag.click();
-        //   aTag.remove();
-        // }
+        if (true) {
+          dispatch(setLoading(true));
+          exportToPDF(editor.document, fileName)
+            .then(() => {
+              dispatch(setLoading(false));
+            })
+            .catch((error) => {
+              dispatch(setLoading(false));
+              console.error(error);
+            })
+            .finally(() => {
+              dispatch(setLoading(false));
+            });
+        } else {
+          // const aTag = document.createElement("a");
+          // aTag.href = item.signedUrl;
+          // aTag.download = item.title;
+          // document.body.appendChild(aTag);
+          // aTag.click();
+          // aTag.remove();
+        }
       }
     },
-    {
-      id: 'close',
-      key: 'close',
-      renderIcon: ()=><Close />,
-      label: 'Close',
-      iconDescription: 'Close',
-      onClick: () => {
-        // setMultiSelection(multiSelection.filter((item_id) => item_id !== item.id));
-      }
-    }
+    // {
+    //   id: 'close',
+    //   key: 'close',
+    //   renderIcon: ()=><Close />,
+    //   label: 'Close',
+    //   iconDescription: 'Close',
+    //   onClick: () => {
+    //     // setMultiSelection(multiSelection.filter((item_id) => item_id !== item.id));
+    //   }
+    // }
   ]
   } 
   rightAlign={true}
@@ -437,8 +446,8 @@ export default function BlockNoteEditor(
     <BlockNoteView {...rest} className="page" style={{
     marginTop: "2rem",
   }} theme="light" editor={editor} formattingToolbar={false} onChange={(props) => {
-      setContent(editor.document);
-      onKeyDown();
+      // setContent(editor.document);
+      // onKeyDown();
       if (setIsChanged) {
         setIsChanged(true);
       }

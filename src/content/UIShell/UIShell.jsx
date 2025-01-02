@@ -215,8 +215,8 @@ class UIShell extends React.Component {
                                 <Route path=":orderId" element={<OrdersPaymentStatus />} />
                             </Route>
                             <Route path="tools">
-                                    <Route path="writing-assistant" element={<AIPromptEditor />} />
-                                    <Route path="design-assistant" element={<ChatScreen />} />
+                                    <Route path="writing-assistant" element={<PrivateRoute access_page={'WALLET'} Component={AIPromptEditor} />} />
+                                    <Route path="design-assistant" element={<PrivateRoute access_page={'WALLET'} Component={ChatScreen} />} />
                             </Route>
                             <Route path="ankit.see" element={
                                     <Resume />
