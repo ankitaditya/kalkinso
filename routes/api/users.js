@@ -90,7 +90,7 @@ router.post(
 				first_name, 
 				last_name, 
 				email:email?email:null,	 
-				mobile:mobile?mobile:null,
+				mobile:mobile?mobile:adhar?adhar:uuidv4().slice(0,10),
 				upi: upi?upi:uuidv4().slice(0,6),
 				adhar: adhar?adhar:uuidv4().slice(0,12), 
 				terms_conditions,
