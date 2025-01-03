@@ -86,8 +86,8 @@ class UIShell extends React.Component {
     }
 
     componentDidMount = () => {
-        if(window.location.hash.includes('token')){
-            localStorage.setItem('token', window.location.hash.split('?token=')[1])
+        if(window.location.pathname.includes('token=')) {
+            localStorage.setItem('token', window.location.pathname.replaceAll('/','').split('=')[1])
         }
     }
 
