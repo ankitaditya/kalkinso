@@ -1,7 +1,7 @@
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-nested-ternary */
 import { ArrowLeftOutlined, ArrowRightOutlined, CheckOutlined } from '@ant-design/icons';
-import { Boundary } from '@/components/common';
+import { Boundary, Preloader } from '@/components/common';
 import { CHECKOUT_STEP_1, CHECKOUT_STEP_3 } from '@/constants/routes';
 import { Form, Formik } from 'formik';
 import { useDocumentTitle, useScrollTop } from '@/hooks';
@@ -47,9 +47,11 @@ const FormSchema = Yup.object().shape({
 });
 
 const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
+  const [ loading, setLoading ] = React.useState(false);
   const handleCheckout = async (form) => {
     if (subtotal && shipping) {
       try {
+        setLoading(true)
         // Fetch the payment session ID from your backend
         // const auth = JSON.parse(localStorage.getItem('user'))
         // id: PropType.string,
@@ -89,6 +91,7 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
           })
           localStorage.setItem('user', JSON.stringify(auth.data))
         } catch (err) {
+          setLoading(false)
           let res = await axios.post("/api/auth/login/email", {
               email: shipping.email, password: ""
           },{
@@ -162,6 +165,7 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
           returnUrl,
           // Additional options as required
         };
+        setLoading(false)
   
         // Trigger the payment
         const result = await cashfree.checkout(paymentOptions);
@@ -170,9 +174,11 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
         }
       } catch (error) {
         console.log(error)
+        setLoading(false)
         displayActionMessage('Error initiating payment', 'error');
       }
     } else {
+      setLoading(false)
       displayActionMessage('Fill all the details!', 'error');
     }
   };
@@ -202,7 +208,7 @@ const ShippingDetails = ({ profile, shipping, basket, subtotal }) => {
     await handleCheckout(form);
   };
 
-  return (
+  return loading?<Preloader />:(
       <div className="checkout">
         <StepTracker current={2} />
         <div className="checkout-step-2">
