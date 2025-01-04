@@ -10,6 +10,8 @@ const Tasks = require("../../models/Tasks");
 const ipAuth = require("../../middleware/ipAuth");
 const AWS = require('aws-sdk');
 const axios = require("axios");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const router = express.Router();
 
@@ -233,17 +235,29 @@ router.post(
       // save the results on s3
       let images = result.data;
       if(images?.data.length>0){
-        await images.data.map(async ({revised_prompt, url}, index) => {
-          const image = await axios.get(url, {responseType: 'arraybuffer'});
-          const s3_params = {
-            Bucket: 'kalkinso.com',
-            Key: key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`,
-            Body: image.data,
-            ContentType: 'image/jpeg',
-          };
-          await s3.upload(s3_params).promise();
+        await images.data.map(({revised_prompt, url}, index) => {
+          axios.get(url, {responseType: 'arraybuffer'}).then(image => {
+            const s3_params = {
+              Bucket: 'kalkinso.com',
+              Key: key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`,
+              Body: image.data,
+              ContentType: 'image/jpeg',
+            };
+            s3.upload(s3_params).promise().then((data) => {
+              console.log(`Successfully uploaded ${key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`}`);
+              const client = new S3Client({region:'ap-south-1'});
+              const get_command = new GetObjectCommand({
+                Bucket: 'kalkinso.com',
+                Key: key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`,
+              });
+              getSignedUrl(client, get_command, { expiresIn: params.Expires }).then((url) => {
+              res.json({ result: {...images.data, signedUrl: url} })
+              }).catch((err) => {});
+
+            }).catch((err) => {});
+          });
         });
-        return res.json({ result: images.data });
+        // return res.json({ result: images.data });
       } else {
         return res.status(500).json({ result: "Something went wrong" });
       }

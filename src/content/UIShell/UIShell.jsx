@@ -1,50 +1,22 @@
 import React from "react";
 import {
-    HeaderContainer, Header, SkipToContent, HeaderMenuButton, HeaderName,
-    HeaderNavigation, HeaderMenu, HeaderMenuItem, HeaderGlobalBar,
-    HeaderGlobalAction, SideNav, SideNavItems, Content,
-    SideNavMenu, SideNavMenuItem, Theme, ExpandableSearch, HeaderPanel,
-    SwitcherItem, SwitcherDivider, Switcher,
-    ContainedList, ContainedListItem, Tag, Button,
-    TextInput,
-    NumberInput,
-    Dropdown,
-    TextArea,
-    IconButton,
+    HeaderContainer, Header, HeaderName,
+    HeaderNavigation, HeaderMenuItem,
+    Content,Theme, 
 } from '@carbon/react';
-import axios from 'axios';
 import ToastNotification from "../../components/ToastNotification";
-import {
-    Notification,
-    // Search,
-    Switcher as SwitcherIcon,
-    Fade,
-    Close,
-    UserProfile,
-    Chat,
-    AiGenerate,
-    View,
-    FolderOpen,
-    Folder
-} from '@carbon/react/icons';
 import { Route, Routes, HashRouter, Navigate } from 'react-router-dom';
-import { NotificationsPanel,  } from '@carbon/ibm-products';
 import { sampleData } from './sampleData';
 
 // import ErrorBoundary from "../../components/ErrorBoundary";
 import LandingPage from '../LandingPage';
-import NotFound from '../../components/NotFound';
 import ContactPage from "../ContactPage";
 import SearchPage from "../SearchPage";
-import { Login, PasswordReset, VerifyOtp } from "../Login";
+import { PasswordReset, VerifyOtp } from "../Login";
 import SignUp from "../Signup";
 // import Kanban from "../Kanban";
 import ChatScreen from "../ChatScreen/ChatScreen";
-import Dashboard from "../Dashboard";
 import HowToPage from "../HowToPage";
-import SidePanel from "./SidePanel/SidePanel";
-import SidePanelChat from "./SidePanelChat/SidePanelChat";
-import ComingSoon from "./ComingSoon";
 import store from "../../store";
 import { Provider } from "react-redux";
 import Kanban from "../Kanban";
@@ -53,7 +25,7 @@ import Loader from "./MainLoader";
 import DashboardScreen from "../Dashboard/Dashboard";
 import AIReact from "./AIReact";
 import PrivateRoute from "../../components/routing/PrivateRoute";
-import { AIReactBaseConfig, AIReactChatConfig, AIReactDashboardConfig } from "./AIReactConfig";
+import { AIReactChatConfig, AIReactDashboardConfig } from "./AIReactConfig";
 import HeaderItemExplore from "./Header/HeaderItemExplore";
 import HeaderGlobal from "./Header/HeaderGlobal";
 import Resume from "./Resume";
@@ -65,7 +37,7 @@ import PaymentStatus from "../Wallet/PaymentStatus";
 import OrdersPage from "../Orders";
 import OrdersPaymentStatus from "../Orders/PaymentStatus";
 import AIPromptEditor from "./AIPromptEditor";
-// import Notification from '../../components/Notification';
+import Editor from "./AIPhotoEditor/components/Editor/Editor";
 
 
 class UIShell extends React.Component {
@@ -118,62 +90,14 @@ class UIShell extends React.Component {
                             render={({isSideNavExpanded, onClickSideNavExpand}) => (
                                 <div>
                                     <Header aria-label="KALKINSO Platform">
-                                        {/* <SkipToContent />
-                                        <HeaderMenuButton
-                                            aria-label="Open menu"
-                                            onClick={onClickSideNavExpand}
-                                            isActive={isSideNavExpanded}
-                                        /> */}
                                         {!(window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))&&(<><HeaderName href="/#" prefix={<img src={brandLogo} alt="KALKINSO KALKINSO Logo" height={75} />}>
                                             KALKINSO
                                         </HeaderName>
                                         <HeaderNavigation aria-label="KALKINSO App">
                                             <HeaderItemExplore />
-                                            {/* <HeaderMenuItem href="/#/Contact">Contact</HeaderMenuItem> */}
                                             <HeaderMenuItem href="/#/how-to">How To</HeaderMenuItem>
                                         </HeaderNavigation></>)}
                                         <HeaderGlobal />
-                                        {/* <HeaderPanel expanded={this.state.isSideNavExpanded}> */}
-                                        {/* </HeaderPanel> */}
-                                        {/* <ErrorBoundary>
-                                            <SideNav aria-label="Side navigation" expanded={isSideNavExpanded}>
-                                                <SideNavItems>
-                                                    <SideNavMenuItem element={Link} to='/'
-                                                        isActive={this.state.activeItem === '/'}
-                                                        onClick={() => { this.setState({ activeItem: '/' }) }}>
-                                                        Overview
-                                                    </SideNavMenuItem>
-                                                    <SideNavMenu renderIcon={Fade} title="Inventory" defaultExpanded>
-                                                        <SideNavMenuItem element={Link} to='/inventory/items'
-                                                            isActive={this.state.activeItem === '/inventory/items'}
-                                                            onClick={() => { this.setState({ activeItem: '/inventory/items' }) }}>
-                                                            Items
-                                                        </SideNavMenuItem>
-                                                    </SideNavMenu>
-                                                    <SideNavMenu renderIcon={Fade} title="Management">
-                                                        <SideNavMenuItem href="#">
-                                                            Link
-                                                        </SideNavMenuItem>
-                                                        <SideNavMenuItem href="#">
-                                                            Link
-                                                        </SideNavMenuItem>
-                                                        <SideNavMenuItem href="#">
-                                                            Link
-                                                        </SideNavMenuItem>
-                                                    </SideNavMenu>
-                                                    <SideNavMenu
-                                                        renderIcon={Fade}
-                                                        title="Docs">
-                                                        <SideNavMenuItem href="#">
-                                                            Link
-                                                        </SideNavMenuItem>
-                                                        <SideNavMenuItem href="#">
-                                                            Link
-                                                        </SideNavMenuItem>
-                                                    </SideNavMenu>
-                                                </SideNavItems>
-                                            </SideNav>
-                                        </ErrorBoundary> */}
                                     </Header>
                                 </div>
                             )}
@@ -215,8 +139,8 @@ class UIShell extends React.Component {
                                 <Route path=":orderId" element={<OrdersPaymentStatus />} />
                             </Route>
                             <Route path="tools">
-                                    <Route path="writing-assistant" element={<PrivateRoute access_page={'WALLET'} Component={AIPromptEditor} />} />
-                                    <Route path="design-assistant" element={<PrivateRoute access_page={'WALLET'} Component={ChatScreen} />} />
+                                    <Route path="writing-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AIPromptEditor} />} />
+                                    <Route path="design-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={Editor} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5eAUA&s" />} />
                             </Route>
                             <Route path="ankit.see" element={
                                     <Resume />

@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import FilerobotImageEditor, {
   TABS,
-  TOOLS,
 } from 'react-filerobot-image-editor';
-import { handleSaveShortcuts } from '../../utils/redux-cache';
 
 function PhotoEditor({ image_uri, title, usageStatistics,closeImgEditor, className,onKeyDown,...rest }) {
 

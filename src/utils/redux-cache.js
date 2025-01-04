@@ -19,7 +19,7 @@ export async function generateSignedUrl(bucketName, objectKey, expiresIn = 3600*
       };
   
       // Generate a signed URL with an expiration time
-      const signedUrl = (await axios.post('/api/auth/get-signed-url', body, config)).data.url;
+      let signedUrl = (await axios.post('/api/auth/get-signed-url', body, config)).data.url;
   
       // console.log("Signed URL:", signedUrl);
       return signedUrl;
