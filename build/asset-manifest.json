@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.12ffe9ba.css",
-    "main.js": "/static/js/main.7ff07e0b.js",
+    "main.js": "/static/js/main.075187bd.js",
     "static/js/218.03ea324d.chunk.js": "/static/js/218.03ea324d.chunk.js",
     "static/js/391.0b4610c2.chunk.js": "/static/js/391.0b4610c2.chunk.js",
     "static/js/709.ed4fcdd0.chunk.js": "/static/js/709.ed4fcdd0.chunk.js",
@@ -266,6 +266,7 @@
     "static/media/KaTeX_Size1-Regular.ttf": "/static/media/KaTeX_Size1-Regular.6de7d4b539221a49e9e2.ttf",
     "static/media/KaTeX_SansSerif-Bold.woff2": "/static/media/KaTeX_SansSerif-Bold.95591a929f0d32aa282a.woff2",
     "static/media/KaTeX_SansSerif-Italic.woff2": "/static/media/KaTeX_SansSerif-Italic.7d393d382f3e7fb1c637.woff2",
+    "static/media/ai.png": "/static/media/ai.80265077428799b6c6a8.png",
     "static/media/IBMPlexMono-Regular-Cyrillic.woff2": "/static/media/IBMPlexMono-Regular-Cyrillic.6956fe0f5e625049f7e2.woff2",
     "static/media/IBMPlexMono-Light-Cyrillic.woff2": "/static/media/IBMPlexMono-Light-Cyrillic.404c0909c893f95ee0dc.woff2",
     "static/media/KaTeX_Size2-Regular.ttf": "/static/media/KaTeX_Size2-Regular.57f5c1837853986ea1db.ttf",
@@ -364,6 +365,6 @@
   },
   "entrypoints": [
     "static/css/main.12ffe9ba.css",
-    "static/js/main.7ff07e0b.js"
+    "static/js/main.075187bd.js"
   ]
 }

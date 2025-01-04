@@ -685,31 +685,32 @@ convertImageToBase64 = async (url) => {
     }, 200);
   }
 
-  savePng = async blob => {
-    var formData = new FormData();
-    formData.append('profile', 'display')
-    formData.append('uuid', uuidv1())
-    formData.append('filename', `${Math.floor(Math.random() * 1000)}.png`)
-    formData.append('totalfilesize', blob.size)
-    formData.append('file', blob)
-
-    fetch(process.env.REACT_APP_IMAGE_UPLOAD, {
-      method: 'POST',
-      body: formData
-    })
-      .then(response => response.json())
-      .then(function (json) {
-        if (json.success) {
-          setTimeout(() => {
-            window.open(json.files[0].url, "_blank")
-          }, 500);
-        }
-      },
-        error => {
-          return error;
-        }
-      )
-  }
+  savePng = async (blob) => {
+    const fileName = `design-${uuidv1()}.png`;
+  
+    // Create a temporary link element
+    const link = document.createElement('a');
+    
+    // Create a blob URL for the image
+    const url = URL.createObjectURL(blob);
+    
+    // Set the download attributes for the link
+    link.href = url;
+    link.download = fileName;
+  
+    // Append the link to the document
+    document.body.appendChild(link);
+  
+    // Trigger the download
+    link.click();
+  
+    // Remove the link from the document
+    document.body.removeChild(link);
+  
+    // Revoke the blob URL to free memory
+    URL.revokeObjectURL(url);
+  };
+  
 
   handleDrag = (e, ui) => {
     e.stopPropagation();
