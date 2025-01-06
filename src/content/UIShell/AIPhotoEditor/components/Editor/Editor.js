@@ -78,6 +78,35 @@ const promptTemplates = {
 }
 const promptTemplate = (prompt, response) => {
   const promptTemplates = {
+    editContent: `
+        You are a professional book editor and writer. Your task is to create a list of books with the following details:
+        1. Title: A catchy, engaging, and relevant title for each book.
+        2. Subtitle: A subtitle that complements the title and gives more context about the content.
+        3. Cover Prompt: A detailed description for generating a visually appealing cover image. This should include the genre, mood, key elements, and a visual style.
+        4. Other Image Prompts: Additional prompts for smaller images related to the book's theme, such as characters, key scenes, or thematic symbols.
+        Give response in the following format:
+        {
+          "books": [
+            {
+              "title": "<Book title>",
+              "subtitle": "<Book subtitle>",
+              "coverPrompt": "<Description for generating cover image>",
+              "otherImagePrompts": [
+                "<List of descriptions for generating related images>"
+              ]
+          ],...
+        }
+        Here is the user's input:
+        "${prompt}"
+
+        Based on this input, generate at least 3 suggestions for books, structured as follows:
+        - Title: <Book title>
+        - Subtitle: <Book subtitle>
+        - Cover Prompt: <Description for generating cover image>
+        - Other Image Prompts: <List of descriptions for generating related images>
+
+        Ensure that the suggestions are unique, creative, and aligned with the user's input.
+        `,
       bookWriter: `
         For my prompt, generate an image that visually represents the theme, setting, or concept of a book. 
         When generating the image:
@@ -195,15 +224,15 @@ export default class Editor extends Component {
     arrayObjectsLayer: [],
     kanvasWidth: 18.9,
     kanvasHeight: 10,
-    widthKanvas: 1754,
-    heightKanvas: 2480,
+    widthKanvas: 460,
+    heightKanvas: 653,
     loading: false,
     showPallet: false,
     selectedObject: {},
     showBackground: false,
     backgroundOn: true,
     indexTextSelected: 0,
-    zoom: 2,
+    zoom: 1,
     imgBase64: undefined,
     newTextObj: {
       textEditVisible: false,
@@ -475,41 +504,48 @@ export default class Editor extends Component {
     image.addEventListener("load", this.addNewImage(image));
   };
 
+  loadImageSrc = (src, func) => {
+    var image = new window.Image();
+    image.src = src;
+    image.addEventListener("load", func(image));
+  };
+
   genImage =  async () => {
     let response = prompt("Please enter your prompt", "Sample Book Cover Designer");
     this.setState({ loading: true });
-    try {
-      let uniqueId = uuidv1();
-      const resp = await axios.post(
-        '/api/kalkiai/images',
-        JSON.stringify({
-            params: {
-                "model": "dall-e-2",
-                "prompt": promptTemplate(response, '')["bookCoverDesigner"],
-                "n": 1,
-                "size": "512x512",
-            },
-            key: `tools/image-designer/${uniqueId}.jpeg`,
-        }),
-        {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
+    await this.getSuggestionsJson(response)
+    // try {
+    //   let uniqueId = uuidv1();
+    //   const resp = await axios.post(
+    //     '/api/kalkiai/images',
+    //     JSON.stringify({
+    //         params: {
+    //             "model": "dall-e-2",
+    //             "prompt": promptTemplate(response, '')["bookCoverDesigner"],
+    //             "n": 1,
+    //             "size": "512x512",
+    //         },
+    //         key: `tools/image-designer/${uniqueId}.jpeg`,
+    //     }),
+    //     {
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //     }
+    // );
 
-    // Update response state with the fetched data
-    const json_response = resp?.data?.result;
-    const imageUrl = json_response.signedUrl;
-    // Convert the image from the signed URL to Base64
-    const base64Image = await this.convertImageToBase64(imageUrl);
-    // Create a new Image object and add it to the canvas
-    const image = new window.Image();
-    image.src = `data:image/png;base64,${base64Image}`;
-    image.addEventListener("load", () => this.addNewImage(image));
-    } catch (err) {
-      console.log(err)
-    }
+    // // Update response state with the fetched data
+    // const json_response = resp?.data?.result;
+    // const imageUrl = json_response.signedUrl;
+    // // Convert the image from the signed URL to Base64
+    // const base64Image = await this.convertImageToBase64(imageUrl);
+    // // Create a new Image object and add it to the canvas
+    // const image = new window.Image();
+    // image.src = `data:image/png;base64,${base64Image}`;
+    // image.addEventListener("load", () => this.addNewImage(image));
+    // } catch (err) {
+    //   console.log(err)
+    // }
     this.setState({ loading: false });
   };
 
@@ -530,7 +566,7 @@ convertImageToBase64 = async (url) => {
 };
 
   selectShape = (selectedObject, index = undefined) => {
-    console.log('dentro')
+    // console.log('dentro')
     let { arrayObjectsLayer, indexTextSelected } = this.state;
     // fecha a text area do texto
     for (let i; i < arrayObjectsLayer.length; i++) {
@@ -710,6 +746,231 @@ convertImageToBase64 = async (url) => {
     // Revoke the blob URL to free memory
     URL.revokeObjectURL(url);
   };
+
+  getSuggestionsJson = async (inputPrompt) => {
+    const canvasWidth = 460;
+    const canvasHeight = 653;
+
+    try {
+        // Step 1: Fetch book suggestions using the text API
+        const textResponse = await axios.post(
+            '/api/kalkiai/completions',
+            JSON.stringify({
+                model: 'gpt-4o',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'You are an expert text editor and book writer in multi-language. and give output only in JSON format. do not include any else other than json',
+                    },
+                    {
+                        role: 'user',
+                        content: promptTemplate(inputPrompt, '')['editContent']
+                    }
+                ]
+            }),
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        // console.log(textResponse)
+
+        const bookSuggestions = JSON.parse(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())?.books.slice(0,1) || []
+        // const bookSuggestions = [
+        //     {
+        //       "title": "The Last Algorithm",
+        //       "subtitle": "A Journey into the Heart of AI Consciousness",
+        //       "coverPrompt": "A futuristic cityscape at night, illuminated by neon lights, with a giant humanoid AI figure made of glowing circuits towering over the skyline. The mood is mysterious and awe-inspiring. Include a sense of advanced technology and human connection.",
+        //       "otherImagePrompts": [
+        //         "A close-up of a humanoid AI's face with intricate glowing circuits, looking contemplative.",
+        //       ]
+        //     },
+        //   ]
+        // Step 2: Generate image data for each suggestion
+        console.log(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())
+        let { arrayObjectsLayer, newImageObj } = this.state;
+        const suggestions = await Promise.all(
+            bookSuggestions.map(async (book, index) => {
+                const { title, subtitle, coverPrompt, otherImagePrompts } = book;
+                const titleObj = {
+                  textEditVisible: false,
+                  fill: "black",
+                  textX: canvasWidth / 2, // Centered horizontally
+                  textY: canvasHeight * 0.2, // Positioned in the top 20% of the canvas
+                  textYTextArea: canvasHeight * 0.2, // Matches textY for initial alignment
+                  textXTextArea: canvasWidth / 2, // Matches textX for initial alignment
+                  x: canvasWidth / 2 - (canvasWidth - 100) / 2, // Centered horizontally with padding
+                  y: canvasHeight * 0.2, // Positioned at 20% height
+                  textValue: title, // Replace with the actual title
+                  fontSize: 40, // Larger font for the title
+                  width: canvasWidth - 100, // Fits most of the canvas width with padding
+                  height: 60, // Estimated height for the text
+                  fontStyle: "bold", // Bold text for title emphasis
+                  align: "center", // Centered alignment
+                  id: Math.round(Math.random() * 10000), // Unique identifier
+                  type: "text",
+                };
+                const subtitleObj = {
+                  textEditVisible: false,
+                  fill: "black",
+                  textX: canvasWidth / 2, // Centered horizontally
+                  textY: canvasHeight * 0.3, // Positioned below the title (30% of canvas height)
+                  textYTextArea: canvasHeight * 0.3, // Matches textY for initial alignment
+                  textXTextArea: canvasWidth / 2, // Matches textX for initial alignment
+                  x: canvasWidth / 2 - (canvasWidth - 150) / 2, // Centered horizontally with padding
+                  y: canvasHeight * 0.3, // Positioned at 30% height
+                  textValue: subtitle, // Replace with the actual subtitle
+                  fontSize: 28, // Smaller font for subtitle
+                  width: canvasWidth - 150, // Slightly narrower width than the title
+                  height: 40, // Estimated height for the text
+                  fontStyle: "italic", // Italicized subtitle for distinction
+                  align: "center", // Centered alignment
+                  id: Math.round(Math.random() * 10000), // Unique identifier
+                  type: "text",
+              };
+                // Fetch background image
+                const backgroundImageResponse = await axios.post(
+                    '/api/kalkiai/images',
+                    JSON.stringify({
+                        params: {
+                            model: 'dall-e-2',
+                            prompt: coverPrompt,
+                            n: 1,
+                            size: '512x512',
+                        },
+                        key: `tools/image-designer/background_${index}.jpeg`,
+                    }),
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                const backgroundImageData = backgroundImageResponse?.data?.result;
+                // const backgroundImageData = null;
+                // Center the background image
+                const bgX = (canvasWidth - 512) / 2; // Center X
+                const bgY = (canvasHeight - 512) / 4; // Positioned in top quarter
+                let selectedObject = null;
+                this.loadImageSrc(backgroundImageData.signedUrl, (image)=>{
+                  const bgImageObject = {
+                    image,
+                    x: bgX,
+                    y: bgY,
+                    width: 512,
+                    height: 512,
+                    id: Math.round(Math.random() * 10000),
+                    type: 'image',
+                }
+                arrayObjectsLayer.push(bgImageObject);
+                let selectedObject = bgImageObject;
+                saveHistory(arrayObjectsLayer)
+
+                this.setState({
+                  arrayObjectsLayer, selectedObject,
+                });
+                })
+
+                // Fetch other images and arrange them in a grid
+              //   const otherImages = otherImagePrompts.map(async (prompt, i) => {
+              //     const otherImageResponse = await axios.post(
+              //         '/api/kalkiai/images',
+              //         JSON.stringify({
+              //             params: {
+              //                 model: 'dall-e-2',
+              //                 prompt,
+              //                 n: 1,
+              //                 size: '512x512',
+              //             },
+              //             key: `tools/image-designer/other_${index}_${i}.jpeg`,
+              //         }),
+              //         {
+              //             headers: {
+              //                 'Content-Type': 'application/json',
+              //             },
+              //         }
+              //     );
+
+              //     const otherImageData = otherImageResponse?.data?.result;
+
+              //     // Arrange images in a grid below the background
+              //     const gridCols = Math.floor(canvasWidth / 512); // Number of columns
+              //     const col = i % gridCols;
+              //     const row = Math.floor(i / gridCols);
+              //     const gridX = col * 512; // Horizontal position
+              //     const gridY = bgY + 1024 + (row * 512); // Vertical position below the background image
+                
+              //   this.loadImageSrc(otherImageData.signedUrl, (image)=>{
+              //     const otherImageObject = {
+              //       image,
+              //       x: gridX,
+              //       y: gridY,
+              //       width: 512,
+              //       height: 512,
+              //       id: Math.round(Math.random() * 10000),
+              //       type: 'image',
+              //   }
+
+              //   arrayObjectsLayer.push(otherImageObject);
+              //   let selectedObject = otherImageObject;
+              //   saveHistory(arrayObjectsLayer)
+              //   this.setState({
+              //     arrayObjectsLayer, selectedObject,
+              //   });
+              //   })
+
+              //     return {
+              //         prompt: otherImageData.signedUrl,
+              //         dimension: '512x512',
+              //         model: 'dall-e-2',
+              //         x: gridX,
+              //         y: gridY
+              //     };
+              // })
+                const otherImages = []
+
+                arrayObjectsLayer.push(titleObj);
+                selectedObject = titleObj;
+                saveHistory(arrayObjectsLayer)
+
+                this.setState({
+                  arrayObjectsLayer, selectedObject,
+                });
+              arrayObjectsLayer.push(subtitleObj);
+                selectedObject = subtitleObj;
+                saveHistory(arrayObjectsLayer)
+
+                this.setState({
+                  arrayObjectsLayer, selectedObject,
+                });
+
+                // console.log("This is Array Object",arrayObjectsLayer)
+
+                return {
+                    title,
+                    subtitle,
+                    background_image: {
+                        prompt: backgroundImageData?.signedUrl,
+                        dimension: '512x512',
+                        model: 'dall-e-2',
+                        x: bgX,
+                        y: bgY
+                    },
+                    other_images: otherImages
+                };
+            })
+        );
+
+        return suggestions;
+    } catch (error) {
+        console.error('Error generating suggestions JSON:', error);
+        return [];
+    }
+};
+
   
 
   handleDrag = (e, ui) => {
@@ -969,8 +1230,8 @@ convertImageToBase64 = async (url) => {
                 height={height}
                 onMouseDown={e => {
                   // deselect when clicked on empty area
-                  console.log(e.target)
-                  console.log(e.target.getStage())
+                  // console.log(e.target)
+                  // console.log(e.target.getStage())
                   const clickedOnEmpty = e.target === e.target.getStage();
                   if (clickedOnEmpty) {
                     this.selectShape(null);
