@@ -6,6 +6,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-ultimate';
 import 'primereact/resources/themes/lara-light-cyan/theme.css';
+import '@carbon/charts/styles.css';
+import '@carbon/charts-react/styles.css';
 
 // Create a QueryClient
 const queryClient = new QueryClient();

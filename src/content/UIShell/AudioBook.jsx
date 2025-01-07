@@ -35,10 +35,8 @@ const AudioBook = (props) => {
         // Listen for job-completed event
         channel.bind('job-completed', (data) => {
             setMediaUrl(data.signedUrl);
-            convertSpeechToText({ audioFile: data.signedUrl, file_path: data.key.replace(/\..+/g,'.json'), mp4: data.mp4 }).then((res) => {
-                setJsonData(res);
-                setComponent(true);
-            });
+            setJsonData(data.json_signed);
+            setComponent(true);
         });
 
         // Listen for job-completed event
