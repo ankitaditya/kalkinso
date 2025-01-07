@@ -283,7 +283,7 @@ router.post(
 )
 
 router.post('/audio_video', ipAuth, auth, [
-  body("params", "Model is required").not().isEmpty(),
+  body("prompt", "Model is required").not().isEmpty(),
 ],async (req, res) => {
   try {
     const { prompt, video } = req.body;
