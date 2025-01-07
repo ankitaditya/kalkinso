@@ -38,6 +38,7 @@ import OrdersPage from "../Orders";
 import OrdersPaymentStatus from "../Orders/PaymentStatus";
 import AIPromptEditor from "./AIPromptEditor";
 import Editor from "./AIPhotoEditor/components/Editor/Editor";
+import AudioBook from "./AudioBook";
 
 
 class UIShell extends React.Component {
@@ -141,6 +142,8 @@ class UIShell extends React.Component {
                             <Route path="tools">
                                     <Route path="writing-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AIPromptEditor} />} />
                                     <Route path="design-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={Editor} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5eAUA&s" />} />
+                                    <Route path="audiobook-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AudioBook} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5eAUA&s" />} />
+                                    <Route path="videobook-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AudioBook} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5eAUA&s" />} />
                             </Route>
                             <Route path="ankit.see" element={
                                     <Resume />

@@ -1,49 +1,41 @@
-import { TextInput } from '@carbon/react';
+import { Loading, TextInput } from '@carbon/react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
-import  SlateTranscriptEditor  from 'slate-transcript-editor';
+import SlateTranscriptEditor from '@bbc/react-transcript-editor';
+import DEMO_SOLEIO from './sample-data/soleio-dpe.json';
 
 const AudioBook = (props) => {
     // Declare a new state variable, which we'll call "count"
     const [jsonData, setJsonData] = useState({});
+    const [mediaUrl, setMediaUrl] = useState('');
     const [interimResults, setInterimResults] = useState({});
     const [ prompt, setPrompt ] = useState('');
-    const [ component, setComponent ] = useState(<TextInput />);
+    const [ component, setComponent ] = useState(null);
   
-    useEffect(() => {
-      props.transcriptInParts &&
-        props.transcriptInParts.forEach(
-          delayLoop((transcriptPart) => {
-            setInterimResults(transcriptPart);
-          }, 3000)
-        );
-    }, []);
-  
-    // https://travishorn.com/delaying-foreach-iterations-2ebd4b29ad30
-    const delayLoop = (fn, delay) => {
-      return (x, i) => {
-        setTimeout(() => {
-          fn(x);
-        }, i * delay);
-      };
-    };
+    const onSubmit = () => {
+        setComponent('loading');
+        setTimeout(()=>{
+            setJsonData(DEMO_SOLEIO);
+            setMediaUrl('https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4');
+            setComponent(true);
+        }, 2000)
+    }
   
     return (
       <>
-        <SlateTranscriptEditor
-          mediaUrl={text('mediaUrl', DEMO_MEDIA_URL_SOLEIO)}
-          handleSaveEditor={action('handleSaveEditor')}
-          handleAutoSaveChanges={action('handleAutoSaveChanges')}
-          // https://www.npmjs.com/package/@storybook/addon-knobs#select
-          autoSaveContentType={select('autoSaveContentType', ['digitalpaperedit', 'slate'], 'digitalpaperedit')} // digitalpaperedit or slate - digitalpaperedit, runs alignement before exporting, slate, is just the raw data.
-          transcriptData={jsonData}
-          transcriptDataLive={interimResults}
-          isEditable={props.isEditable}
-          title={props.title}
-          showTitle={true}
-          showTimecodes={true}
-          showSpeakers={true}
-        />
+        {component?(component==='loading'?<Loading withOverlay={true} />:<SlateTranscriptEditor    
+            mediaUrl={mediaUrl}
+            transcriptData={jsonData}
+            title={"Sample Audio"}
+            autoPlay={false}
+            isEditable={true}
+            spellCheck={true}
+            sttJsonType="draftjs"
+          />):<TextInput id="prompt" labelText="Give Audio Book Prompt" value={prompt} onKeyDown={(e)=>{
+        if(e.key === 'Enter') {
+            onSubmit();
+        }
+    }} onChange={(e)=>{setPrompt(e.target.value); console.log(e.target.value)}} />}
       </>
     );
   };

@@ -9,6 +9,7 @@ const ChatSession = require("../../models/ChatSession");
 const Tasks = require("../../models/Tasks");
 const ipAuth = require("../../middleware/ipAuth");
 const AWS = require('aws-sdk');
+const Pusher = require('pusher');
 const axios = require("axios");
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
@@ -16,6 +17,13 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const router = express.Router();
 
 const s3 = new AWS.S3();
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER,
+  useTLS: true
+});
 
 router.post(
   "/",
@@ -267,5 +275,51 @@ router.post(
     }
   },
 )
+
+router.post('/audio_video', ipAuth, auth, [
+  body("params", "Model is required").not().isEmpty(),
+],async (req, res) => {
+  try {
+    const { params } = req.body;
+    const JobParams = {
+      JobName: 'video_generator',
+      Arguments: {
+        '--VIDEO_PROMPT': params.prompt,
+      }
+    };
+    const response = await glue.startJobRun(JobParams).promise();
+    if(response.JobRunId){
+      pusher.trigger('kalkinso-bucaudio', 'job-started', {
+        message: `Glue job video_generator started`,
+        jobRunId: response.JobRunId
+      });
+      return res.json({ result: response.JobRunId });
+    } else {
+      return res.status(500).json({ result: "Something went wrong" });
+    }
+  } catch (err) {
+    console.error(err?.message);
+    return res.status(500).json({ msg: err?.message });
+  }
+});
+
+router.post('/audio_video/state', ipAuth, auth, async (req, res) => {
+  try {
+    const { jobId, signedUrl } = req.body;
+    if(signedUrl){
+      pusher.trigger('kalkinso-bucaudio', 'job-completed', {
+        message: `Glue job video_generator completed`,
+        jobRunId: jobId,
+        signedUrl: signedUrl,
+      });
+      return res.json({ result: signedUrl });
+    } else {
+      return res.status(500).json({ result: "Something went wrong" });
+    }
+  } catch (err) {
+    console.error(err?.message);
+    return res.status(500).json({ msg: err?.message });
+  }
+});
 
 module.exports = router;
