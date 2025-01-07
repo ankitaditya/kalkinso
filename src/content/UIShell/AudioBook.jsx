@@ -1,29 +1,77 @@
 import { Loading, TextInput } from '@carbon/react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Pusher from 'pusher-js';
 
 import SlateTranscriptEditor from '@bbc/react-transcript-editor';
-import DEMO_SOLEIO from './sample-data/soleio-dpe.json';
+import { useDispatch } from 'react-redux';
+import { setAlert } from '../../actions/alert';
+import axios from 'axios';
+import { convertSpeechToText } from '../../utils/openai-utils';
 
 const AudioBook = (props) => {
     // Declare a new state variable, which we'll call "count"
     const [jsonData, setJsonData] = useState({});
+    const dispatch = useDispatch();
     const [mediaUrl, setMediaUrl] = useState('');
+    const [status, setStatus] = useState('started');
     const [interimResults, setInterimResults] = useState({});
     const [ prompt, setPrompt ] = useState('');
     const [ component, setComponent ] = useState(null);
+    useEffect(() => {
+        // Initialize Pusher
+        const pusher = new Pusher('14bbfc475d91b9f07a76', {
+            cluster: 'ap2'
+        });
+    
+        // Subscribe to the channel
+        const channel = pusher.subscribe('kalkinso-bucaudio');
+    
+        // Listen for job-started event
+        channel.bind('job-started', (data) => {
+          setComponent('loading');
+          setStatus(data.message);
+        });
+    
+        // Listen for job-completed event
+        channel.bind('job-completed', (data) => {
+            setMediaUrl(data.signedUrl);
+            convertSpeechToText({ audioFile: data.signedUrl, file_path: data.key.replace(/\..+/g,'.json'), mp4: data.mp4 }).then((res) => {
+                setJsonData(res);
+                setComponent(true);
+            });
+        });
+
+        // Listen for job-completed event
+        channel.bind('job-running', (data) => {
+            setComponent('loading');
+            setStatus(data.message);
+        });
+    
+        // Listen for job-failed event
+        channel.bind('job-failed', (data) => {
+          setComponent(null)
+          dispatch(setAlert("Something Went Wrong", 'error'));
+        });
+    
+        // Cleanup on component unmount
+        return () => {
+          pusher.unsubscribe('kalkinso-bucaudio');
+        };
+      }, []);
   
     const onSubmit = () => {
-        setComponent('loading');
-        setTimeout(()=>{
-            setJsonData(DEMO_SOLEIO);
-            setMediaUrl('https://www.sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4');
-            setComponent(true);
-        }, 2000)
+        axios.post('/api/kalkiai/audio_video', { prompt: prompt }).then((res) => {
+            dispatch(setAlert("Audio Book Prompt Submitted", 'success'));
+            setComponent('loading');
+        }).catch((err) => {
+            setComponent(null);
+            dispatch(setAlert("Something Went Wrong", 'error'));
+        });
     }
   
     return (
       <>
-        {component?(component==='loading'?<Loading withOverlay={true} />:<SlateTranscriptEditor    
+        {component?(component==='loading'?<><Loading withOverlay={true} description={status} />{status}</>:<SlateTranscriptEditor    
             mediaUrl={mediaUrl}
             transcriptData={jsonData}
             title={"Sample Audio"}

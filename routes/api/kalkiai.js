@@ -16,7 +16,13 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const router = express.Router();
 
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({
+  region: 'ap-south-1'
+});
+const glue = new AWS.Glue({
+  region: 'ap-south-1'
+});
+
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
   key: process.env.PUSHER_KEY,
@@ -280,18 +286,19 @@ router.post('/audio_video', ipAuth, auth, [
   body("params", "Model is required").not().isEmpty(),
 ],async (req, res) => {
   try {
-    const { params } = req.body;
+    const { prompt, video } = req.body;
     const JobParams = {
       JobName: 'video_generator',
       Arguments: {
-        '--VIDEO_PROMPT': params.prompt,
+        '--VIDEO_PROMPT': prompt,
       }
     };
     const response = await glue.startJobRun(JobParams).promise();
     if(response.JobRunId){
       pusher.trigger('kalkinso-bucaudio', 'job-started', {
-        message: `Glue job video_generator started`,
-        jobRunId: response.JobRunId
+        message: `Glue job video_generator:${response.JobRunId} started`,
+        jobRunId: response.JobRunId,
+        video: video,
       });
       return res.json({ result: response.JobRunId });
     } else {
