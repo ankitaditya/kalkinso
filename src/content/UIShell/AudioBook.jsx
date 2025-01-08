@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../actions/alert';
 import axios from 'axios';
 import SOLIEO_DATA from './sample-data/soleio-dpe.json';
+import { save } from '../../actions/kits';
 
 
 const AudioBook = (props) => {
@@ -77,8 +78,13 @@ const AudioBook = (props) => {
       }, []);
   
     const onSubmit = () => {
-        axios.post('/api/kalkiai/audio_video', { prompt: prompt }).then((res) => {
+        axios.post('/api/kalkiai/audio_video', JSON.stringify({ prompt: prompt, video: 'false' }), {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((res) => {
             dispatch(setAlert("Audio Book Prompt Submitted", 'success'));
+            dispatch(save('kalkinso.com', `users/${user}/tasks/tools/audiobook-assistant/video-prompt.json`, JSON.stringify({ prompt: prompt })));
             // setComponent('loading');
         }).catch((err) => {
             setComponent(null);

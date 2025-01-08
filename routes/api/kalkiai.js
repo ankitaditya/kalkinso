@@ -293,6 +293,7 @@ router.post('/audio_video', ipAuth, auth, [
         '--VIDEO_PROMPT': prompt,
         '--OUTPUT': `users/${req.user.id}/tasks/`,
         '--USER': req.user.id,
+        '--VIDEO': video,
       }
     };
     const response = await glue.startJobRun(JobParams).promise();
