@@ -6,11 +6,12 @@ import SlateTranscriptEditor from '@bbc/react-transcript-editor';
 import { useDispatch } from 'react-redux';
 import { setAlert } from '../../actions/alert';
 import axios from 'axios';
-import { convertSpeechToText } from '../../utils/openai-utils';
+import SOLIEO_DATA from './sample-data/soleio-dpe.json';
+
 
 const AudioBook = (props) => {
     // Declare a new state variable, which we'll call "count"
-    const [jsonData, setJsonData] = useState({});
+    const [jsonData, setJsonData] = useState(SOLIEO_DATA);
     const dispatch = useDispatch();
     const [mediaUrl, setMediaUrl] = useState('');
     const [status, setStatus] = useState('started');
@@ -34,9 +35,18 @@ const AudioBook = (props) => {
     
         // Listen for job-completed event
         channel.bind('job-completed', (data) => {
-            setMediaUrl(data.signedUrl);
-            setJsonData(data.json_signed);
-            setComponent(true);
+            // setJsonData(data.json_signed);
+            axios.get(data.json_signed).then((res) => {
+                if(res.data.blocks.length === 0) {
+                  setJsonData(null);
+                } else {
+                  setJsonData(res.data);
+                }
+                setMediaUrl(data.signedUrl);
+                setComponent(true);
+            }).catch((err) => {
+                setComponent(null);
+            });
         });
 
         // Listen for job-completed event
