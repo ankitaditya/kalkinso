@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Button,
+  ClickableTile,
+  Column,
+    Grid,
     Loading,
 } from '@carbon/react';
 import './Dashboard.scss';
@@ -8,6 +12,8 @@ import AddSelectBody from './AddSelectBody';
 import { normalize, getGlobalFilterValues } from '@carbon/ibm-products/lib/components/AddSelect/add-select-utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { getSelectedTasks } from '../../actions/kits';
+import { Folder, SkipBack } from '@carbon/react/icons';
+import { useNavigate } from 'react-router-dom';
 pkg.component.UserAvatar = true;
 pkg.component.ExpressiveCard = true;
 pkg.component.StatusIcon = true;
@@ -18,6 +24,7 @@ const DashboardTools = () => {
     const profile = useSelector((state) => state.profile);
     const { selectedTask } = useSelector((state) => state.kits);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [items, setItems] = useState({});
     useEffect(()=>{
       if(profile?.user&&!selectedTask?.entries?.length){
@@ -83,21 +90,28 @@ const DashboardTools = () => {
                 };
               })
             : [];
-        setAddSelectComponent(<AddSelectBody title="Select Items"
-          description="Choose items from the list"
-          items={items}
-          itemsLabel="Tasks"
-          globalSearchLabel="Search Items"
-          onCloseButtonText="Close"
-          onSubmitButtonText="Submit"
-          onSubmit={handleOnSubmit}
-          onClose={handleOnClose}
-          normalizedItems={normalizedItems}
-          useNormalizedItems={useNormalizedItems}
-          globalFilterOpts={globalFilterOpts}
-          defaultModifiers={defaultModifiers}
-          open={true}
-          multi={false} />);
+        setAddSelectComponent(<><Grid>
+          <Column lg={16} md={8} sm={2}>
+          <Button size='sm' kind="secondary" style={{
+          marginBottom: '1rem',
+          // marginLeft: '4rem',
+          float: 'left',
+        }}><SkipBack style={{
+          // marginBottom: '1rem',
+          marginRight: '1rem',
+          // float: 'left',
+        }} />Back</Button>
+        </Column>
+          {selectedTask?.entries[0]?.children?.entries.filter(obj=>obj.id.includes('tools'))[0]?.children?.entries.map((obj)=>{
+            return <Column lg={4} md={2} sm={2}>
+            <ClickableTile onClick={(e)=>{navigate(`/tools/${obj.title}`);window.location.reload()}} title={obj.icon}>
+              <Folder style={{
+                marginRight: '1rem',
+              }} /> <strong>{obj.title.split('-')[0].slice(0,1).toLocaleUpperCase()+obj.title.split('-')[0].slice(1)} {obj.title.split('-')[1].slice(0,1).toLocaleUpperCase()+obj.title.split('-')[1].slice(1)}</strong>
+            </ClickableTile>
+        </Column>
+          })}
+        </Grid></>);
       }
     }, [selectedTask, items, normalizedItems, useNormalizedItems, globalFilterOpts]);
     return addSelectComponent;
