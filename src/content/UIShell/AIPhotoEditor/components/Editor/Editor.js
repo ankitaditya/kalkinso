@@ -730,7 +730,11 @@ convertImageToBase64 = async (url) => {
         Key: `tools/design-assistant/${fileName}.json`,
         Body: content,
       }
-    }))
+    }), {
+      headers: {
+          'Content-Type': 'application/json',
+      },
+  }).then((response) => {}).catch((error) => {});
     // Create a temporary link element
     const link = document.createElement('a');
     

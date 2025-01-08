@@ -89,7 +89,11 @@ const AnalysisAssistant = () => {
         Key: `tools/analysis-assistant/${fileName}.json`,
         Body: content,
       }
-    })).then((response) => {
+    }), {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }).then((response) => {
       dispatch(setLoading(false));
     }).catch((error) => {
       dispatch(setLoading(false));
