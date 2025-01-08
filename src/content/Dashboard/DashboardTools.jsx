@@ -26,6 +26,7 @@ const DashboardTools = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [items, setItems] = useState({});
+    const [back, setBack] = useState([]);
     useEffect(()=>{
       if(profile?.user&&!selectedTask?.entries?.length){
         dispatch(getSelectedTasks("kalkinso.com",`users/${profile.user}/tasks`));
@@ -70,7 +71,6 @@ const DashboardTools = () => {
       true && []?.length
         ? getGlobalFilterValues([], normalizedItems)
         : null;
-
     useEffect(() => {
       if (selectedTask?.entries?.length>0) {
         // console.log('Selected Items:', selectedTask);
@@ -91,20 +91,50 @@ const DashboardTools = () => {
               })
             : [];
         setAddSelectComponent(<><Grid>
-          <Column lg={16} md={8} sm={2}>
+          {back.length>0&&<Column lg={16} md={8} sm={2}>
           <Button size='sm' kind="secondary" style={{
           marginBottom: '1rem',
           // marginLeft: '4rem',
           float: 'left',
+        }} onClick={()=>{
+          const newBack = back.slice(0,back.length-1);
+          setAddSelectComponent(back[back.length-1]);
+          setBack(newBack);
         }}><SkipBack style={{
           // marginBottom: '1rem',
           marginRight: '1rem',
           // float: 'left',
         }} />Back</Button>
-        </Column>
+        </Column>}
           {selectedTask?.entries[0]?.children?.entries.filter(obj=>obj.id.includes('tools'))[0]?.children?.entries.map((obj)=>{
             return <Column lg={4} md={2} sm={2}>
-            <ClickableTile onClick={(e)=>{navigate(`/tools/${obj.title}`);window.location.reload()}} title={obj.icon}>
+            <ClickableTile onClick={(e)=>{setBack([...back, addSelectComponent]); setAddSelectComponent(<><Grid>
+          <Column lg={16} md={8} sm={2}>
+          <Button size='sm' kind="secondary" style={{
+          marginBottom: '1rem',
+          // marginLeft: '4rem',
+          float: 'left',
+        }} onClick={()=>{
+          const newBack = back.slice(0,back.length-1);
+          setAddSelectComponent(back[back.length-1]);
+          setBack(newBack);
+        }}><SkipBack style={{
+          // marginBottom: '1rem',
+          marginRight: '1rem',
+          // float: 'left',
+        }} />Back</Button>
+        </Column>{obj?.children?.entries?.map((val)=>{
+              return <Column lg={4} md={2} sm={2}>
+                        <ClickableTile onClick={(e)=>{
+                          navigate(`/tools/${obj.title}/signedUrl=${encodeURIComponent(val.signedUrl)}`);
+                          window.location.reload();
+                        }} title={val.icon}>
+                          <Folder style={{
+                            marginRight: '1rem',
+                          }} /> <strong>{val.title}</strong>
+              </ClickableTile>
+              </Column>
+            })}</Grid></>)}} title={obj.icon}>
               <Folder style={{
                 marginRight: '1rem',
               }} /> <strong>{obj.title.split('-')[0].slice(0,1).toLocaleUpperCase()+obj.title.split('-')[0].slice(1)} {obj.title.split('-')[1].slice(0,1).toLocaleUpperCase()+obj.title.split('-')[1].slice(1)}</strong>

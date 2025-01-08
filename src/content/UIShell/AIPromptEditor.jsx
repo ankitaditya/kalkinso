@@ -34,6 +34,7 @@ import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { Close, Download, MathCurve, Save } from "@carbon/react/icons";
 import { ActionBar, EditInPlace } from "@carbon/ibm-products";
+import { useParams } from "react-router-dom";
 
 const turndownService = new TurndownService();
 
