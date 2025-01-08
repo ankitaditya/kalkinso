@@ -115,9 +115,7 @@ const DashboardTools = () => {
           // marginLeft: '4rem',
           float: 'left',
         }} onClick={()=>{
-          const newBack = back.slice(0,back.length-1);
-          setAddSelectComponent(back[back.length-1]);
-          setBack(newBack);
+          navigate(`/tools/home`); window.location.reload();
         }}><SkipBack style={{
           // marginBottom: '1rem',
           marginRight: '1rem',
