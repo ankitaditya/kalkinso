@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Pusher from 'pusher-js';
 
 import SlateTranscriptEditor from '@bbc/react-transcript-editor';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../actions/alert';
 import axios from 'axios';
 import SOLIEO_DATA from './sample-data/soleio-dpe.json';
@@ -14,6 +14,7 @@ const AudioBook = (props) => {
     const [jsonData, setJsonData] = useState(SOLIEO_DATA);
     const dispatch = useDispatch();
     const [mediaUrl, setMediaUrl] = useState('');
+    const { user } = useSelector((state) => state.profile);
     const [status, setStatus] = useState('started');
     const [interimResults, setInterimResults] = useState({});
     const [ prompt, setPrompt ] = useState('');
@@ -29,13 +30,16 @@ const AudioBook = (props) => {
     
         // Listen for job-started event
         channel.bind('job-started', (data) => {
+          if(data.user !== user) {
           setComponent('loading');
           setStatus(data.message);
+          }
         });
     
         // Listen for job-completed event
         channel.bind('job-completed', (data) => {
             // setJsonData(data.json_signed);
+            if(data.user !== user) {
             axios.get(data.json_signed).then((res) => {
                 if(res.data.blocks.length === 0) {
                   setJsonData(null);
@@ -47,18 +51,23 @@ const AudioBook = (props) => {
             }).catch((err) => {
                 setComponent(null);
             });
+          }
         });
 
         // Listen for job-completed event
         channel.bind('job-running', (data) => {
+          if(data.user !== user) {
             setComponent('loading');
             setStatus(data.message);
+          }
         });
     
         // Listen for job-failed event
         channel.bind('job-failed', (data) => {
+          if(data.user !== user) {
           setComponent(null)
           dispatch(setAlert("Something Went Wrong", 'error'));
+          }
         });
     
         // Cleanup on component unmount
@@ -70,7 +79,7 @@ const AudioBook = (props) => {
     const onSubmit = () => {
         axios.post('/api/kalkiai/audio_video', { prompt: prompt }).then((res) => {
             dispatch(setAlert("Audio Book Prompt Submitted", 'success'));
-            setComponent('loading');
+            // setComponent('loading');
         }).catch((err) => {
             setComponent(null);
             dispatch(setAlert("Something Went Wrong", 'error'));

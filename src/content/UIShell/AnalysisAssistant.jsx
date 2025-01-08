@@ -81,7 +81,19 @@ const AnalysisAssistant = () => {
 
     const analyticsData = JSON.parse(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim()) || []
     setData(analyticsData);
-    dispatch(setLoading(false));
+    const fileName = `analysis-assistant-${Date.now()}`;
+    const content = JSON.stringify(analyticsData);
+    axios.put('/api/kits/save', JSON.stringify({
+      params: {
+        Bucket: 'kalkinso.com',
+        Key: `tools/analysis-assistant/${fileName}.json`,
+        Body: content,
+      }
+    })).then((response) => {
+      dispatch(setLoading(false));
+    }).catch((error) => {
+      dispatch(setLoading(false));
+    });
   };
   if (!data) return <div>Loading...</div>;
 

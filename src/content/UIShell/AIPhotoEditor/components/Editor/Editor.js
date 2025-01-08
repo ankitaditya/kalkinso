@@ -723,7 +723,14 @@ convertImageToBase64 = async (url) => {
 
   savePng = async (blob) => {
     const fileName = `design-${uuidv1()}.png`;
-  
+    const content = JSON.stringify(this.state.arrayObjectsLayer);
+    axios.put('/api/kits/save', JSON.stringify({
+      params: {
+        Bucket: 'kalkinso.com',
+        Key: `tools/design-assistant/${fileName}.json`,
+        Body: content,
+      }
+    }))
     // Create a temporary link element
     const link = document.createElement('a');
     
@@ -840,7 +847,7 @@ convertImageToBase64 = async (url) => {
                             n: 1,
                             size: '512x512',
                         },
-                        key: `tools/image-designer/background_${index}.jpeg`,
+                        key: `tools/design-assistant/assets/background_${index}.jpeg`,
                     }),
                     {
                         headers: {
@@ -885,7 +892,7 @@ convertImageToBase64 = async (url) => {
               //                 n: 1,
               //                 size: '512x512',
               //             },
-              //             key: `tools/image-designer/other_${index}_${i}.jpeg`,
+              //             key: `tools/design-assistant/assets/background_${index}.jpeg`,
               //         }),
               //         {
               //             headers: {

@@ -253,7 +253,7 @@ router.post(
           axios.get(url, {responseType: 'arraybuffer'}).then(image => {
             const s3_params = {
               Bucket: 'kalkinso.com',
-              Key: key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`,
+              Key: `users/${req.user.id}/tasks/${key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`}`,
               Body: image.data,
               ContentType: 'image/jpeg',
             };
@@ -291,6 +291,8 @@ router.post('/audio_video', ipAuth, auth, [
       JobName: 'video_generator',
       Arguments: {
         '--VIDEO_PROMPT': prompt,
+        '--OUTPUT': `users/${req.user.id}/tasks/`,
+        '--USER': req.user.id,
       }
     };
     const response = await glue.startJobRun(JobParams).promise();
@@ -298,6 +300,7 @@ router.post('/audio_video', ipAuth, auth, [
       pusher.trigger('kalkinso-bucaudio', 'job-started', {
         message: `Glue job video_generator:${response.JobRunId} started`,
         jobRunId: response.JobRunId,
+        user: req.user.id,
         video: video,
       });
       return res.json({ result: response.JobRunId });
