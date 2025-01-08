@@ -40,6 +40,8 @@ import AIPromptEditor from "./AIPromptEditor";
 import Editor from "./AIPhotoEditor/components/Editor/Editor";
 import AudioBook from "./AudioBook";
 import AnalysisAssistant from "./AnalysisAssistant";
+import DashboardTools from "../Dashboard/DashboardTools";
+import WorkInProgress from "./WorkInProgress";
 
 
 class UIShell extends React.Component {
@@ -141,11 +143,13 @@ class UIShell extends React.Component {
                                 <Route path=":orderId" element={<OrdersPaymentStatus />} />
                             </Route>
                             <Route path="tools">
+                                    <Route path="home" element={<PrivateRoute access_page={'TOOLS'} Component={DashboardTools} />} />
                                     <Route path="writing-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AIPromptEditor} />} />
                                     <Route path="design-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={Editor} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5eAUA&s" />} />
                                     <Route path="audiobook-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AudioBook} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:&s" />} />
                                     <Route path="videobook-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AudioBook} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBn" />} />
                                     <Route path="analysis-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AnalysisAssistant} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5e" />} />
+                                    <Route path="*" element={<PrivateRoute access_page={'TOOLS'} Component={WorkInProgress} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5e" />} />
                             </Route>
                             <Route path="ankit.see" element={
                                     <Resume />
