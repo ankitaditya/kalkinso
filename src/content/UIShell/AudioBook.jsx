@@ -32,8 +32,10 @@ const AudioBook = (props) => {
             setMediaUrl(mp4File.signedUrl);
             setTitle(selectedTool.selectedEntry.title);
             setComponent(true);
+            localStorage.removeItem('selectedTool')
           }).catch((err) => {
             setComponent(null);
+            localStorage.removeItem('selectedTool')
           });
         }
       } else if (selectedTool&&selectedTool.name==="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0&&selectedTool.selectedEntry?.children?.entries?.length===0){

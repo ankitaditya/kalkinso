@@ -37,8 +37,10 @@ const VideoBook = (props) => {
             setComponent(null);
           });
         }
+        localStorage.removeItem('selectedTool')
       } else if (selectedTool&&selectedTool.name==="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0&&selectedTool.selectedEntry?.children?.entries?.length===0){
         setComponent("loading");
+        localStorage.removeItem('selectedTool')
       }
     }, []);
     useEffect(() => {

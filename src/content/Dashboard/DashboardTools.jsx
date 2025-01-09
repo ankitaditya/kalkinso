@@ -40,6 +40,9 @@ const DashboardTools = () => {
         setUseNormalizedItems(!!selectedTask.entries.find((item) => item.children));
         setItems(selectedTask.entries[0].children);
       }
+      if(selectedTask?.entries[0]?.children?.entries?.filter(obj=>obj.title==='design-assistant')?.length>0&&selectedTask?.entries[0]?.children?.entries?.filter(obj=>obj.title==='design-assistant')[0].children?.entries?.filter(obj=>obj.title==='assets')){
+        localStorage.setItem('assets', JSON.stringify(selectedTask?.entries[0]?.children?.entries?.filter(obj=>obj.title==='design-assistant')[0].children?.entries?.filter(obj=>obj.title==='assets')[0].children?.entries));
+      }
     },[selectedTask])
     useEffect(() => {
       if(useNormalizedItems&&selectedTask?.entries?.length>0){

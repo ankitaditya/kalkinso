@@ -327,6 +327,7 @@ export default function BlockNoteEditor(
         if (setIsChanged) {
           setIsChanged(null);
         }
+        localStorage.removeItem('selectedTool')
       });
     }
   }, []);

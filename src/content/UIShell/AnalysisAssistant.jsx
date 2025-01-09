@@ -22,6 +22,7 @@ const AnalysisAssistant = () => {
       axios.get(selectedTool.selectedEntry.signedUrl).then((res) => {
         setData(res.data);
         setValue(selectedTool.selectedEntry.value);
+        localStorage.removeItem('selectedTool')
       }).catch((err) => {});
     }
   }, []);

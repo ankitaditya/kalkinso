@@ -8,6 +8,8 @@ import { DropImage } from "../DropImage";
 import { v4 as uuidv1 } from 'uuid';
 import KeyboardEventHandler from "react-keyboard-event-handler";
 import { connect } from "react-redux";
+import { Sidebar } from "primereact/sidebar";
+import { Divider } from 'primereact/divider';
 import axios from "axios";
 import {
   Retangulo,
@@ -41,6 +43,7 @@ import BackgroundIcon from "../../assets/icons-editor-bar/background.png";
 import AiIcon from "../../assets/icons-editor-bar/ai.png";
 import { generateSignedUrl } from "../../../../../utils/redux-cache";
 import { Loading } from "@carbon/react";
+import { Close } from "@carbon/react/icons";
 
 var HISTORY = []
 
@@ -223,6 +226,7 @@ class Editor extends Component {
   }
   state = {
     arrayObjectsLayer: [],
+    visibleTray: true,
     kanvasWidth: 18.9,
     kanvasHeight: 10,
     widthKanvas: 460,
@@ -331,15 +335,20 @@ class Editor extends Component {
 
   async componentDidMount() {
     const selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
+    const assets = JSON.parse(localStorage.getItem('assets'));
     if (selectedTool&&selectedTool.name==='design-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
       console.log(selectedTool)
       if(selectedTool.selectedEntry.fileType.includes('json')){
         axios.get(selectedTool.selectedEntry.signedUrl).then((response) => {
           this.setState({ arrayObjectsLayer: response.data });
+          localStorage.removeItem('selectedTool')
         })
       } else {
         this.loadImageSrc(selectedTool.selectedEntry.signedUrl, this.addNewImage)
       }
+    }
+    if (assets) {
+      this.setState({ assets: assets });
     }
     saveHistory(this.state.arrayObjectsLayer)
     await localStorage.setItem("defaultState", JSON.stringify(this.state));
@@ -688,9 +697,15 @@ convertImageToBase64 = async (url) => {
     }
   };
 
+  setVisibleTray = (value) => {
+    this.setState({
+      visibleTray: value
+    });
+  };
+
   b64toBlob = b64Data => {
     const contentType = 'image/png';
-    const sliceSize = 512;
+    const sliceSize = 1024;
     let byteCharacters = atob(b64Data);
     const byteArrays = [];
 
@@ -805,7 +820,7 @@ convertImageToBase64 = async (url) => {
 
         // console.log(textResponse)
 
-        const bookSuggestions = JSON.parse(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())?.books.slice(0,1) || []
+        const bookSuggestions = JSON.parse(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())?.books || []
         // const bookSuggestions = [
         //     {
         //       "title": "The Last Algorithm",
@@ -863,12 +878,12 @@ convertImageToBase64 = async (url) => {
                     '/api/kalkiai/images',
                     JSON.stringify({
                         params: {
-                            model: 'dall-e-2',
+                            model: 'dall-e-3',
                             prompt: coverPrompt,
                             n: 1,
-                            size: '512x512',
+                            size: '1024x1024',
                         },
-                        key: `tools/design-assistant/assets/background_${index}.jpeg`,
+                        key: `users/${this.props.user}/tasks/tools/design-assistant/assets/background_${uuidv1()}.jpeg`,
                     }),
                     {
                         headers: {
@@ -880,27 +895,13 @@ convertImageToBase64 = async (url) => {
                 const backgroundImageData = backgroundImageResponse?.data?.result;
                 // const backgroundImageData = null;
                 // Center the background image
-                const bgX = (canvasWidth - 512) / 2; // Center X
-                const bgY = (canvasHeight - 512) / 4; // Positioned in top quarter
+                const bgX = (canvasWidth - 1024) / 2; // Center X
+                const bgY = (canvasHeight - 1024) / 4; // Positioned in top quarter
                 let selectedObject = null;
-                this.loadImageSrc(backgroundImageData.signedUrl, (image)=>{
-                  const bgImageObject = {
-                    image,
-                    x: bgX,
-                    y: bgY,
-                    width: 512,
-                    height: 512,
-                    id: Math.round(Math.random() * 10000),
-                    type: 'image',
-                }
-                arrayObjectsLayer.push(bgImageObject);
-                let selectedObject = bgImageObject;
-                saveHistory(arrayObjectsLayer)
-
-                this.setState({
-                  arrayObjectsLayer, selectedObject,
-                });
-                })
+                this.loadImageSrc(backgroundImageData.signedUrl, this.addNewImage)
+                let assets = this.state.assets;
+                assets.push({ signedUrl: backgroundImageData.signedUrl, type: 'image' })
+                this.setState({ assets })
 
                 // Fetch other images and arrange them in a grid
               //   const otherImages = otherImagePrompts.map(async (prompt, i) => {
@@ -913,7 +914,7 @@ convertImageToBase64 = async (url) => {
               //                 n: 1,
               //                 size: '512x512',
               //             },
-              //             key: `tools/design-assistant/assets/background_${index}.jpeg`,
+              //             key: `users/${this.props.user}/tasks/tools/design-assistant/assets/background_${uuidv1()}.jpeg`,
               //         }),
               //         {
               //             headers: {
@@ -1096,10 +1097,9 @@ convertImageToBase64 = async (url) => {
             </div>
             <div
               className="containerIconeToolbar"
+              onClick={()=>this.setVisibleTray(true)}
             >
-              <DropImage getImage={base64 => this.loadImage(base64)}>
                 <img className="img" src={Image} title="Adicionar imagem" />
-              </DropImage>
             </div>
             <div className="containerIconeToolbar" onClick={this.genImage}>
               <img className="img" src={AiIcon} title="AIGen"></img>
@@ -1250,6 +1250,65 @@ convertImageToBase64 = async (url) => {
             )}
             <div className={`container-area`}>
               {this.state.loading&&<Loading loading={this.state.loading} withOverlay={true} />}
+              <Sidebar style={{
+                height: '30vh',
+              }} visible={this.state.visibleTray} position="bottom" onHide={() => this.setVisibleTray(false)}
+              closeIcon={<div><Close /></div>}
+              >
+              <div className="card flex justify-content-center" style={{
+                maxWidth: '80vw',
+                margin: '2rem',
+              }}>
+                <Divider layout="vertical" />
+                <DropImage getImage={base64 => {this.loadImage(base64); this.setVisibleTray(false)}}>
+                <p style={{
+                      cursor: 'pointer',
+                    }} >
+                      <img
+                        src={"https://content.hostgator.com/img/weebly_image_sample.png"} // Replace with your thumbnail URL
+                        alt="Thumbnail"
+                        style={{
+                          minWidth: '25vh',
+                          maxWidth: '25vh',
+                          height: '20vh',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                          marginRight: '1rem',
+                          marginLeft: '1rem'
+                        }}
+                      />
+                      </p>
+                </DropImage>
+                {this.state.assets&&this.state.assets.map((asset, index) => {
+                  return (
+                    <>
+                    <Divider layout="vertical" />
+                    <p style={{
+                      cursor: 'pointer',
+                    }} onClick={()=>{
+                      this.loadImageSrc(asset.signedUrl, (image)=>{
+                        this.addNewImage(image)
+                      })
+                    }} >
+                      <img
+                        src={asset.signedUrl} // Replace with your thumbnail URL
+                        alt="Thumbnail"
+                        style={{
+                          minWidth: '25vh',
+                          maxWidth: '25vh',
+                          height: '25vh',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                          marginRight: '1rem',
+                          marginLeft: '1rem'
+                        }}
+                      />
+                      </p>
+                </>
+                  )
+                })}
+            </div>
+              </Sidebar>
               <Stage
                 scaleY={1 / zoom}
                 scaleX={1 / zoom}

@@ -253,7 +253,7 @@ router.post(
           axios.get(url, {responseType: 'arraybuffer'}).then(image => {
             const s3_params = {
               Bucket: 'kalkinso.com',
-              Key: `users/${req.user.id}/tasks/${key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`}`,
+              Key: key,
               Body: image.data,
               ContentType: 'image/jpeg',
             };
@@ -262,7 +262,7 @@ router.post(
               const client = new S3Client({region:'ap-south-1'});
               const get_command = new GetObjectCommand({
                 Bucket: 'kalkinso.com',
-                Key: key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`,
+                Key: key,
               });
               getSignedUrl(client, get_command, { expiresIn: params.Expires }).then((url) => {
               res.json({ result: {...images.data, signedUrl: url} })
