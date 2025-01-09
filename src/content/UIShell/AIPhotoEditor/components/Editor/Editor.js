@@ -229,8 +229,8 @@ class Editor extends Component {
     visibleTray: true,
     kanvasWidth: 18.9,
     kanvasHeight: 10,
-    widthKanvas: 460,
-    heightKanvas: 653,
+    widthKanvas: 421,
+    heightKanvas: 596,
     loading: false,
     showPallet: false,
     selectedObject: {},
@@ -791,8 +791,8 @@ convertImageToBase64 = async (url) => {
   };
 
   getSuggestionsJson = async (inputPrompt) => {
-    const canvasWidth = 460;
-    const canvasHeight = 653;
+    const canvasWidth = 421;
+    const canvasHeight = 596;
 
     try {
         // Step 1: Fetch book suggestions using the text API
@@ -896,9 +896,25 @@ convertImageToBase64 = async (url) => {
                 // const backgroundImageData = null;
                 // Center the background image
                 const bgX = (canvasWidth - 1024) / 2; // Center X
-                const bgY = (canvasHeight - 1024) / 4; // Positioned in top quarter
+                const bgY = (canvasHeight - 1792) / 4; // Positioned in top quarter
                 let selectedObject = null;
-                this.loadImageSrc(backgroundImageData.signedUrl, this.addNewImage)
+                this.loadImageSrc(backgroundImageData.signedUrl, (image)=>{
+                  const backgroundImageObject = {
+                    image,
+                    x: bgX,
+                    y: bgY,
+                    width: canvasWidth,
+                    height: canvasHeight,
+                    id: Math.round(Math.random() * 10000),
+                    type: 'image',
+                }
+                arrayObjectsLayer.push(backgroundImageObject);
+                selectedObject = backgroundImageObject;
+                saveHistory(arrayObjectsLayer)
+                this.setState({
+                  arrayObjectsLayer, selectedObject,
+                });
+                })
                 let assets = this.state.assets;
                 assets.push({ signedUrl: backgroundImageData.signedUrl, type: 'image' })
                 this.setState({ assets })
