@@ -21,6 +21,22 @@ const VideoBook = (props) => {
     const [ prompt, setPrompt ] = useState('');
     const [ component, setComponent ] = useState(null);
     useEffect(() => {
+      let selectedTool = localStorage.getItem("selectedTool");
+      if(selectedTool&&selectedTool!=="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
+        const mp4File = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'mp4');
+        const jsonFile = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'json');
+        if(mp4File&&jsonFile){
+          setMediaUrl(mp4File.signedUrl);
+          axios.get(jsonFile.signedUrl).then((res) => {
+            setJsonData(res.data);
+            setComponent(true);
+          }).catch((err) => {
+            setComponent(null);
+          });
+        }
+      }
+    }, []);
+    useEffect(() => {
         // Initialize Pusher
         const pusher = new Pusher('14bbfc475d91b9f07a76', {
             cluster: 'ap2'
@@ -84,7 +100,7 @@ const VideoBook = (props) => {
             },
         }).then((res) => {
             dispatch(setAlert("Audio Book Prompt Submitted", 'success'));
-            dispatch(save('kalkinso.com', `users/${user}/tasks/tools/audiobook-assistant/video-prompt.json`, JSON.stringify({ prompt: prompt })));
+            dispatch(save('kalkinso.com', `users/${user}/tasks/tools/videobook-assistant/video-prompt.json`, JSON.stringify({ prompt: prompt })));
             // setComponent('loading');
         }).catch((err) => {
             setComponent(null);

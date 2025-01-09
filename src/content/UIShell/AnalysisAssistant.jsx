@@ -1,24 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, Column } from "@carbon/react";
 import SentimentBarChart from "./Analytics/SentimentBarChart";
 import EmotionPieChart from "./Analytics/EmotionPieChart";
 import { EditInPlace } from "@carbon/ibm-products";
 import axios from "axios";
 import { data as SampleData } from "./Analytics/SampleData";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../actions/auth";
+import { save } from "../../actions/kits";
 
 const AnalysisAssistant = () => {
   const [data, setData] = useState(SampleData);
   const [value, setValue] = useState("This is the initial description for the analysis.");
+  const { user } = useSelector((state) => state.profile);
   const dispatch = useDispatch();
 
-//   useEffect(() => {
-//     // Fetch analysis data from the backend
-//     api.get("/analysis-data").then((response) => {
-//       setData(response.data);
-//     });
-//   }, []);
+  useEffect(() => {
+    // Fetch analysis data from the backend
+    let selectedTool = localStorage.getItem("selectedTool");
+    if(selectedTool&&selectedTool!=="analysis-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
+      axios.get(selectedTool.selectedEntry.signedUrl).then((res) => {
+        setData(res.data);
+      }).catch((err) => {});
+    }
+  }, []);
   const handleEditChange = async () => {
     dispatch(setLoading(true));
     const textResponse = await axios.post(
@@ -83,21 +88,7 @@ const AnalysisAssistant = () => {
     setData(analyticsData);
     const fileName = `analysis-assistant-${Date.now()}`;
     const content = JSON.stringify(analyticsData);
-    axios.put('/api/kits/save', JSON.stringify({
-      params: {
-        Bucket: 'kalkinso.com',
-        Key: `tools/analysis-assistant/${fileName}.json`,
-        Body: content,
-      }
-    }), {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    }).then((response) => {
-      dispatch(setLoading(false));
-    }).catch((error) => {
-      dispatch(setLoading(false));
-    });
+    dispatch(save('kalkinso.com', `users/${user}/tasks/tools/analysis-assistant/${fileName}.json`, content, true));
   };
   if (!data) return <div>Loading...</div>;
 

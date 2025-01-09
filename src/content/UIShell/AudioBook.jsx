@@ -21,6 +21,22 @@ const AudioBook = (props) => {
     const [ prompt, setPrompt ] = useState('');
     const [ component, setComponent ] = useState(null);
     useEffect(() => {
+      let selectedTool = localStorage.getItem("selectedTool");
+      if(selectedTool&&selectedTool!=="audiobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
+        const mp4File = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'wav');
+        const jsonFile = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'json');
+        if(mp4File&&jsonFile){
+          setMediaUrl(mp4File.signedUrl);
+          axios.get(jsonFile.signedUrl).then((res) => {
+            setJsonData(res.data);
+            setComponent(true);
+          }).catch((err) => {
+            setComponent(null);
+          });
+        }
+      }
+    }, []); // useEffect hook
+    useEffect(() => {
         // Initialize Pusher
         const pusher = new Pusher('14bbfc475d91b9f07a76', {
             cluster: 'ap2'
