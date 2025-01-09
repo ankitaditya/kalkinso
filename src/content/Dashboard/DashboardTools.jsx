@@ -129,6 +129,11 @@ const DashboardTools = () => {
                             entries: obj?.children?.entries,
                             selectedEntry: val,
                           }));
+                          console.log('Selected Tool:', {
+                            name: obj.title,
+                            entries: obj?.children?.entries,
+                            selectedEntry: val,
+                          });
                           navigate(`/tools/${obj.title}`);
                           window.location.reload();
                         }} title={val.icon}>

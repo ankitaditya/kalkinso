@@ -8,11 +8,13 @@ import { setAlert } from '../../actions/alert';
 import axios from 'axios';
 import SOLIEO_DATA from './sample-data/soleio-dpe.json';
 import { save } from '../../actions/kits';
+import { Button } from 'carbon-components-react';
 
 
 const VideoBook = (props) => {
     // Declare a new state variable, which we'll call "count"
     const [jsonData, setJsonData] = useState(SOLIEO_DATA);
+    const [title, setTitle] = useState('Video Book');
     const dispatch = useDispatch();
     const [mediaUrl, setMediaUrl] = useState('');
     const { user } = useSelector((state) => state.profile);
@@ -21,19 +23,22 @@ const VideoBook = (props) => {
     const [ prompt, setPrompt ] = useState('');
     const [ component, setComponent ] = useState(null);
     useEffect(() => {
-      let selectedTool = localStorage.getItem("selectedTool");
-      if(selectedTool&&selectedTool==="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
+      let selectedTool = JSON.parse(localStorage.getItem("selectedTool"));
+      if(selectedTool&&selectedTool.name==="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0&&selectedTool.selectedEntry?.children?.entries?.length>0){
         const mp4File = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'mp4');
         const jsonFile = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'json');
         if(mp4File&&jsonFile){
-          setMediaUrl(mp4File.signedUrl);
           axios.get(jsonFile.signedUrl).then((res) => {
             setJsonData(res.data);
+            setMediaUrl(mp4File.signedUrl);
+            setTitle(selectedTool.selectedEntry.title);
             setComponent(true);
           }).catch((err) => {
             setComponent(null);
           });
         }
+      } else if (selectedTool&&selectedTool.name==="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0&&selectedTool.selectedEntry?.children?.entries?.length===0){
+        setComponent("loading");
       }
     }, []);
     useEffect(() => {
@@ -100,25 +105,49 @@ const VideoBook = (props) => {
             },
         }).then((res) => {
             dispatch(setAlert("Audio Book Prompt Submitted", 'success'));
-            dispatch(save('kalkinso.com', `users/${user}/tasks/tools/videobook-assistant/video-prompt.json`, JSON.stringify({ prompt: prompt })));
             // setComponent('loading');
         }).catch((err) => {
             setComponent(null);
             dispatch(setAlert("Something Went Wrong", 'error'));
         });
     }
+
+    const handleDownloadMedia = () => {
+      if (!mediaUrl) {
+        alert("Media file is not available.");
+        return;
+      }
+  
+      // Create a download link for the media file
+      const link = document.createElement("a");
+      link.href = mediaUrl;
+      link.download = mediaUrl.split("/").pop() || "media-file";
+      link.click();
+    };
   
     return (
       <>
-        {component?(component==='loading'?<><Loading withOverlay={true} description={status} />{status}</>:<SlateTranscriptEditor    
+        {component?(component==='loading'?<><Loading withOverlay={true} description={status} />{status}</>:<><Button
+        onClick={handleDownloadMedia}
+        kind='primary'
+        size='sm'
+        style={{
+          position: "absolute",
+          top: "10rem",
+          zIndex: "100",
+          right: "4rem",
+        }}
+      >
+        Download
+      </Button><SlateTranscriptEditor    
             mediaUrl={mediaUrl}
             transcriptData={jsonData}
-            title={"Sample Audio"}
+            title={title}
             autoPlay={false}
             isEditable={true}
             spellCheck={true}
             sttJsonType="draftjs"
-          />):<TextInput id="prompt" labelText="Give Audio Book Prompt" value={prompt} onKeyDown={(e)=>{
+          /></>):<TextInput id="prompt" labelText="Give Audio Book Prompt" value={prompt} onKeyDown={(e)=>{
         if(e.key === 'Enter') {
             onSubmit();
         }

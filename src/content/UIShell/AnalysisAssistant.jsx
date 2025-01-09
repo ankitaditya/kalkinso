@@ -17,10 +17,11 @@ const AnalysisAssistant = () => {
 
   useEffect(() => {
     // Fetch analysis data from the backend
-    let selectedTool = localStorage.getItem("selectedTool");
-    if(selectedTool&&selectedTool==="analysis-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
+    let selectedTool = JSON.parse(localStorage.getItem("selectedTool"));
+    if(selectedTool&&selectedTool.name==="analysis-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
       axios.get(selectedTool.selectedEntry.signedUrl).then((res) => {
         setData(res.data);
+        setValue(selectedTool.selectedEntry.value);
       }).catch((err) => {});
     }
   }, []);
