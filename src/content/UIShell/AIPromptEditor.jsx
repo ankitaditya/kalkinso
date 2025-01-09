@@ -402,7 +402,7 @@ export default function BlockNoteEditor(
   }}><EditInPlace value={fileName} onChange={(e)=>setFileName(e)} onSave={(e)=>{
     if(profile.user && fileName) {
       dispatch(setLoading(true));
-      dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document)));
+      dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
       setIsChanged(false);
       // setContent(null);
     }
@@ -417,7 +417,7 @@ export default function BlockNoteEditor(
       disabled: !isChanged,
       onClick: () => {
         dispatch(setLoading(true));
-        dispatch(save('kalkinso.com', `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document)));
+        dispatch(save('kalkinso.com', `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
         setIsChanged(false);
         // setContent(null);
       }
