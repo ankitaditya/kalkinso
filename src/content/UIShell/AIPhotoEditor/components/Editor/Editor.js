@@ -527,9 +527,14 @@ class Editor extends Component {
   };
 
   loadImageSrc = (src, func) => {
-    var image = new window.Image();
-    image.src = src;
-    image.addEventListener("load", func(image));
+    axios.get(src, {
+      responseType: 'arraybuffer', // Ensures the response is returned as raw binary data
+    }).then(response => {
+      var image = new window.Image();
+      const base64 = Buffer.from(response.data, 'binary').toString('base64');
+      image.src = `data:image/png;base64,${base64}`;
+      image.addEventListener("load", func(image));
+    });
   };
 
   genImage =  async () => {
@@ -1092,6 +1097,65 @@ convertImageToBase64 = async (url) => {
     return (
       <div>
         <div className="containerCanvas" ref={this.containerCanvas}>
+        <Sidebar style={{
+                height: '30vh',
+              }} visible={this.state.visibleTray} position="bottom" onHide={() => this.setVisibleTray(false)}
+              closeIcon={<div><Close /></div>}
+              >
+              <div className="card flex justify-content-center" style={{
+                maxWidth: '80vw',
+                margin: '2rem',
+              }}>
+                <Divider layout="vertical" />
+                <DropImage getImage={base64 => {this.loadImage(base64); this.setVisibleTray(false)}}>
+                <p style={{
+                      cursor: 'pointer',
+                    }} >
+                      <img
+                        src={"https://content.hostgator.com/img/weebly_image_sample.png"} // Replace with your thumbnail URL
+                        alt="Thumbnail"
+                        style={{
+                          minWidth: '25vh',
+                          maxWidth: '25vh',
+                          height: '20vh',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                          marginRight: '1rem',
+                          marginLeft: '1rem'
+                        }}
+                      />
+                      </p>
+                </DropImage>
+                {this.state.assets&&this.state.assets.map((asset, index) => {
+                  return (
+                    <>
+                    <Divider layout="vertical" />
+                    <p style={{
+                      cursor: 'pointer',
+                    }} onClick={()=>{
+                      this.loadImageSrc(asset.signedUrl, (image)=>{
+                        this.addNewImage(image)
+                      })
+                    }} >
+                      <img
+                        src={asset.signedUrl} // Replace with your thumbnail URL
+                        alt="Thumbnail"
+                        style={{
+                          minWidth: '25vh',
+                          maxWidth: '25vh',
+                          height: '25vh',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                          marginRight: '1rem',
+                          marginLeft: '1rem'
+                        }}
+                      />
+                      </p>
+                </>
+                  )
+                })}
+            </div>
+        </Sidebar>
           <div className="containerToolbar">
             <div
               className="containerIconeToolbar"
@@ -1266,65 +1330,6 @@ convertImageToBase64 = async (url) => {
             )}
             <div className={`container-area`}>
               {this.state.loading&&<Loading loading={this.state.loading} withOverlay={true} />}
-              <Sidebar style={{
-                height: '30vh',
-              }} visible={this.state.visibleTray} position="bottom" onHide={() => this.setVisibleTray(false)}
-              closeIcon={<div><Close /></div>}
-              >
-              <div className="card flex justify-content-center" style={{
-                maxWidth: '80vw',
-                margin: '2rem',
-              }}>
-                <Divider layout="vertical" />
-                <DropImage getImage={base64 => {this.loadImage(base64); this.setVisibleTray(false)}}>
-                <p style={{
-                      cursor: 'pointer',
-                    }} >
-                      <img
-                        src={"https://content.hostgator.com/img/weebly_image_sample.png"} // Replace with your thumbnail URL
-                        alt="Thumbnail"
-                        style={{
-                          minWidth: '25vh',
-                          maxWidth: '25vh',
-                          height: '20vh',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                          marginRight: '1rem',
-                          marginLeft: '1rem'
-                        }}
-                      />
-                      </p>
-                </DropImage>
-                {this.state.assets&&this.state.assets.map((asset, index) => {
-                  return (
-                    <>
-                    <Divider layout="vertical" />
-                    <p style={{
-                      cursor: 'pointer',
-                    }} onClick={()=>{
-                      this.loadImageSrc(asset.signedUrl, (image)=>{
-                        this.addNewImage(image)
-                      })
-                    }} >
-                      <img
-                        src={asset.signedUrl} // Replace with your thumbnail URL
-                        alt="Thumbnail"
-                        style={{
-                          minWidth: '25vh',
-                          maxWidth: '25vh',
-                          height: '25vh',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                          marginRight: '1rem',
-                          marginLeft: '1rem'
-                        }}
-                      />
-                      </p>
-                </>
-                  )
-                })}
-            </div>
-              </Sidebar>
               <Stage
                 scaleY={1 / zoom}
                 scaleX={1 / zoom}
