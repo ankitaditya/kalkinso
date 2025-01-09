@@ -266,7 +266,7 @@ class Editor extends Component {
       type: 'circle',
     },
     newImageObj: {
-      x: 100,
+      x: 0,
       image: null,
       id: 50,
       type: 'image',
@@ -820,7 +820,7 @@ convertImageToBase64 = async (url) => {
 
         // console.log(textResponse)
 
-        const bookSuggestions = JSON.parse(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())?.books || []
+        const bookSuggestions = JSON.parse(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())?.books?.slice(0,1) || []
         // const bookSuggestions = [
         //     {
         //       "title": "The Last Algorithm",
@@ -839,7 +839,7 @@ convertImageToBase64 = async (url) => {
                 const { title, subtitle, coverPrompt, otherImagePrompts } = book;
                 const titleObj = {
                   textEditVisible: false,
-                  fill: "black",
+                  fill: "white",
                   textX: canvasWidth / 2, // Centered horizontally
                   textY: canvasHeight * 0.2, // Positioned in the top 20% of the canvas
                   textYTextArea: canvasHeight * 0.2, // Matches textY for initial alignment
@@ -857,7 +857,7 @@ convertImageToBase64 = async (url) => {
                 };
                 const subtitleObj = {
                   textEditVisible: false,
-                  fill: "black",
+                  fill: "white",
                   textX: canvasWidth / 2, // Centered horizontally
                   textY: canvasHeight * 0.3, // Positioned below the title (30% of canvas height)
                   textYTextArea: canvasHeight * 0.3, // Matches textY for initial alignment
@@ -881,7 +881,7 @@ convertImageToBase64 = async (url) => {
                             model: 'dall-e-3',
                             prompt: coverPrompt,
                             n: 1,
-                            size: '1024x1024',
+                            size: '1024x1792',
                         },
                         key: `users/${this.props.user}/tasks/tools/design-assistant/assets/background_${uuidv1()}.jpeg`,
                     }),
