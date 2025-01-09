@@ -7,6 +7,7 @@ import ColorPickerPalette from '../ColorPickerPalette'
 import { DropImage } from "../DropImage";
 import { v4 as uuidv1 } from 'uuid';
 import KeyboardEventHandler from "react-keyboard-event-handler";
+import { connect } from "react-redux";
 import axios from "axios";
 import {
   Retangulo,
@@ -214,7 +215,7 @@ const promptTemplate = (prompt, response) => {
   return promptTemplates;
 }
 
-export default class Editor extends Component {
+class Editor extends Component {
   constructor(props) {
     super(props);
     this.stageRef = React.createRef();
@@ -294,6 +295,7 @@ export default class Editor extends Component {
     }
   };
 
+
   handleDragStart = e => {
     e.target.setAttrs({
       shadowOffset: {
@@ -328,6 +330,17 @@ export default class Editor extends Component {
 
 
   async componentDidMount() {
+    const selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
+    if (selectedTool&&selectedTool.name==='design-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
+      console.log(selectedTool)
+      if(selectedTool.selectedEntry.fileType.includes('json')){
+        axios.get(selectedTool.selectedEntry.signedUrl).then((response) => {
+          this.setState({ arrayObjectsLayer: response.data });
+        })
+      } else {
+        this.loadImageSrc(selectedTool.selectedEntry.signedUrl, this.addNewImage)
+      }
+    }
     saveHistory(this.state.arrayObjectsLayer)
     await localStorage.setItem("defaultState", JSON.stringify(this.state));
     const state = await localStorage.getItem("stateSaved");
@@ -723,18 +736,22 @@ convertImageToBase64 = async (url) => {
 
   savePng = async (blob) => {
     const fileName = `design-${uuidv1()}.png`;
-    const content = JSON.stringify(this.state.arrayObjectsLayer);
-    axios.put('/api/kits/save', JSON.stringify({
-      params: {
-        Bucket: 'kalkinso.com',
-        Key: `tools/design-assistant/${fileName}.json`,
-        Body: content,
-      }
-    }), {
+    const params = {
+      Bucket: 'kalkinso.com',
+      Key: `users/${this.props.user}/tasks/tools/design-assistant/${fileName}`,
+      ContentType: 'image/png',
+  };
+  const formData = new FormData();
+  formData.append('file', blob);
+  formData.append('params', JSON.stringify(params));
+    axios.post('/api/kits/upload', formData, {
       headers: {
-          'Content-Type': 'application/json',
-      },
-  }).then((response) => {}).catch((error) => {});
+        'Content-Type': 'multipart/form-data',
+      }}).then((response) => {
+        if(response.data.success){
+          console.log('sucessfully saved!')
+        }
+      }).catch((error) => {});
     // Create a temporary link element
     const link = document.createElement('a');
     
@@ -1388,3 +1405,8 @@ convertImageToBase64 = async (url) => {
   }
 }
 
+const mapStateToProps = state => ({
+  user: state.profile.user,
+});
+
+export default connect(mapStateToProps)(Editor);

@@ -29,7 +29,7 @@ const DashboardTools = () => {
     const [back, setBack] = useState([]);
     useEffect(()=>{
       if(profile?.user&&!selectedTask?.entries?.length){
-        dispatch(getSelectedTasks("kalkinso.com",`users/${profile.user}/tasks`));
+        dispatch(getSelectedTasks("kalkinso.com",`users/${profile.user}/tasks/tools`));
       }
     },[profile])
     const [useNormalizedItems, setUseNormalizedItems] = useState(!!items?.entries?.find((item) => item.children));
@@ -106,7 +106,7 @@ const DashboardTools = () => {
           // float: 'left',
         }} />Back</Button>
         </Column>}
-          {selectedTask?.entries[0]?.children?.entries.filter(obj=>obj.id.includes('tools'))[0]?.children?.entries.map((obj)=>{
+          {selectedTask?.entries[0]?.children?.entries?.map((obj)=>{
             return <Column lg={4} md={2} sm={2}>
             <ClickableTile onClick={(e)=>{setBack([...back, addSelectComponent]); setAddSelectComponent(<><Grid>
           <Column lg={16} md={8} sm={2}>
@@ -124,7 +124,12 @@ const DashboardTools = () => {
         </Column>{obj?.children?.entries?.map((val)=>{
               return <Column lg={4} md={2} sm={2}>
                         <ClickableTile onClick={(e)=>{
-                          navigate(`/tools/${obj.title}/signedUrl=${encodeURIComponent(val.signedUrl)}`);
+                          localStorage.setItem('selectedTool', JSON.stringify({
+                            name: obj.title,
+                            entries: obj?.children?.entries,
+                            selectedEntry: val,
+                          }));
+                          navigate(`/tools/${obj.title}`);
                           window.location.reload();
                         }} title={val.icon}>
                           <Folder style={{

@@ -201,3 +201,14 @@ export const save = (bucketName="kalkinso.com", Prefix='', content=null, newFile
         dispatch(setLoading(false));
     }
   };
+
+export const getSelectedTool = (name, data, selectedTool={}) => async (dispatch) => {
+    dispatch({
+        type: actionTypes.SET_SELECTED_TOOL,
+        payload: {
+            name: name,
+            entries: data,
+            selectedEntry: selectedTool,
+        },
+    });
+};

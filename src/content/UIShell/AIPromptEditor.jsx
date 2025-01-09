@@ -308,6 +308,30 @@ export default function BlockNoteEditor(
   });
 
   useEffect(() => {
+    let selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
+    if (selectedTool&&selectedTool.name==='writing-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
+      setFileName(selectedTool.selectedEntry.title);
+      axios.get(selectedTool.selectedEntry.signedUrl).then(async (res) => {
+        let blocks = res.data;
+        if (selectedTool.selectedEntry.signedUrl.split('?')[0].endsWith('.pdf') && typeof blocks !== "object") {
+          dispatch(setLoading(true));
+          blocks = await extractTextFromPDF(selectedTool.selectedEntry.signedUrl);
+          blocks = await editor.tryParseMarkdownToBlocks(blocks);
+          dispatch(save(bucket, item_id.replace('.pdf', '.txt'), JSON.stringify(blocks)));
+          dispatch(deleteFile(bucket, item_id, false));
+        }
+        if (typeof blocks === "string") {
+          blocks = await editor.tryParseMarkdownToBlocks(blocks);
+        }
+        editor.replaceBlocks(editor.document, blocks);
+        if (setIsChanged) {
+          setIsChanged(null);
+        }
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     if (typeof initialContent === 'string' && !markdown) {
       axios.get(initialContent).then(async (res) => {
         let blocks = res.data;

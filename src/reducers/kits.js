@@ -6,6 +6,11 @@ const initialState = {
             sortBy: ['title'],
             entries: []
         },
+        selectedTool: {
+            name: '',
+            entries: [],
+            selectedEntry: {}
+        }
     };
   
 
@@ -48,6 +53,11 @@ export default function kitsReducer(state = initialState, action) {
                     ...state.selectedTask,
                     entries: [removeObjectById(entries, action.payload)],
                 }
+            }}
+        case actionTypes.SET_SELECTED_TOOL:{
+            return {
+                ...state,
+                selectedTool: action.payload,
             }}
         default:
             return state

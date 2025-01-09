@@ -17,6 +17,7 @@ export const CLEAR_PROFILE = 'CLEAR_PROFILE'
 export const PROFILE_ERROR = 'PROFILE_ERROR'
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT'
 export const SET_LOADING = 'SET_LOADING'
+export const SET_SELECTED_TOOL = 'SET_SELECTED_TOOL'
 
 /* Verification Status */
 
