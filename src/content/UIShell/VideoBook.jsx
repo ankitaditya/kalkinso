@@ -22,7 +22,7 @@ const VideoBook = (props) => {
     const [ component, setComponent ] = useState(null);
     useEffect(() => {
       let selectedTool = localStorage.getItem("selectedTool");
-      if(selectedTool&&selectedTool!=="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
+      if(selectedTool&&selectedTool==="videobook-assistant"&&Object.keys(selectedTool.selectedEntry).length>0){
         const mp4File = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'mp4');
         const jsonFile = selectedTool.selectedEntry.children.entries.find((entry) => entry.fileType === 'json');
         if(mp4File&&jsonFile){
