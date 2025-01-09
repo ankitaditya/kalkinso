@@ -10,6 +10,7 @@ import KeyboardEventHandler from "react-keyboard-event-handler";
 import { connect } from "react-redux";
 import { Sidebar } from "primereact/sidebar";
 import { Divider } from 'primereact/divider';
+import { Buffer } from 'buffer';
 import axios from "axios";
 import {
   Retangulo,
@@ -237,6 +238,7 @@ class Editor extends Component {
     showBackground: false,
     backgroundOn: true,
     indexTextSelected: 0,
+    assets: [],
     zoom: 1,
     imgBase64: undefined,
     newTextObj: {
@@ -335,7 +337,7 @@ class Editor extends Component {
 
   async componentDidMount() {
     const selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
-    const assets = JSON.parse(localStorage.getItem('assets'));
+    const assets = JSON.parse(localStorage.getItem('images'));
     if (selectedTool&&selectedTool.name==='design-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
       console.log(selectedTool)
       if(selectedTool.selectedEntry.fileType.includes('json')){
@@ -345,9 +347,10 @@ class Editor extends Component {
         })
       } else {
         this.loadImageSrc(selectedTool.selectedEntry.signedUrl, this.addNewImage)
+        localStorage.removeItem('selectedTool')
       }
     }
-    if (assets) {
+    if (assets&&this.state.assets.length===0) {
       this.setState({ assets: assets });
     }
     saveHistory(this.state.arrayObjectsLayer)
@@ -526,14 +529,16 @@ class Editor extends Component {
     image.addEventListener("load", this.addNewImage(image));
   };
 
-  loadImageSrc = (src, func) => {
+  loadImageSrc = async (src, func) => {
     axios.get(src, {
-      responseType: 'arraybuffer', // Ensures the response is returned as raw binary data
+      responseType: 'arraybuffer'
     }).then(response => {
-      var image = new window.Image();
+      let image = new window.Image();
       const base64 = Buffer.from(response.data, 'binary').toString('base64');
       image.src = `data:image/png;base64,${base64}`;
-      image.addEventListener("load", func(image));
+      image.addEventListener("load", () => func(image));
+    }).catch(error => {
+      console.error("Error loading image from URL:", error);
     });
   };
 
@@ -888,7 +893,7 @@ convertImageToBase64 = async (url) => {
                             n: 1,
                             size: '1024x1792',
                         },
-                        key: `users/${this.props.user}/tasks/tools/design-assistant/assets/background_${uuidv1()}.jpeg`,
+                        key: `users/${this.props.user}/tasks/tools/design-assistant/images/background_${uuidv1()}.png`,
                     }),
                     {
                         headers: {
@@ -906,8 +911,8 @@ convertImageToBase64 = async (url) => {
                 this.loadImageSrc(backgroundImageData.signedUrl, (image)=>{
                   const backgroundImageObject = {
                     image,
-                    x: bgX,
-                    y: bgY,
+                    x: 0,
+                    y: 0,
                     width: canvasWidth,
                     height: canvasHeight,
                     id: Math.round(Math.random() * 10000),
@@ -935,7 +940,7 @@ convertImageToBase64 = async (url) => {
               //                 n: 1,
               //                 size: '512x512',
               //             },
-              //             key: `users/${this.props.user}/tasks/tools/design-assistant/assets/background_${uuidv1()}.jpeg`,
+              //             key: `users/${this.props.user}/tasks/tools/design-assistant/images/background_${uuidv1()}.jpeg`,
               //         }),
               //         {
               //             headers: {
@@ -1098,13 +1103,13 @@ convertImageToBase64 = async (url) => {
       <div>
         <div className="containerCanvas" ref={this.containerCanvas}>
         <Sidebar style={{
-                height: '30vh',
+                height: '40vh',
+                // overflowY: 'none',
               }} visible={this.state.visibleTray} position="bottom" onHide={() => this.setVisibleTray(false)}
               closeIcon={<div><Close /></div>}
               >
-              <div className="card flex justify-content-center" style={{
-                maxWidth: '80vw',
-                margin: '2rem',
+              <div className="card flex" style={{
+                marginTop: '1.5rem',
               }}>
                 <Divider layout="vertical" />
                 <DropImage getImage={base64 => {this.loadImage(base64); this.setVisibleTray(false)}}>
@@ -1132,14 +1137,12 @@ convertImageToBase64 = async (url) => {
                     <Divider layout="vertical" />
                     <p style={{
                       cursor: 'pointer',
-                    }} onClick={()=>{
-                      this.loadImageSrc(asset.signedUrl, (image)=>{
-                        this.addNewImage(image)
-                      })
-                    }} >
+                    }}>
                       <img
+                        onClick={(e) => {this.loadImageSrc(this.state.assets[index].signedUrl, this.addNewImage);}}
                         src={asset.signedUrl} // Replace with your thumbnail URL
-                        alt="Thumbnail"
+                        value={index}
+                        alt={`Thumbnail-${index}`}
                         style={{
                           minWidth: '25vh',
                           maxWidth: '25vh',

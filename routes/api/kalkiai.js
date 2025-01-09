@@ -255,7 +255,7 @@ router.post(
               Bucket: 'kalkinso.com',
               Key: key,
               Body: image.data,
-              ContentType: 'image/jpeg',
+              ContentType: 'image/png',
             };
             s3.upload(s3_params).promise().then((data) => {
               console.log(`Successfully uploaded ${key.split('.').slice(0,-1).join('/')+`/${index}.jpeg`}`);

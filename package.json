@@ -33,6 +33,7 @@
     "aws-sdk": "^2.1664.0",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
+    "buffer": "^6.0.3",
     "carbon-components-react": "^8.60.3",
     "cashfree-pg": "^4.3.1",
     "cashfree-sdk": "^0.1.1",
