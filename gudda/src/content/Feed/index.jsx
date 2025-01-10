@@ -7,6 +7,7 @@ import { UserProfileImage } from "@carbon/ibm-products";
 import { useParams } from "react-router-dom";
 import ImageViewer from "./ImageViewer";
 import { Edit, Image, Menu } from "@carbon/react/icons";
+import { news } from "../utils/news";
 
 
 const Feed = () => {
@@ -16,70 +17,15 @@ const Feed = () => {
   const [filters, setFilters] = useState({ text: true, image: false });
   const [auth, setAuth] = useState({});
   const [imageInput, setImageInput] = useState("");
-  const THEMED_IMAGES = [
-    {
-      id: "1506773090264-ac0b07293a64",
-      caption: "Photo by Dan Grinwis",
-      orientation: "square",
-      useForDemo: true,
-    },
-    {
-      id: "1482398650355-d4c6462afa0e",
-      caption: "Photo by Andrew Neel",
-      orientation: "landscape",
-      useForDemo: true,
-    },
-    {
-      id: "1514949823529-bdcc933a9339",
-      caption: "Photo by Kristopher Roller",
-      orientation: "landscape",
-      useForDemo: true,
-    },
-    {
-      id: "1503293962593-47247718a17a",
-      caption: "Photo by Jeremy Bishop",
-      orientation: "landscape",
-      useForDemo: true,
-    },
-    {
-      id: "1509914398892-963f53e6e2f1",
-      caption: "Photo by Linus Nylund",
-      orientation: "landscape",
-      useForDemo: true,
-    },
-  ];
-  const mockResults = [
-    {
-      id: 1,
-      title: "Water Crisis in Gali No. 7",
-      content:
-        "Residents have reported severe water shortages due to broken pipelines. Authorities are yet to respond.",
-      image: ["https://images.hindustantimes.com/img/2022/06/09/550x309/eda3a116-e821-11ec-a635-885b646977d8_1654799429939.jpg",
-        "https://c.ndtvimg.com/2024-10/4u7nt09g_pm-modi-broom_625x300_02_October_24.jpeg"
-      ],
-      tags: ["#WaterCrisis", "#Gali7"],
-    },
-    {
-      id: 2,
-      title: "Cleanliness Drive Success",
-      content:
-        "Community members joined hands to clean Gali No. 10. Over 50 people participated, and waste was collected.",
-      image: ["https://c.ndtvimg.com/2024-10/4u7nt09g_pm-modi-broom_625x300_02_October_24.jpeg",
-        "https://c.ndtvimg.com/2024-10/4u7nt09g_pm-modi-broom_625x300_02_October_24.jpeg"
-      ],
-      tags: ["#CleanGali10", "#CommunityWork"],
-    },
-    {
-      id: 3,
-      title: "Local Diwali Celebration",
-      content:
-        "Diwali celebrations in XYZ Nagar saw beautiful decorations and a strong sense of unity among residents.",
-      image: ["https://i.dawn.com/primary/2017/10/59e9b4996f752.jpg",
-        "https://i.dawn.com/primary/2015/11/564355efd2c5e.jpg"
-      ],
-      tags: ["#DiwaliFestival", "#XYZNagar"],
-    },
-  ];
+  const mockResults = localStorage.getItem('searchResultsNews')?JSON.parse(localStorage.getItem('searchResultsNews')):news.map((item, index) => {
+    return {
+      id: index+1,
+      title: item.title,
+      content: item.snippet,
+      image: item.pagemap.cse_image,
+      link: item.link
+    };
+  });
 
   const handlePost = () => {
     if (!postInput.trim()) return;
@@ -263,14 +209,14 @@ const Feed = () => {
                         <p>{mockResults[id-1].content}</p>
                         {mockResults[id-1]?.image?.length>0&&<ImageViewer imgs={mockResults[id-1].image.map((img)=>{
                           return {
-                            src: img,
+                            src: img?.src?img.src:img,
                             alt: mockResults[id-1].title,
                           }
                         })} />}
-                        <center><p style={{
+                        <center><a href={mockResults[id-1].link} style={{
                           color: "#10a37f",
                           cursor: "pointer",
-                        }}>{mockResults[id-1].tags.join(" ")}</p></center>
+                        }}>Goto Link</a></center>
                         <Grid>
                             <Column sm={4} md={8} className="filter-mobile" lg={16} style={{
                                 margin: "auto",

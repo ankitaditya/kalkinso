@@ -246,6 +246,7 @@ app.use('/api/kits', require('../routes/api/kits'))
 app.use('/api/how-to', require('../routes/api/how_to'))
 app.use('/api/payments', require('../routes/api/payments'))
 app.use('/api/apparels', require('../routes/api/apparels'))
+app.use('/api/news', require('../routes/api/news'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));

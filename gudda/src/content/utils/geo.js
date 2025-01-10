@@ -1,9 +1,12 @@
-export const getPlace = async (lat, lon) => {
+export const getPlace = async (lat, lon, pin=false) => {
   const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
   try {
     const response = await fetch(url);
     const data = await response.json();
     if (data && data.display_name) {
+      if(pin){
+        return {address:data.display_name, pincode:data.address.postcode};
+      }
       return data.display_name;
     } else {
       return "Location Not found";

@@ -76,7 +76,7 @@ const Login = () => {
   // Three.js background effect
   useEffect(() => {
     if(window.localStorage.getItem('auth')){
-        window.location.href = "/#/space";
+        window.location.href = "/#/search";
     }
     const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "normal",

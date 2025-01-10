@@ -4,55 +4,57 @@ import * as THREE from "three";
 import {
     Loading
 } from "@carbon/react"
+import { news } from "../utils/news"
+import { getPlace } from "../utils";
+import axios from "axios";
 
 const Search = () => {
   const [loading, setLoading] = useState(false);
-  const mockResults = [
-    {
-      id: 1,
-      title: "Water Crisis in Gali No. 7",
-      content:
-        "Residents have reported severe water shortages due to broken pipelines. Authorities are yet to respond.",
-      tags: ["#WaterCrisis", "#Gali7"],
-    },
-    {
-      id: 2,
-      title: "Cleanliness Drive Success",
-      content:
-        "Community members joined hands to clean Gali No. 10. Over 50 people participated, and waste was collected.",
-      tags: ["#CleanGali10", "#CommunityWork"],
-    },
-    {
-      id: 3,
-      title: "Local Diwali Celebration",
-      content:
-        "Diwali celebrations in XYZ Nagar saw beautiful decorations and a strong sense of unity among residents.",
-      tags: ["#DiwaliFestival", "#XYZNagar"],
-    },
-  ];
+  const [location, setLocation] = useState(null);
+  const newResults = news.map((item, index) => {
+    return {
+      id: index+1,
+      title: item.title,
+      content: item.snippet,
+      image: item.pagemap.cse_image,
+      link: item.link
+    };
+  })
 
   const [searchInput, setSearchInput] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
 
   const handleSearch = () => {
+    if(!location || !location.address || !location.pincode){
+      alert("Location not found. Please enable location services and try again.");
+      return;
+    }
     if (!searchInput.trim()) {
         setFilteredResults([]);
         return;
     }
-    setLoading(true);
-    setTimeout(() => {
-        const results = mockResults
-      .filter((item) =>
-        item.title.toLowerCase().includes(searchInput.toLowerCase())
-      )
-      .map((item) => ({
-        ...item,
-        summary: item.content.length > 100 ? item.content.slice(0, 100) + "..." : item.content,
+    
+    axios.get(`http://localhost/api/news/mudda?q=${encodeURIComponent(searchInput.toLocaleLowerCase())}&address=${location.address}&pincode=${location.pincode}`).then((res) => {
+      setFilteredResults(res.data.map((item, index) => {
+        return {
+          ...item.news,
+          id: index+1,
+          summary: item.news.content.length > 100 ? item.news.content.slice(0, 100) + "..." : item.news.content,
+        };
       }));
-
-    setFilteredResults(results);
-    setLoading(false);
-    }, 200);
+      localStorage.setItem('searchResultsNews', JSON.stringify(res.data.map((item, index) => {
+        return {
+          ...item.news,
+          id: index+1,
+          summary: item.news.content.length > 100 ? item.news.content.slice(0, 100) + "..." : item.news.content,
+        };
+      })));
+      setLoading(false);
+    }).catch((err) => {
+        console.log(err);
+    });
+    window.location.href = window.location.href.split('?')[0]+`?q=${encodeURIComponent(searchInput.toLocaleLowerCase())}`;
+    setLoading(true);
   };
 
   useEffect(() => {
@@ -97,6 +99,17 @@ const Search = () => {
     };
   }, []);
 
+  useEffect(()=>{
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        getPlace(position.coords.latitude, position.coords.longitude, true).then((res) => {
+          setLocation(res);
+        });
+      },
+      () => alert("Unable to fetch location")
+    );
+  },[])
+
   return (
     <>
     {loading && <Loading className="loader" />}
@@ -123,18 +136,19 @@ const Search = () => {
         {filteredResults.length > 0 ? (
           filteredResults.map((result) => (
             <div key={result.id} className="result-card" onClick={()=>{
-              window.location.href = `/#/feed/${result.id}`
+              window.location.href = `/#/feed/${result.id}`;
               // window.location.reload();
             }}>
+              <img src={result?.image[0]?.src?result?.image[0]?.src:result?.image[0]} height={100} alt="thumbnail" />
               <h3>{result.title}</h3>
               <p>{result.summary}</p>
-              <div className="tags">
+              {/* <div className="tags">
                 {result.tags.map((tag, index) => (
                   <span key={index} className="tag">
                     {tag}
                   </span>
                 ))}
-              </div>
+              </div> */}
             </div>
           ))
         ) : 

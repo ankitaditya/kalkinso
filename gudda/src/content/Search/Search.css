@@ -9,6 +9,7 @@
   body {
     background-color: #f3f4f6;
     color: #2c2c2c;
+    overflow: hidden;
   }
   
   .search-page {
@@ -19,6 +20,7 @@
     align-items: center;
     justify-content: center;
     overflow: auto;
+    max-height: 95vh;
     padding: 20px;
   }
   
@@ -73,6 +75,7 @@
   
   .search-results {
     width: 100%;
+    height: 75vh;
     max-width: 800px;
     z-index: 10;
   }
