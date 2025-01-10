@@ -27,7 +27,7 @@ const PredictiveText = () => {
         if (text.trim().length) {
             setLoading(true);
             fetch(
-                `http://localhost/api/kalkiai/suggestions?text=${encodeURIComponent(text)}`
+                `https://www.kalkinso.com/api/kalkiai/suggestions?text=${encodeURIComponent(text)}`
             )
                 .then((res) => res.json())
                 .then((data) => {
