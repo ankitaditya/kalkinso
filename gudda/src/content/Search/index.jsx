@@ -34,7 +34,7 @@ const Search = () => {
         return;
     }
     
-    axios.get(`http://localhost/api/news/mudda?q=${encodeURIComponent(searchInput.toLocaleLowerCase())}&address=${location.address}&pincode=${location.pincode}`).then((res) => {
+    axios.get(`https://www.kalkinso.com/api/news/mudda?q=${encodeURIComponent(searchInput.toLocaleLowerCase())}&address=${location.address}&pincode=${location.pincode}`).then((res) => {
       setFilteredResults(res.data.map((item, index) => {
         return {
           ...item.news,

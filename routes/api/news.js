@@ -155,56 +155,79 @@ router.get(
         if (!query || !address || !pincode) {
             return res.status(400).json({ error: "Query parameter 'q'&'address'&'pincode' are required." });
           }
-        const checkpincode = await News.findOne({ pincode: pincode });
-        if (checkpincode) {
-            const news = await News.aggregate([
-                {
-                    $search: {
-                      index: "default",
-                      text: {
-                        query: query + ' ' + address + ' ' + pincode,
-                        path: {
-                          wildcard: "*"
-                        }
-                      }
-                    }
-                  }
-            ]);
-            if (news?.length > 0) {
-                return res.json(news);
-            }
-        }
 
         const apiUrl = `https://www.googleapis.com/customsearch/v1?key=${process.env.GOOGLE_SEARCH_API_KEY}&cx=${process.env.GOOGLE_SEARCH_API_CX}&q=${encodeURIComponent(query + ' ' + address + ' ' + pincode)}`;
-        
-        axios.get(apiUrl, { headers: { 'Accept': 'application/json' } })
-            .then((response) => {
-                const newsData = response?.data?.items?.map((item) => {
-                    return {
-                        pincode: pincode,
-                        address: address,
-                        news: {
-                            title: item.title,
-                            content: item.snippet,
-                            image: item.pagemap?.cse_image?.map((image) => image.src),
-                            link: item.link,
-                        },
-                        priority: "0",
-                    };
-                })
-                if(!newsData||newsData.length === 0){
+        try {
+            const responseNews = await axios.get(apiUrl, { headers: { 'Accept': 'application/json' } })
+
+        const newsData = responseNews?.data?.items?.map((item) => {
+            return {
+                pincode: pincode,
+                address: address,
+                news: {
+                    title: item.title,
+                    content: item.snippet,
+                    image: item.pagemap?.cse_image?.map((image) => image.src),
+                    link: item.link,
+                },
+                priority: "0",
+            };
+        })
+            if(!newsData||newsData.length === 0){
+                const checkpincode = await News.findOne({ pincode: pincode });
+            if (checkpincode) {
+                const news = await News.aggregate([
+                    {
+                        $search: {
+                        index: "default",
+                        text: {
+                            query: query + ' ' + address + ' ' + pincode,
+                            path: {
+                            wildcard: "*"
+                            }
+                        }
+                        }
+                    }
+                ]);
+                    if (news?.length > 0) {
+                        return res.json(news);
+                    }
+                } else {
                     return res.status(404).json({ error: "No news found" });
                 }
+            } else {
                 News.insertMany(newsData).then((news) => {
                     res.json(news);
                 }).catch((error) => {
                     res.json(response?.data?.items);
                     console.log(error);
                 });
-            })
-            .catch((error) => {
-                res.status(500).json({ error: error.message });
-            });
+            }
+        } catch (error) {
+
+        }
+            
+            const checkpincode = await News.findOne({ pincode: pincode });
+            if (checkpincode) {
+                const news = await News.aggregate([
+                    {
+                        $search: {
+                        index: "default",
+                        text: {
+                            query: query + ' ' + address + ' ' + pincode,
+                            path: {
+                            wildcard: "*"
+                            }
+                        }
+                        }
+                    }
+                ]);
+                if (news?.length > 0) {
+                    return res.json(news);
+                }
+            } else {
+                return res.status(404).json({ error: "No news found" });
+            }
     }
 )
 
