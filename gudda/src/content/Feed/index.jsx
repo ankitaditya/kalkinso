@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./Feed.css";
 import * as THREE from "three";
-import { Button, Column, Grid, RadioButton, RadioButtonGroup, TextArea } from "@carbon/react";
+import { Button, ButtonSet, Column, ContentSwitcher, Grid, IconButton, IconSwitch, OverflowMenu, OverflowMenuItem, RadioButton, RadioButtonGroup, TextArea } from "@carbon/react";
 import FileUpload from "./FileUpload";
 import { UserProfileImage } from "@carbon/ibm-products";
 import { useParams } from "react-router-dom";
 import ImageViewer from "./ImageViewer";
+import { Edit, Image, Menu } from "@carbon/react/icons";
+
 
 const Feed = () => {
   const [postInput, setPostInput] = useState("");
@@ -222,9 +224,37 @@ const Feed = () => {
             }}>Logout</a></li>
             </ul>
         </Column>
+        <Column sm={4} md={8} lg={3} className="menu-mobile" style={{
+                  display: "none",
+                }}>
+              <OverflowMenu flipped={true} renderIcon={Menu}>
+                <OverflowMenuItem itemText={<center>
+                    <UserProfileImage image={auth?.user?.photoURL} kind="user" size="lg" tooltipAlignment="right" tooltipText={auth?.user?.displayName} />
+                    {/* <p style={{
+                      marginTop: "-10px",
+                    }}>{auth?.user?.displayName}</p> */}
+                  </center>} />
+                <OverflowMenuItem hasDivider itemText="Feed" onClick={()=>{
+                window.location.href = "/#/feed";
+                window.location.reload();
+            }} />
+                <OverflowMenuItem itemText="Release" onClick={()=>{
+                window.location.href = "/#/release";
+                window.location.reload();
+            }} />
+                <OverflowMenuItem itemText="Search" onClick={()=>{
+                window.location.href = "/#/search";
+                window.location.reload();
+            }} />
+                <OverflowMenuItem hasDivider isDelete itemText="Logout" onClick={()=>{
+                  window.localStorage.removeItem('auth');
+                  window.location.href = "/#/login";
+                  window.location.reload();
+                }} />
+              </OverflowMenu>
+        </Column>
         <Column sm={4} md={8} lg={10}>
             <div className="feed-page">
-
                 {/* Scrollable Feed */}
                 <section className="feed">
                     {/* Create Post UI */}
@@ -242,6 +272,32 @@ const Feed = () => {
                           cursor: "pointer",
                         }}>{mockResults[id-1].tags.join(" ")}</p></center>
                         <Grid>
+                            <Column sm={4} md={8} className="filter-mobile" lg={16} style={{
+                                margin: "auto",
+                                padding: "10px",
+                                display: "none"
+                              }}>
+                              <ContentSwitcher onChange={(e) => {
+                                setFilters(e.name==="text"?{
+                                  text: true,
+                                  image: false,
+                              }:{
+                                  text: false,
+                                  image: true,
+                              });
+                              }}>
+                                <IconSwitch style={{
+                                  background: "none",
+                                }} name="text" text="Text">
+                                  <Edit />
+                                </IconSwitch>
+                                <IconSwitch style={{
+                                  background: "none",
+                                }} name="image" text="Image">
+                                  <Image />
+                                </IconSwitch>
+                              </ContentSwitcher>
+                            </Column>
                             <Column sm={4} md={8} lg={16}>
                             {filters.text&&<TextArea
                                 labelText="Raise your Mudda here..."
