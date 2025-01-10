@@ -32,7 +32,7 @@ const Release = () => {
       author: "Youth Organizer",
     },
     {
-        id: 4,
+        id: 1,
         title: "Water Shortage in Gali No. 12",
         description:
           "Residents are facing a major water crisis due to a pipeline issue. Local authorities have promised repairs soon.",
@@ -41,7 +41,7 @@ const Release = () => {
         author: "Admin",
       },
       {
-        id: 5,
+        id: 2,
         title: "Community Cleanliness Drive Success",
         description:
           "Over 100 residents joined hands to clean the neighborhood. The event was a great success!",
@@ -50,7 +50,7 @@ const Release = () => {
         author: "Community Leader",
       },
       {
-        id: 6,
+        id: 3,
         title: "Upcoming Youth Festival in XYZ Nagar",
         description:
           "A three-day youth festival is scheduled with cultural events, sports competitions, and more.",
@@ -59,7 +59,7 @@ const Release = () => {
         author: "Youth Organizer",
       },
       {
-        id: 7,
+        id: 2,
         title: "Community Cleanliness Drive Success",
         description:
           "Over 100 residents joined hands to clean the neighborhood. The event was a great success!",
@@ -68,7 +68,7 @@ const Release = () => {
         author: "Community Leader",
       },
       {
-        id: 8,
+        id: 3,
         title: "Upcoming Youth Festival in XYZ Nagar",
         description:
           "A three-day youth festival is scheduled with cultural events, sports competitions, and more.",
@@ -128,7 +128,9 @@ const Release = () => {
         <div id="background-container-release"></div>
         <div className="release-container">
             {releases.map((release) => (
-            <div key={release.id} className="release-card">
+            <div key={release.id} className="release-card" onClick={()=>{
+              window.open(`${window.location.origin}/#/feed/${release.id}`, "_blank")
+            }}>
                 <img
                 height={600}
                 width={300}

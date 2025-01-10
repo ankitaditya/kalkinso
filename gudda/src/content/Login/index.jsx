@@ -128,7 +128,7 @@ const Login = () => {
     <div id="background-container"></div>
     <div className="login-page">
       <div className="login-content">
-        <h1>Welcome to G'udda</h1>
+        <h1>Welcome to M'udda</h1>
 
         {/* Google Login */}
         <div className="login-section">
@@ -137,10 +137,10 @@ const Login = () => {
           </button>
         </div>
 
-        <hr />
+        {/* <hr /> */}
 
         {/* OTP Login */}
-        <div className="login-section">
+        {/* <div className="login-section">
           <h3>Login with OTP</h3>
           <input
             type="text"
@@ -162,7 +162,8 @@ const Login = () => {
             </>
           )}
           <div id="recaptcha-container"></div>
-        </div>
+        </div> */}
+        <div id="recaptcha-container"></div>
       </div>
     </div>
     <Mudda />

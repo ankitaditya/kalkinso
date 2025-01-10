@@ -122,7 +122,10 @@ const Search = () => {
       <div className="search-results">
         {filteredResults.length > 0 ? (
           filteredResults.map((result) => (
-            <div key={result.id} className="result-card">
+            <div key={result.id} className="result-card" onClick={()=>{
+              window.location.href = `/#/feed/${result.id}`
+              // window.location.reload();
+            }}>
               <h3>{result.title}</h3>
               <p>{result.summary}</p>
               <div className="tags">

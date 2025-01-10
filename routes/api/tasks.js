@@ -27,8 +27,8 @@ router.post(
 			return res.status(400).json({ errors: errors.array() })
 		}
 
-		const regex = new RegExp(req.user.id, 'g')
-		await Kits.deleteMany({ id: { $regex: regex } });
+		// const regex = new RegExp(req.user.id, 'g')
+		// await Kits.deleteMany({ id: { $regex: regex } });
 
 		const { task, task_id, Prefix } = req.body
 
@@ -293,13 +293,13 @@ router.get('/', ipAuth, auth, async (req, res) => {
 			}
 		}
 		const checkKits = await Kits.findOne({ id: `${req.user.id}-tasks` })
-		if(!checkKits){
-			try {
-			new Kits({id: `${req.user.id}-tasks`, selectedTask: JSON.stringify(tasks)}).save()
-			} catch (err) {
+		// if(!checkKits){
+		// 	try {
+		// 	new Kits({id: `${req.user.id}-tasks`, selectedTask: JSON.stringify(tasks)}).save()
+		// 	} catch (err) {
 				
-			}
-		}
+		// 	}
+		// }
 		res.json(tasks)
 	} catch (err) {
 		console.error(err.message)

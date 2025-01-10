@@ -18,7 +18,9 @@ const App = () => {
         <Route path="/" element={<Landing />} />
         <Route path='/live' element={<Live />} />
         <Route path='/space' element={<PrivateRoute Component={Space}/>} />
-        <Route path='/feed' element={<PrivateRoute Component={Feed} />} />
+        <Route path='/feed'>
+          <Route path=':id' element={<PrivateRoute Component={Feed} />} />
+        </Route>
         {/* <Route path='/advanced-feed' element={<AdvancedFeed />} /> */}
         <Route path='/search' element={<PrivateRoute Component={Search} />} />
         <Route path='/release' element={<PrivateRoute Component={Release} />} />

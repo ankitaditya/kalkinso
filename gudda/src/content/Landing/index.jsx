@@ -47,7 +47,7 @@ const Landing = () => {
       {/* Hero Banner */}
       <section id="hero-banner" className="hero-banner">
         <div className="hero-content">
-          <h1>G'udda: Galiyon Ka Mudda</h1>
+          <h1>M'udda: Galiyon Ka Mudda</h1>
           <p>Your voice, your platform! Raise issues, share stories, and be heard.</p>
           <Button
             kind="ghost"
@@ -68,7 +68,7 @@ const Landing = () => {
 
       {/* Features Section */}
       <section className="features-section">
-        <h2>Why Choose G'udda?</h2>
+        <h2>Why Choose M'udda?</h2>
         <Grid>
             <Column className='feature' sm={4} md={2} lg={4}>
               <Tile onClick={() => window.location.href = `${window.location.origin}/#/feed`}>
