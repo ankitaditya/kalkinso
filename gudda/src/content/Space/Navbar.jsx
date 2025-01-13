@@ -49,7 +49,7 @@ const Navbar = () => {
         }} />
     </Menu>
     <PageHeader
-      title="Welcome to G'UDDA Dashboard"
+      title="Welcome to MUDDA Dashboard"
       subtitle={`Current Location: ${location ? location : "Fetching..."}`}
       pageActions={{
         content: userProfile
