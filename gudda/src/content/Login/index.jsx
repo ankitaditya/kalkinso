@@ -21,16 +21,12 @@ const Login = () => {
   const [verificationId, setVerificationId] = useState("");
   const [recaptcha, setRecaptcha] = useState(null);
   const recaptchaRef = useRef(null);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   // Google Sign-In Handler
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      const capchaVerified = await recaptcha.verify();
-      if (!capchaVerified) {
-        alert("Please verify the captcha.");
-        return;
-      }
       const result = await signInWithPopup(auth, provider);
       localStorage.setItem("auth", JSON.stringify(result));
       const res = await register({email: result.user.email, first_name: result.user.displayName.split(' ')[0], last_name: result.user.displayName.split(' ')[1]});
@@ -43,6 +39,18 @@ const Login = () => {
       console.error("Google Sign-In Error:", error.message);
     }
   };
+
+  const handleSignIn = () => {
+    recaptcha.verify().then((captcha) => {
+      if(!recaptchaToken) setRecaptchaToken(captcha);
+    });
+  }
+
+  useEffect(() => {
+    if(recaptchaToken) {
+      handleGoogleSignIn();
+    }
+  }, [recaptchaToken]);
 
   // Send OTP Handler
   const sendOtp = () => {
@@ -147,7 +155,7 @@ const Login = () => {
 
         {/* Google Login */}
         <div className="login-section">
-          <button className="google-button" onClick={handleGoogleSignIn}>
+          <button className="google-button" onClick={handleSignIn}>
             Sign in with Google
           </button>
         </div>
