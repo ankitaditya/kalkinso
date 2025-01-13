@@ -66,6 +66,23 @@ export const loadUser = ({token}) => async (dispatch) => {
 	}
 }
 
+export const registerWithEmail = async ({email, first_name, last_name}) => {
+    const config = {
+		headers: {
+			'Content-Type': 'application/json',
+		}
+	}
+	const body = JSON.stringify({ first_name, last_name, email, mobile: "", upi: "", adhar: "", terms_conditions: true, password: "", user_role: "", access: ["DASH","HOME","ORDERS","AI","WALLET"] })
+    try {
+        const res = await axios.post('/api/users', body, config)
+        console.log(res.data)
+        return res.data
+    } catch (err) {
+        console.error(err)
+        return { error: err }
+    }
+}
+
 export const register = ({ first_name, last_name, email, mobile, upi, adhar, terms_conditions, password, confirm_password, user_role, access }) => async (dispatch) => {
 	// console.log('register is clicked!')
 	setAuthToken(null)

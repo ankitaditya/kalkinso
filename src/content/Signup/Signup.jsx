@@ -48,6 +48,7 @@ import OtpInput from 'react-otp-input';
 const SignUp = (props) => {
   const blockClass = `${pkg.prefix}--create-full-page`;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [information, setInformation] = useState({
     step0: {
@@ -438,9 +439,7 @@ const SignUp = (props) => {
         modalTitle="Are you sure you want to cancel?"
         modalDescription="If you cancel, your account will not be created."
         onRequestSubmit={(e) => onSubmit(e)}
-        onClose={() => {
-          // navigate("/");
-        }}
+        onClose={() => {navigate('/');}}
       >
         <CreateFullPageStep
           title="Select Your Path"

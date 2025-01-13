@@ -17,7 +17,7 @@ const dehydratedState = window.__REACT_QUERY_STATE__;
 
 const root = ReactDOM.hydrateRoot(document.getElementById('root'));
 root.render(
-    <React.StrictMode>
+    // <React.StrictMode>
         <QueryClientProvider client={queryClient}>
             <Hydrate state={dehydratedState}>
                 <GoogleReCaptchaProvider
@@ -28,7 +28,7 @@ root.render(
                 </GoogleReCaptchaProvider>
             </Hydrate>
         </QueryClientProvider>
-    </React.StrictMode>
+    // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -12,6 +12,7 @@ import {
 import * as THREE from "three";
 import Mudda from "./Mudda";
 import { register } from "../utils/users";
+import { useRef } from "react";
 
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -19,11 +20,17 @@ const Login = () => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [verificationId, setVerificationId] = useState("");
   const [recaptcha, setRecaptcha] = useState(null);
+  const recaptchaRef = useRef(null);
 
   // Google Sign-In Handler
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
     try {
+      const capchaVerified = await recaptcha.verify();
+      if (!capchaVerified) {
+        alert("Please verify the captcha.");
+        return;
+      }
       const result = await signInWithPopup(auth, provider);
       localStorage.setItem("auth", JSON.stringify(result));
       const res = await register({email: result.user.email, first_name: result.user.displayName.split(' ')[0], last_name: result.user.displayName.split(' ')[1]});
@@ -73,15 +80,23 @@ const Login = () => {
       });
   };
 
+  useEffect(() => {
+    if (recaptchaRef.current && !recaptcha) {
+      const recaptchaLocal = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "normal",
+      });
+      recaptchaLocal.render().then((widgetId) => {
+        // recaptchaRef.current.appendChild(widgetId);
+      });
+      setRecaptcha(recaptchaLocal);
+    }
+  }, [recaptchaRef]);
+
   // Three.js background effect
   useEffect(() => {
     if(window.localStorage.getItem('auth')){
         window.location.href = "/#/search";
     }
-    const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "normal",
-      });
-    setRecaptcha(recaptcha);
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -163,7 +178,7 @@ const Login = () => {
           )}
           <div id="recaptcha-container"></div>
         </div> */}
-        <div id="recaptcha-container"></div>
+        <div ref={recaptchaRef} id="recaptcha-container"></div>
       </div>
     </div>
     <Mudda />
