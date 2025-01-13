@@ -208,21 +208,6 @@ const VerifyOtp = () => {
       recaptcha.verify().then((captch) => {
         if(!recaptchaToken) setRecaptchaToken(captch);
       });
-      // else {
-      //   // Add form submission logic here
-      //   const payload = validate(emailOrMobile);
-      //   if (payload){
-      //       dispatch(setLoading(true));
-      //       dispatch(sendVerificationLogin(payload));
-      //       setTimer(30);
-      //       setResend(true);
-      //       setError(null);
-      //   } else {
-      //       setError("Invalid Email or Mobile");
-      //   }
-      // }
-    // console.log('Email:', email);
-    // console.log('Password:', password);
   };
 
   return (
@@ -268,34 +253,6 @@ const VerifyOtp = () => {
               </ButtonGroup>
             </SemanticForm>
           </Column>
-          {/* <Column md={8} lg={16} className="login-container">
-          <div className="divider" style={{margin:"15px", marginBottom:"25px"}}>
-                Or login with
-            </div>
-            <div className="social-buttons" style={{margin:"15px"}}>
-              <Button
-                renderIcon={LogoGithub}
-                kind="secondary"
-                onClick={() => alert('Login with Github')}
-              >
-                Github
-              </Button>
-              <Button
-                renderIcon={LogoLinkedin}
-                kind="ghost"
-                onClick={() => alert('Login with LinkedIn')}
-              >
-                LinkedIn
-              </Button>
-              <Button
-                renderIcon={LogoFacebook}
-                kind="primary"
-                onClick={() => alert('Login with Facebook')}
-              >
-                Facebook
-              </Button>
-            </div>
-          </Column> */}
       </Grid>
     </div>
   );
