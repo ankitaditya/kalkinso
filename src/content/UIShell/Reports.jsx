@@ -130,7 +130,57 @@ const Reports = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Here you can send `formData` to an API or process it as needed
-    dispatch(addTask(createValues, '678a0f86256abed9cbcebc43', '678a0f86256abed9cbcebc43'));
+    dispatch(addTask(createValues, '678a0f86256abed9cbcebc43', '678a0f86256abed9cbcebc43', '676fcd15a8c7e1466ecd7e29'));
+    setCreateValues({
+        "user": {
+          "first_name": "Abhishek",
+          "last_name": "Shukla",
+          "email": "abhishekshukla.shuklaabhishek@gmail.com",
+          "mobile": "8953399459",
+          "upi": "1b70d1",
+          "adhar": "04f7f998-df4",
+          "terms_conditions":  "true",
+          "avatar": "//www.gravatar.com/avatar/82caf8ce1dd92298fa874e41ac691095?s=200&r=pg&d=mm",
+          "date": "2024-12-28T10:04:05.782+00:00"
+        },
+        "name": "",
+        "description": "",
+        "short_description": "",
+        "assigned": [],
+        "time": {
+        "estimated": [
+          {
+            "user": "646cbcb0f29d303de1b5df7f",
+            "value": 4
+          },
+          {
+            "user": "646cbcb0f29d303de1b5df80",
+            "value": 2
+          }
+        ],
+        "actual": {
+            "user": "646cbcb0f29d303de1b5df81",
+            "value": 6
+        }
+        },
+        "cost": {
+            "estimated": 384,
+            "actual": 416
+        },
+        "org": "Self",
+        "location": "Remote",
+        "status": "To Do",
+        "skills": [],
+        "analytics": {},
+        "priority": "",
+        "subTasks": [],
+        "parentTasks": [],
+        "attachments": [],
+        "tags": [],
+        "date": new Date().toLocaleDateString(),
+        "createdAt": "2023-08-11T19:02:19.529Z",
+        "updatedAt": "2023-10-21T02:32:14.518Z"
+      });
     dispatch(setAlert('Reported successfully!', 'success'));
   };
 

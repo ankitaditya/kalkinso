@@ -74,7 +74,7 @@ export const getTask = (task_id) => async dispatch => {
 };
 
 // Action to add a new task
-export const addTask = (taskData, task_id=null, Prefix=null) => async dispatch => {
+export const addTask = (taskData, task_id=null, Prefix=null, user=null) => async dispatch => {
   try {
     if (task_id) {
       taskData.parentTasks = [task_id];
@@ -89,6 +89,7 @@ export const addTask = (taskData, task_id=null, Prefix=null) => async dispatch =
       task:taskData,
       task_id:task_id,
       Prefix:Prefix,
+      user,
     });
     dispatch({
       type: ADD_TASK,

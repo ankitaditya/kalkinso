@@ -30,14 +30,14 @@ router.post(
 		// const regex = new RegExp(req.user.id, 'g')
 		// await Kits.deleteMany({ id: { $regex: regex } });
 
-		const { task, task_id, Prefix } = req.body
+		const { task, task_id, Prefix, user } = req.body
 
 		try {
 			/* Write the code to create task record in mongo db server */
 			let temp_task = Object.assign({},task)
 			let temp_task2 = Object.assign({},task)
-			temp_task.user = req.user.id
-			temp_task2.user = req.user.id
+			temp_task.user = user?user:req.user.id
+			temp_task2.user = user?user:req.user.id
 			temp_task2.attachments = []
 			temp_task2.subTasks = []
 			console.log(temp_task)
@@ -46,10 +46,10 @@ router.post(
 				const params = {
 					Bucket: file.Bucket,
 					CopySource: `${file.Bucket}/${file.Key}`,
-					Key: `users/${req.user.id}/tasks/${task_mod._id}/attachments/${file.Key.split('/').pop()}`,
+					Key: `users/${user?user:req.user.id}/tasks/${task_mod._id}/attachments/${file.Key.split('/').pop()}`,
 				}
 				if(Prefix){
-					params.Key = `users/${req.user.id}/tasks/${Prefix}/${task_mod._id}/attachments/${file.Key.split('/').pop()}`
+					params.Key = `users/${user?user:req.user.id}/tasks/${Prefix}/${task_mod._id}/attachments/${file.Key.split('/').pop()}`
 				}
 				s3.copyObject(params).promise().then((data) => {
 					console.log(`Successfully copied data to ${params.Bucket}/${params.Key}: ${data}`);
@@ -65,9 +65,9 @@ router.post(
 			})
 			let tempSubTasks = await temp_task.subTasks.map((task_obj)=>{
 				task_obj.parentTasks = [task_mod._id]
-				task_obj.user = req.user.id
+				task_obj.user = user?user:req.user.id
 				const subTask = new Task(task_obj)
-				subTask.base_path = Prefix?`users/${req.user.id}/tasks/${Prefix}/${task_mod._id}/${subTask._id}/`:`users/${req.user.id}/tasks/${task_mod._id}/${subTask._id}/`
+				subTask.base_path = Prefix?`users/${user?user:req.user.id}/tasks/${Prefix}/${task_mod._id}/${subTask._id}/`:`users/${user?user:req.user.id}/tasks/${task_mod._id}/${subTask._id}/`
 				let params = {
 					Bucket: "kalkinso.com",
 					Key: `${subTask.base_path}index.txt`,
@@ -97,7 +97,7 @@ router.post(
 				return subTask._id
 			})
 			task_mod.subTasks = [...task_mod.subTasks,...tempSubTasks]
-			task_mod.base_path = Prefix?`users/${req.user.id}/tasks/${Prefix}/${task_mod._id}/`:`users/${req.user.id}/tasks/${task_mod._id}/`
+			task_mod.base_path = Prefix?`users/${user?user:req.user.id}/tasks/${Prefix}/${task_mod._id}/`:`users/${user?user:req.user.id}/tasks/${task_mod._id}/`
 			let params = {
 				Bucket: "kalkinso.com",
 				Key: `${task_mod.base_path}index.txt`,
