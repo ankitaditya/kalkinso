@@ -52,7 +52,7 @@ const UserSchema = new mongoose.Schema({
 	access: {
 		type: [String],
 		required: true,
-		enum: ['DASH', 'HOME', 'ORDERS', 'AI'],
+		enum: ['DASH', 'HOME', 'ORDERS', 'AI', 'TOOLS', 'WALLET'],
 	},
 	date: {
 		type: Date,
