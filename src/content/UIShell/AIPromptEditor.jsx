@@ -35,7 +35,7 @@ import { setLoading } from "../../actions/auth";
 import { deleteFile, save, saveTools } from "../../actions/kits";
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
-import { AddFilled, Close, Download, MathCurve, Save } from "@carbon/react/icons";
+import { AddFilled, Close, Download, MathCurve, Save, TrashCan } from "@carbon/react/icons";
 import { ActionBar, EditInPlace } from "@carbon/ibm-products";
 import { useParams } from "react-router-dom";
 
@@ -368,6 +368,10 @@ export default function BlockNoteEditor(
       editor.replaceBlocks(editor.document, cacheContent.content);
       setFileName(cacheContent.fileName);
     }
+    editor.blocksToMarkdownLossy(editor.document).then((res) => {
+      console.log(res);
+      setWordCount(res.replace(/[#*_`>-]|\[.*?\]\(.*?\)/g, "").split(/\s+/).length-1);
+    });
     // return function cleanup() {
     //   window.pramukhIME.disable();
     // }
@@ -522,7 +526,7 @@ export default function BlockNoteEditor(
         }
       }
     },
-    { id: "delete", key: "delete", renderIcon: () => <Close />, label: "Delete", onClick: handleDelete },
+    { id: "delete", key: "delete", renderIcon: () => <TrashCan />, label: "Delete", onClick: handleDelete },
     // {
     //   id: 'close',
     //   key: 'close',
@@ -545,11 +549,10 @@ export default function BlockNoteEditor(
   }} theme="light" editor={editor} formattingToolbar={false} onChange={(props) => {
       // setContent(editor.document);
       // onKeyDown();
-      console.log("Editor changed: ", editor.blocksToMarkdownLossy(editor.document));
       if (setIsChanged) {
         setIsChanged(true);
         editor.blocksToMarkdownLossy(editor.document).then((res) => {
-          setWordCount(res.split(' ').length);
+          setWordCount(res.replace(/[#*_`>-]|\[.*?\]\(.*?\)/g, "").split(/\s+/).length-1);
         });
       }
     }}
