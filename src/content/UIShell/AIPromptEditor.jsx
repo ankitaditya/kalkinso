@@ -1,5 +1,6 @@
 import React from "react";
 import "@blocknote/core/fonts/inter.css";
+import "./AIPromptEditor.css";
 import { 
   useCreateBlockNote, 
   createReactInlineContentSpec,
@@ -34,7 +35,7 @@ import { setLoading } from "../../actions/auth";
 import { deleteFile, save, saveTools } from "../../actions/kits";
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
-import { Close, Download, MathCurve, Save } from "@carbon/react/icons";
+import { AddFilled, Close, Download, MathCurve, Save } from "@carbon/react/icons";
 import { ActionBar, EditInPlace } from "@carbon/ibm-products";
 import { useParams } from "react-router-dom";
 
@@ -217,6 +218,22 @@ function InlineMathButton() {
   ) : null;
 }
 
+function AddFileButton() {
+  const editor = useBlockNoteEditor({ schema: schema });
+  const Components = useComponentsContext()
+
+  return editor ? (
+    <Components.FormattingToolbar.Button
+      mainTooltip={"Create a New File"}
+      onClick={() => {
+        editor.replaceBlocks(editor.document, []);
+      }}
+    >
+      <AddFilled />
+    </Components.FormattingToolbar.Button>
+  ) : null;
+}
+
 const generateAiPrompt = async (inputPrompt, document) => {
   // Replace with your AI API integration (e.g., OpenAI API)
   console.log("Generating AI prompt...: ", document);
@@ -309,7 +326,6 @@ export default function BlockNoteEditor(
   }
   const [fileName, setFileName] = useState("Untitled Document");
   const [ isChanged, setIsChanged ] = useState(false);
-  const [wordCount, setWordCount] = useState(0);
   const dispatch = useDispatch();
   const editor = useCreateBlockNote({
     schema: schema,
@@ -320,9 +336,12 @@ export default function BlockNoteEditor(
       } }],
   });
 
+  const [wordCount, setWordCount] = useState(0);
+
   useEffect(() => {
     // window.pramukhIME.setLanguage('hindi', 'pramukhindic');
     // window.pramukhIME.enable();
+    let cacheContent = JSON.parse(localStorage.getItem('tools/writing-assistant'));
     let selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
     if (selectedTool&&selectedTool.name==='writing-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
       setFileName(selectedTool.selectedEntry.title);
@@ -345,6 +364,10 @@ export default function BlockNoteEditor(
         localStorage.removeItem('selectedTool')
       });
     }
+    if (cacheContent&&cacheContent.fileName===fileName) {
+      editor.replaceBlocks(editor.document, cacheContent.content);
+      setFileName(cacheContent.fileName);
+    }
     // return function cleanup() {
     //   window.pramukhIME.disable();
     // }
@@ -354,6 +377,11 @@ export default function BlockNoteEditor(
     if (isChanged) {
       // dispatch(setLoading(true));
       dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+      const cacheContent = {
+        fileName: fileName,
+        content: editor.document,
+      };
+      localStorage.setItem('tools/writing-assistant', JSON.stringify(cacheContent));
       setIsChanged(false);
     }
   };
@@ -447,8 +475,7 @@ export default function BlockNoteEditor(
     {
       id: 'wordCount',
       key: 'wordCount',
-      label: `Word Count: ${wordCount}`,
-      iconDescription: 'Word Count',
+      renderIcon: ()=>`${wordCount}`,
       disabled: true,
     },
     {
@@ -518,15 +545,21 @@ export default function BlockNoteEditor(
   }} theme="light" editor={editor} formattingToolbar={false} onChange={(props) => {
       // setContent(editor.document);
       // onKeyDown();
+      console.log("Editor changed: ", editor.blocksToMarkdownLossy(editor.document));
       if (setIsChanged) {
         setIsChanged(true);
-        setWordCount(editor.getSelectedText().split(/\s+/).length);
+        editor.blocksToMarkdownLossy(editor.document).then((res) => {
+          setWordCount(res.split(' ').length);
+        });
       }
     }}
   >
-    <FormattingToolbarController
-      formattingToolbar={() => (
-        <FormattingToolbar>
+    <FormattingToolbar>
+          <AddFileButton onClick={()=>{
+            dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+            setFileName("Untitled Document");
+            editor.replaceBlocks(editor.document, []);
+          }} key={"addFileButton"} />
           <BlockTypeSelect items={blockTypeSelectItems(editor.dictionary).map((val)=>{
             return {
               ...val,
@@ -579,7 +612,5 @@ export default function BlockNoteEditor(
 
           <CreateLinkButton key={"createLinkButton"} />
         </FormattingToolbar>
-      )}
-    />
   </BlockNoteView></div></>;
 }
