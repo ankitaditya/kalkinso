@@ -31,7 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import TurndownService from 'turndown';
 import { convertToMarkdown, exportToPDF, formatToMarkdown } from "../Dashboard/utils";
 import { setLoading } from "../../actions/auth";
-import { deleteFile, save } from "../../actions/kits";
+import { deleteFile, save, saveTools } from "../../actions/kits";
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { Close, Download, MathCurve, Save } from "@carbon/react/icons";
@@ -353,7 +353,7 @@ export default function BlockNoteEditor(
   const autoSave = () => {
     if (isChanged) {
       // dispatch(setLoading(true));
-      dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+      dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
       setIsChanged(false);
     }
   };

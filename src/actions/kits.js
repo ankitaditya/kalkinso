@@ -158,6 +158,25 @@ export const addFile = (id) => async (dispatch) => {
     dispatch(setAlert('File Added!', 'success'));
 };
 
+export const addFileTool = (id) => async (dispatch) => {
+    const signedUrl = await generateSignedUrl('kalkinso.com', id);
+    dispatch({
+        type: actionTypes.ADD_FILE,
+        payload:{
+            id: id.split('/').slice(0,-1).join('/')+'/',
+            value: {
+                id: id,
+                icon: 'Document',
+                title: id.split('/').slice(-1)[0],
+                value: id.split('/').slice(-1)[0],
+                fileType: id.split('.').slice(-1)[0],
+                signedUrl: signedUrl,
+            },
+        },
+    });
+    // dispatch(setAlert('File Added!', 'success'));
+};
+
 export const save = (bucketName="kalkinso.com", Prefix='', content=null, newFile=false) => async (dispatch) => {
     if (!bucketName){
         dispatch(setAlert('Bucket Name not found!', 'error'));
@@ -184,6 +203,50 @@ export const save = (bucketName="kalkinso.com", Prefix='', content=null, newFile
         const signedUrl = await generateSignedUrl('kalkinso.com', Prefix);
         if(newFile){
             dispatch(addFile(Prefix));
+        } else {
+            dispatch({
+                type: actionTypes.RENAME_FILE,
+                payload: {
+                    file_id: Prefix,
+                    new_file_id: Prefix,
+                    signedUrl: signedUrl,
+                },
+            });
+        }
+        dispatch(setLoading(false));
+    } catch (err) {
+        console.log(err);
+        dispatch(setAlert('File not saved!', 'error'));
+        dispatch(setLoading(false));
+    }
+  };
+
+  export const saveTools = (bucketName="kalkinso.com", Prefix='', content=null, newFile=false) => async (dispatch) => {
+    if (!bucketName){
+        dispatch(setAlert('Bucket Name not found!', 'error'));
+        return;
+    }
+    if (!Prefix){
+        dispatch(setAlert('File Path not found!', 'error'));
+        return;
+    }
+    if (!content){
+        dispatch(setAlert('No content to save!', 'error'));
+    }
+    const params = JSON.stringify({params:{
+        Bucket: bucketName,
+        Key: Prefix,
+        Body: content,
+    }});
+    try {
+        const res = await axios.put('/api/kits/save', params, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        const signedUrl = await generateSignedUrl('kalkinso.com', Prefix);
+        if(newFile){
+            dispatch(addFileTool(Prefix));
         } else {
             dispatch({
                 type: actionTypes.RENAME_FILE,
