@@ -321,8 +321,8 @@ export default function BlockNoteEditor(
   });
 
   useEffect(() => {
-    window.pramukhIME.setLanguage('hindi', 'pramukhindic');
-    window.pramukhIME.enable();
+    // window.pramukhIME.setLanguage('hindi', 'pramukhindic');
+    // window.pramukhIME.enable();
     let selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
     if (selectedTool&&selectedTool.name==='writing-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
       setFileName(selectedTool.selectedEntry.title);
@@ -345,9 +345,9 @@ export default function BlockNoteEditor(
         localStorage.removeItem('selectedTool')
       });
     }
-    return function cleanup() {
-      window.pramukhIME.disable();
-    }
+    // return function cleanup() {
+    //   window.pramukhIME.disable();
+    // }
   }, []);
 
   const autoSave = () => {
