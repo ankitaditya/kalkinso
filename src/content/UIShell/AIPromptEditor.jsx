@@ -16,6 +16,8 @@ import {
   UnnestBlockButton,
   useComponentsContext,
   useBlockNoteEditor,
+  getDefaultReactSlashMenuItems,
+  blockTypeSelectItems,
  } from "@blocknote/react";
 import {
   BlockNoteSchema,
@@ -297,17 +299,30 @@ export default function BlockNoteEditor(
   }
 ) {
   const profile = useSelector((state) => state.profile);
+  const blockNoteRef = React.useRef(null);
+  const rename = {
+    "Heading 1": "Title",
+    "Heading 2": "Subtitle",
+    "Heading 3": "Subtitle 2",
+    "Bullet List": "Bullet Index",
+    "Numbered List": "Numbered Index",
+  }
   const [fileName, setFileName] = useState("Untitled Document");
   const [ isChanged, setIsChanged ] = useState(false);
+  const [wordCount, setWordCount] = useState(0);
   const dispatch = useDispatch();
   const editor = useCreateBlockNote({
     schema: schema,
     initialContent: initialContent ?
-      Array.isArray(initialContent) ? initialContent : [{ type: "paragraph", content: "Loading..." }] :
-      [{ type: "paragraph", content: "Write something..." }],
+      Array.isArray(initialContent) ? initialContent : [{ type: "heading", content: "Loading..." }] :
+      [{ type: "heading", content: "Write something...", props: {
+        textAlignment: "center",
+      } }],
   });
 
   useEffect(() => {
+    window.pramukhIME.setLanguage('hindi', 'pramukhindic');
+    window.pramukhIME.enable();
     let selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
     if (selectedTool&&selectedTool.name==='writing-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
       setFileName(selectedTool.selectedEntry.title);
@@ -330,7 +345,27 @@ export default function BlockNoteEditor(
         localStorage.removeItem('selectedTool')
       });
     }
+    return function cleanup() {
+      window.pramukhIME.disable();
+    }
   }, []);
+
+  const autoSave = () => {
+    if (isChanged) {
+      // dispatch(setLoading(true));
+      dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+      setIsChanged(false);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(autoSave, 5000);
+    return () => clearInterval(interval);
+  }, [isChanged]);
+
+  const handleDelete = () => {
+    dispatch(deleteFile("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, false));
+  };
 
   useEffect(() => {
     if (typeof initialContent === 'string' && !markdown) {
@@ -402,13 +437,20 @@ export default function BlockNoteEditor(
     fontSize: "1.5rem",
   }}><EditInPlace value={fileName} onChange={(e)=>setFileName(e)} onSave={(e)=>{
     if(profile.user && fileName) {
-      dispatch(setLoading(true));
+      // dispatch(setLoading(true));
       dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
       setIsChanged(false);
       // setContent(null);
     }
   }} /></strong><ActionBar
   actions={[
+    {
+      id: 'wordCount',
+      key: 'wordCount',
+      label: `Word Count: ${wordCount}`,
+      iconDescription: 'Word Count',
+      disabled: true,
+    },
     {
       id: 'save',
       key: 'save',
@@ -453,6 +495,7 @@ export default function BlockNoteEditor(
         }
       }
     },
+    { id: "delete", key: "delete", renderIcon: () => <Close />, label: "Delete", onClick: handleDelete },
     // {
     //   id: 'close',
     //   key: 'close',
@@ -469,20 +512,27 @@ export default function BlockNoteEditor(
   containerWidth={800}
   style={{marginRight: "2.5rem", marginLeft: "2.5rem", marginTop: "1rem"}}
 /><div className='word-processor'>
-    <BlockNoteView {...rest} className="page" style={{
+    <BlockNoteView {...rest} className="page"
+    style={{
     marginTop: "2rem",
   }} theme="light" editor={editor} formattingToolbar={false} onChange={(props) => {
       // setContent(editor.document);
       // onKeyDown();
       if (setIsChanged) {
         setIsChanged(true);
+        setWordCount(editor.getSelectedText().split(/\s+/).length);
       }
     }}
   >
     <FormattingToolbarController
       formattingToolbar={() => (
         <FormattingToolbar>
-          <BlockTypeSelect key={"blockTypeSelect"} />
+          <BlockTypeSelect items={blockTypeSelectItems(editor.dictionary).map((val)=>{
+            return {
+              ...val,
+              name: rename[val.name]?rename[val.name]:val.name,
+            }
+          }).slice(0,-1)} key={"blockTypeSelect"} />
           <InlineMathButton key={"inlineMath"} />
           <AiPromptButton key={"aiPromptButton"} />
           <FileCaptionButton key={"fileCaptionButton"} />

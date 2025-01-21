@@ -115,7 +115,6 @@ const DashboardTools = () => {
           <Column lg={16} md={8} sm={2}>
           <Button size='sm' kind="secondary" style={{
           marginBottom: '1rem',
-          // marginLeft: '4rem',
           float: 'left',
         }} onClick={()=>{
           navigate(`/tools/home`); window.location.reload();
