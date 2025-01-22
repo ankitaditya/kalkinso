@@ -35,9 +35,9 @@ import { setLoading } from "../../actions/auth";
 import { deleteFile, save, saveTools } from "../../actions/kits";
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
-import { AddFilled, Close, Download, MathCurve, Save, TrashCan } from "@carbon/react/icons";
+import { AddFilled, Close, Download, MathCurve, Save, SendBackward, SkipBack, TrashCan } from "@carbon/react/icons";
 import { ActionBar, EditInPlace } from "@carbon/ibm-products";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const turndownService = new TurndownService();
 
@@ -316,6 +316,7 @@ export default function BlockNoteEditor(
   }
 ) {
   const profile = useSelector((state) => state.profile);
+  const navigate = useNavigate();
   const blockNoteRef = React.useRef(null);
   const rename = {
     "Heading 1": "Title",
@@ -528,6 +529,16 @@ export default function BlockNoteEditor(
       }
     },
     { id: "delete", key: "delete", renderIcon: () => <TrashCan />, label: "Delete", onClick: handleDelete },
+    {
+      id: "back",
+      key: "back",
+      renderIcon: () => <SkipBack />,
+      label: "Back",
+      onClick: () => {
+        navigate(`/tools/home`);
+        window.location.reload();
+      }
+    }
     // {
     //   id: 'close',
     //   key: 'close',

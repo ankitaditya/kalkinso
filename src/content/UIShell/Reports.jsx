@@ -7,14 +7,17 @@ import {
   Button,
   FileUploaderDropContainer,
   FileUploaderItem,
+  IconButton,
 } from '@carbon/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAlert } from '../../actions/alert';
 import { addTask } from '../../actions/task';
+import { SkipBack } from '@carbon/react/icons';
+import { useNavigate } from 'react-router-dom';
 
 const Reports = () => {
   const dispatch = useDispatch();
-  const [files, setFiles] = useState([]);
+  const navigate = useNavigate();
   const [tempFiles, setTempFiles] = useState({});   
   const [createValues, setCreateValues] = useState({
     "user": {
@@ -186,6 +189,18 @@ const Reports = () => {
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+      <IconButton style={{
+            marginBottom: '1rem',
+            marginRight: '1rem',
+            float: 'left',
+          }} 
+          kind="ghost"
+          onClick={() => {
+            navigate(`/tools/home`);
+            window.location.reload();
+        }}>
+          <SkipBack />
+        </IconButton>
       <Form onSubmit={handleSubmit}>
         <TextInput
           style={{

@@ -1,4 +1,4 @@
-import { Loading, TextInput } from '@carbon/react';
+import { IconButton, Loading, TextInput } from '@carbon/react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Pusher from 'pusher-js';
 
@@ -9,6 +9,8 @@ import axios from 'axios';
 import SOLIEO_DATA from './sample-data/soleio-dpe.json';
 import { save } from '../../actions/kits';
 import { Button } from 'carbon-components-react';
+import { SkipBack } from '@carbon/react/icons';
+import { useNavigate } from 'react-router-dom';
 
 
 const VideoBook = (props) => {
@@ -19,7 +21,7 @@ const VideoBook = (props) => {
     const [mediaUrl, setMediaUrl] = useState('');
     const { user } = useSelector((state) => state.profile);
     const [status, setStatus] = useState('started');
-    const [interimResults, setInterimResults] = useState({});
+    const navigate = useNavigate();
     const [ prompt, setPrompt ] = useState('');
     const [ component, setComponent ] = useState(null);
     useEffect(() => {
@@ -129,6 +131,18 @@ const VideoBook = (props) => {
   
     return (
       <>
+      <IconButton style={{
+            marginBottom: '1rem',
+            marginRight: '1rem',
+            float: 'left',
+          }} 
+          kind="ghost"
+          onClick={() => {
+            navigate(`/tools/home`);
+            window.location.reload();
+        }}>
+          <SkipBack />
+        </IconButton>
         {component?(component==='loading'?<><Loading withOverlay={true} description={status} />{status}</>:<><Button
         onClick={handleDownloadMedia}
         kind='primary'

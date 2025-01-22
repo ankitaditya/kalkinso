@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Column } from "@carbon/react";
+import { Grid, Column, IconButton } from "@carbon/react";
 import SentimentBarChart from "./Analytics/SentimentBarChart";
 import EmotionPieChart from "./Analytics/EmotionPieChart";
 import { EditInPlace } from "@carbon/ibm-products";
@@ -8,10 +8,13 @@ import { data as SampleData } from "./Analytics/SampleData";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../actions/auth";
 import { save } from "../../actions/kits";
+import { SkipBack } from "@carbon/react/icons";
+import { useNavigate } from "react-router-dom";
 
 const AnalysisAssistant = () => {
   const [data, setData] = useState(SampleData);
   const [value, setValue] = useState("This is the initial description for the analysis.");
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.profile);
   const dispatch = useDispatch();
 
@@ -99,7 +102,26 @@ const AnalysisAssistant = () => {
     <>
     <Grid>
         <Column lg={16} md={8} sm={4}>
-          <h1>Analysis Assistant Dashboard</h1>
+          <Grid>
+            <Column lg={16} md={8} sm={4}>
+              <IconButton style={{
+                  marginBottom: '1rem',
+                  marginRight: '1rem',
+                  float: 'left',
+                }} 
+                kind="ghost"
+                onClick={() => {
+                  navigate(`/tools/home`);
+                  window.location.reload();
+                }}
+                >
+                <SkipBack />
+              </IconButton>
+            </Column>
+            <Column lg={16} md={8} sm={4}>
+              <h2>Analysis Assistant</h2>
+            </Column>
+          </Grid>
           <EditInPlace 
           value={value}
           placeholder="Enter the text to analyze"

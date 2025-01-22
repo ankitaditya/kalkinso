@@ -1,4 +1,4 @@
-import { Button, Loading, TextInput } from '@carbon/react';
+import { Button, IconButton, Loading, TextInput } from '@carbon/react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Pusher from 'pusher-js';
 
@@ -8,6 +8,8 @@ import { setAlert } from '../../actions/alert';
 import axios from 'axios';
 import SOLIEO_DATA from './sample-data/soleio-dpe.json';
 import { save } from '../../actions/kits';
+import { SkipBack } from '@carbon/react/icons';
+import { useNavigate } from 'react-router-dom';
 
 
 const AudioBook = (props) => {
@@ -18,7 +20,7 @@ const AudioBook = (props) => {
     const [mediaUrl, setMediaUrl] = useState('');
     const { user } = useSelector((state) => state.profile);
     const [status, setStatus] = useState('started');
-    const [interimResults, setInterimResults] = useState({});
+    const navigate = useNavigate();
     const [ prompt, setPrompt ] = useState('');
     const [ component, setComponent ] = useState(null);
     useEffect(() => {
@@ -127,6 +129,18 @@ const AudioBook = (props) => {
   
     return (
       <>
+        <IconButton style={{
+            marginBottom: '1rem',
+            marginRight: '1rem',
+            float: 'left',
+          }} 
+          kind="ghost"
+          onClick={() => {
+            navigate(`/tools/home`);
+            window.location.reload();
+        }}>
+          <SkipBack />
+        </IconButton>
         {component?(component==='loading'?<><Loading withOverlay={true} description={status} />{status}</>:<><Button
         onClick={handleDownloadMedia}
         kind='primary'
