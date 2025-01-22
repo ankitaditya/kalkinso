@@ -380,7 +380,7 @@ export default function BlockNoteEditor(
   const autoSave = () => {
     if (isChanged) {
       // dispatch(setLoading(true));
-      dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+      dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
       const cacheContent = {
         fileName: fileName,
         content: editor.document,
@@ -396,7 +396,8 @@ export default function BlockNoteEditor(
   }, [isChanged]);
 
   const handleDelete = () => {
-    dispatch(deleteFile("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, false));
+    dispatch(deleteFile("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, false));
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -470,7 +471,7 @@ export default function BlockNoteEditor(
   }}><EditInPlace value={fileName} onChange={(e)=>setFileName(e)} onSave={(e)=>{
     if(profile.user && fileName) {
       // dispatch(setLoading(true));
-      dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+      dispatch(save("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
       setIsChanged(false);
       // setContent(null);
     }
@@ -491,7 +492,7 @@ export default function BlockNoteEditor(
       disabled: !isChanged,
       onClick: () => {
         dispatch(setLoading(true));
-        dispatch(save('kalkinso.com', `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+        dispatch(save('kalkinso.com', `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
         setIsChanged(false);
         // setContent(null);
       }
@@ -559,7 +560,7 @@ export default function BlockNoteEditor(
   >
     <FormattingToolbar>
           <AddFileButton onClick={()=>{
-            dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}.txt`, JSON.stringify(editor.document), true));
+            dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
             setFileName("Untitled Document");
             editor.replaceBlocks(editor.document, []);
           }} key={"addFileButton"} />
