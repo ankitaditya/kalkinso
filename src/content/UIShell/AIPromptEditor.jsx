@@ -365,7 +365,7 @@ export default function BlockNoteEditor(
         localStorage.removeItem('selectedTool')
       });
     }
-    if (cacheContent&&cacheContent.fileName===fileName) {
+    if (cacheContent) {
       editor.replaceBlocks(editor.document, cacheContent.content);
       setFileName(cacheContent.fileName);
     }

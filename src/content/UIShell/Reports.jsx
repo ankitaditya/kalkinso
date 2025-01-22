@@ -185,6 +185,8 @@ const Reports = () => {
         "updatedAt": "2023-10-21T02:32:14.518Z"
       });
     dispatch(setAlert('Reported successfully!', 'success'));
+    navigate(`/tools/home`);
+    window.location.reload();
   };
 
   return (

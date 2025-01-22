@@ -4,6 +4,7 @@ import {
   ClickableTile,
   Column,
     Grid,
+    IconButton,
     Loading,
 } from '@carbon/react';
 import './Dashboard.scss';
@@ -11,8 +12,8 @@ import { pkg } from '@carbon/ibm-products';
 import AddSelectBody from './AddSelectBody';
 import { normalize, getGlobalFilterValues } from '@carbon/ibm-products/lib/components/AddSelect/add-select-utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { getSelectedTasks } from '../../actions/kits';
-import { Folder, SkipBack } from '@carbon/react/icons';
+import { deleteFile, getSelectedTasks } from '../../actions/kits';
+import { Folder, SkipBack, TrashCan } from '@carbon/react/icons';
 import { useNavigate } from 'react-router-dom';
 pkg.component.UserAvatar = true;
 pkg.component.ExpressiveCard = true;
@@ -125,12 +126,28 @@ const DashboardTools = () => {
         }} />Back</Button>
         </Column>{obj?.children?.entries?.map((val)=>{
               return <Column lg={4} md={2} sm={2}>
+                        <IconButton kind='ghost' size='sm' style={{
+                          marginRight: '1rem',
+                          float: 'right',
+                        }}
+                          onClick={() => {
+                            const newItems = {...items};
+                            newItems.entries = newItems.entries.filter((item)=>item.title!==val.title);
+                            setItems(newItems);
+                            dispatch(deleteFile("kalkinso.com",`users/${profile.user}/tasks/tools/${obj.title}/${val.title}`));
+                            dispatch(getSelectedTasks("kalkinso.com",`users/${profile.user}/tasks/tools`));
+                            window.location.reload();
+                          }}
+                        >
+                          <TrashCan />
+                        </IconButton>
                         <ClickableTile onClick={(e)=>{
                           localStorage.setItem('selectedTool', JSON.stringify({
                             name: obj.title,
                             entries: obj?.children?.entries,
                             selectedEntry: val,
                           }));
+                          localStorage.removeItem('tools/writing-assistant');
                           console.log('Selected Tool:', {
                             name: obj.title,
                             entries: obj?.children?.entries,
