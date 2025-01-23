@@ -150,7 +150,13 @@ router.post('/subtasks', ipAuth, auth, async (req, res) => {
 	try {
 		/* Write the code to get all tasks */
 		const { task_id } = req.body;
-		let mainTask = await Task.findOne({ _id: task_id, user: req.user.id })
+		let mainTask = await Task.findOne({
+			_id: task_id,
+			$or: [
+			  { user: req.user.id },
+			  { "assigned.user": req.user.id }
+			]
+		});
 		if (!mainTask||mainTask?.length===0) {
 			return res.status(401).json({ msg: 'User not authorized' })
 		}
@@ -277,7 +283,12 @@ router.get('/', ipAuth, auth, async (req, res) => {
   			await Kits.deleteMany({ id: { $regex: regex } });
 		}
 		/* Write the code to get all tasks */
-		const tasks = await Task.find({ user: req.user.id })
+		const tasks = await Task.find({
+			$or: [
+			  { user: req.user.id },
+			  { "assigned.user": req.user.id }
+			]
+		  });
 		const user = await User.findById(req.user.id)
 		if (!tasks||tasks?.length===0) {
 			return res.status(404).json({ msg: `No tasks found, create tasks to get started!` })
