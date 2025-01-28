@@ -1,0 +1,115 @@
+/* App.css */
+@import '@carbon/styles/css/styles.css';
+
+.reel-container {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--cds-layer);
+  min-height: 100vh;
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--cds-text-primary);
+  border-radius: var(--cds-border-radius);
+  box-shadow: var(--cds-box-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.search-input {
+  flex: 1;
+}
+
+.search-button {
+  display: flex;
+  align-items: center;
+}
+
+.video-preview,
+.karaoke-video {
+  width: 100%;
+  max-width: 500px;
+  border-radius: var(--cds-border-radius);
+  margin-top: 1.5rem;
+  box-shadow: var(--cds-box-shadow);
+  background-color: var(--cds-layer-accent);
+}
+
+.karaoke-audio {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.karaoke-preview {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.button-group {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.start-button {
+  background-color: var(--cds-button-primary);
+  color: var(--cds-text-on-color);
+}
+
+.stop-button {
+  background-color: var(--cds-button-danger);
+  color: var(--cds-text-on-color);
+}
+
+.publish-button {
+  background-color: var(--cds-button-tertiary);
+  color: var(--cds-text-primary);
+}
+
+.collab-button {
+  background-color: var(--cds-button-ghost);
+  color: var(--cds-text-primary);
+}
+
+.download-button {
+  background-color: var(--cds-button-primary);
+  color: var(--cds-text-on-color);
+  text-decoration: none;
+}
+
+.start-button:hover,
+.stop-button:hover,
+.publish-button:hover,
+.collab-button:hover,
+.download-button:hover {
+  opacity: 0.9;
+}
+
+.status-text {
+  font-weight: var(--cds-font-weight-semibold);
+  margin-top: 1rem;
+}
+
+.coming-soon {
+  margin-top: 2rem;
+  font-size: var(--cds-font-size-lg);
+  font-weight: var(--cds-font-weight-bold);
+}
+
+.feature-list {
+  font-size: var(--cds-font-size-sm);
+  font-style: italic;
+  color: var(--cds-text-secondary);
+}

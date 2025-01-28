@@ -1,6 +1,8 @@
 import React from "react";
 import "@blocknote/core/fonts/inter.css";
 import "./AIPromptEditor.css";
+import { pkg, SidePanel } from "@carbon/ibm-products";
+import { TextArea, usePrefix } from "@carbon/react";
 import { 
   useCreateBlockNote, 
   createReactInlineContentSpec,
@@ -11,18 +13,17 @@ import {
   FileCaptionButton,
   FileReplaceButton,
   FormattingToolbar,
-  FormattingToolbarController,
   NestBlockButton,
   TextAlignButton,
   UnnestBlockButton,
   useComponentsContext,
   useBlockNoteEditor,
-  getDefaultReactSlashMenuItems,
   blockTypeSelectItems,
  } from "@blocknote/react";
 import {
   BlockNoteSchema,
   defaultInlineContentSpecs,
+  defaultBlockSpecs,
 } from "@blocknote/core";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
@@ -35,9 +36,11 @@ import { setLoading } from "../../actions/auth";
 import { deleteFile, save, saveTools } from "../../actions/kits";
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
-import { AddFilled, Close, Download, MathCurve, Save, SendBackward, SkipBack, TrashCan } from "@carbon/react/icons";
+import { AddFilled, Close, Download, MathCurve, Save, SendBackward, SkipBack, Translate, TrashCan } from "@carbon/react/icons";
 import { ActionBar, EditInPlace } from "@carbon/ibm-products";
 import { useNavigate, useParams } from "react-router-dom";
+
+pkg.component.SidePanel = true;
 
 const turndownService = new TurndownService();
 
@@ -315,9 +318,13 @@ export default function BlockNoteEditor(
     ...rest
   }
 ) {
+  const carbonPrefix = usePrefix();
   const profile = useSelector((state) => state.profile);
+  const [ isSideNavExpanded, setIsSideNavExpanded ] = useState(false);
+  const openSideNav = () => setIsSideNavExpanded(true);
+  const closeSideNav = () => setIsSideNavExpanded(false);
   const navigate = useNavigate();
-  const blockNoteRef = React.useRef(null);
+  const [hindiText, setHindiText] = useState('');
   const rename = {
     "Heading 1": "Title",
     "Heading 2": "Subtitle",
@@ -338,10 +345,9 @@ export default function BlockNoteEditor(
   });
 
   const [wordCount, setWordCount] = useState(0);
+  const [lang, setLang] = useState('')
 
   useEffect(() => {
-    // window.pramukhIME.setLanguage('hindi', 'pramukhindic');
-    // window.pramukhIME.enable();
     let cacheContent = JSON.parse(localStorage.getItem('tools/writing-assistant'));
     let selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
     if (selectedTool&&selectedTool.name==='writing-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
@@ -373,9 +379,6 @@ export default function BlockNoteEditor(
       console.log(res);
       setWordCount(res.replace(/[#*_`>-]|\[.*?\]\(.*?\)/g, "").split(/\s+/).length-1);
     });
-    // return function cleanup() {
-    //   window.pramukhIME.disable();
-    // }
   }, []);
 
   const autoSave = () => {
@@ -395,6 +398,15 @@ export default function BlockNoteEditor(
     const interval = setInterval(autoSave, 5000);
     return () => clearInterval(interval);
   }, [isChanged]);
+
+  useEffect(()=>{
+    if(lang===''){
+      window.pramukhIME.disable()
+    } else {
+      window.pramukhIME.setLanguage('hindi', 'pramukhindic');
+      window.pramukhIME.enable();
+    }
+  },[lang])
 
   const handleDelete = () => {
     dispatch(deleteFile("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, false));
@@ -528,6 +540,10 @@ export default function BlockNoteEditor(
         }
       }
     },
+    { id: "hindi", key: "hindi", renderIcon: () => <Translate />, label: "Hindi", onClick: ()=>{
+      setLang('hindi')
+      openSideNav();
+    } },
     { id: "delete", key: "delete", renderIcon: () => <TrashCan />, label: "Delete", onClick: handleDelete },
     {
       id: "back",
@@ -554,8 +570,12 @@ export default function BlockNoteEditor(
   rightAlign={true}
   containerWidth={800}
   style={{marginRight: "2.5rem", marginLeft: "2.5rem", marginTop: "1rem"}}
-/><div className='word-processor'>
-    <BlockNoteView {...rest} className="page"
+/>
+<SidePanel id="storybook-id" title="Hindi Typing" subtitle="Lets write in hindi" size="2xl" primaryButtonText="Send" secondaryButtonText="Cancel" open={isSideNavExpanded} onRequestClose={() => { setLang('');closeSideNav();}} selectorPrimaryFocus={`.${carbonPrefix}--text-input`}>
+      <TextArea value={hindiText} onChange={(e)=>setHindiText(e.target.value)} placeholder="Type In hindi" />
+  </SidePanel>
+<div className='word-processor'>
+    <BlockNoteView {...rest} editable={true} className="page"
     style={{
     marginTop: "2rem",
   }} theme="light" editor={editor} formattingToolbar={false} onChange={(props) => {
