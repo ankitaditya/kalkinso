@@ -54,7 +54,7 @@ const promptTemplates = {
     "Business Plan Writer": "businessPlanWriter",
     "PCB Component List": "pcbComponentList",
 }
-const promptTemplate = (prompt, response) => {
+const promptTemplate = (prompt, response, previousContent) => {
     const promptTemplates = {
         bookWriter: `
           For my prompt, respond with detailed, professionally written text formatted in Markdown. 
@@ -66,7 +66,8 @@ const promptTemplate = (prompt, response) => {
           5. Ensure the tone is professional, engaging, and appropriate for the audience.
           6. If a previous response exists, incorporate it logically and contextually into the new output.
           Here is my prompt: ${prompt}
-          Previous Response: ${response}
+          Selected Content: ${response}
+          Previous Response: ${previousContent}
         `,
       
         researchPaperWriter: `
@@ -237,7 +238,7 @@ function AddFileButton() {
   ) : null;
 }
 
-const generateAiPrompt = async (inputPrompt, document) => {
+const generateAiPrompt = async (inputPrompt, document, previousContent) => {
   // Replace with your AI API integration (e.g., OpenAI API)
   console.log("Generating AI prompt...: ", document);
   const resp = await axios.post(
@@ -251,7 +252,7 @@ const generateAiPrompt = async (inputPrompt, document) => {
             },
             {
                 "role": "user",
-                "content": promptTemplate(inputPrompt, document)['editContent']
+                "content": promptTemplate(inputPrompt, document, previousContent)['editContent']
             }
         ]
     }),
@@ -275,6 +276,20 @@ function AiPromptButton() {
   
     // Return null if the editor is not initialized
     if (!editor) return null;
+
+    const getPreviousContentToTop = (editor) => {
+      const cursorBlock = editor.getTextCursorPosition().block;
+      const allBlocks = editor.getBlocks();
+      const cursorIndex = allBlocks.findIndex((block) => block.id === cursorBlock.id);
+    
+      // Get all content from the cursor position to the top
+      const previousContent = allBlocks
+        .slice(0, cursorIndex + 1)
+        .map((block) => block.content)
+        .join("\n");
+    
+      return previousContent || "No previous text found.";
+    };
   
     // Function to handle AI Prompt generation
     const handleGenerateAiPrompt = async () => {
@@ -287,7 +302,8 @@ function AiPromptButton() {
         dispatch(setLoading(true));
         // Generate AI prompt based on user input and current editor content
         const currentContent = editor.getSelectedText();
-        const aiPrompt = await generateAiPrompt(inputPrompt, currentContent);
+        const previousContent = getPreviousContentToTop(editor);
+        const aiPrompt = await generateAiPrompt(inputPrompt, currentContent, previousContent);
         const currentBlock = editor.getTextCursorPosition().block;
         const newBlocks = await editor.tryParseMarkdownToBlocks(aiPrompt);
         // Replace the content in the editor with the generated AI prompt

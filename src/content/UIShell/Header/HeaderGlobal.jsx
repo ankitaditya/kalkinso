@@ -3,18 +3,38 @@ import { HeaderGlobalAction, HeaderGlobalBar, Theme } from "@carbon/react"
 import { AiGenerate, Notification, UserProfile } from "@carbon/react/icons"
 import { useSelector } from "react-redux";
 import SidePanelChat from "../SidePanelChat/SidePanelChat";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SidePanel from "../SidePanel/SidePanel";
 import { sampleData } from "../sampleData";
 
 const HeaderGlobal = () => {
     const { isAuthenticated } = useSelector((state) => state.auth);
+    const { tasks } = useSelector((state) => state.task.kanban);
     const [state, setState] = useState({
         activeTab: 0,
         isSideNavExpanded: false,
         notificationOpen: false,
         notificationsData: sampleData,
     });
+    useEffect(() => {
+        setState({
+            activeTab: 0,
+            isSideNavExpanded: false,
+            notificationOpen: false,
+            notificationsData:tasks.map(task=>{
+            return {
+                id: task._id,
+                type: 'informational',
+                title: task.name,
+                description: task.description,
+                timestamp: new Date(task.updatedAt),
+                unread: true,
+                onNotificationClick: (notification) => {
+                    window.location.href = `/#/home/${notification.id}`
+                }
+            }
+        })})
+    },[tasks])
     const setNotificationsData = (data) => {
         let newState = state;
         newState.notificationsData = data;
