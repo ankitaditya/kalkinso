@@ -154,7 +154,7 @@ export function ContactPage() {
           <h2>Contact Info</h2>
           <ul>
             <li>Email: <a href="mailto:info@kalkinso.com">info@kalkinso.com</a></li>
-            <li>Address: KALKINSO SOFTWARE (OPC) PRIVATE LIMITED, Pratapgarh, Uttar Pradesh, India</li>
+            <li>Address: KALKINSO SOFTWARE (OPC) , Pratapgarh, Uttar Pradesh, India</li>
           </ul>
           <br />
           <h2>Our Location</h2>
