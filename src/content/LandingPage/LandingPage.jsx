@@ -79,7 +79,7 @@ class LandingPage extends Component {
                               sm={4}>
                         <h2 className="landing-page__subheading">What is Kalkinso?</h2>
                         <p className="landing-page__p">
-                        Kalkinso Software  is a dynamic technology company committed to transforming innovative ideas into reality. 
+                        KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  is a dynamic technology company committed to transforming innovative ideas into reality. 
                         Our core strengths lie in bridging the gap between conceptualization and successful implementation. 
                         With a dedicated team of skilled engineers and strategists, 
                         we specialize in turning ideas into high-quality software products.

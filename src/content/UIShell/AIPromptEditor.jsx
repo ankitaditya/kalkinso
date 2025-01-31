@@ -152,7 +152,10 @@ const promptTemplate = (prompt, response, previousContent) => {
           Here is my prompt: ${prompt}
           Previous Response: ${response}
         `,
-        editContent: `${prompt}: ${response}`
+        editContent: `
+        Context: ${previousContent}
+        Constraints: do not add extra sentences, just edit the content.
+        ${prompt}: ${response}`
       };  
     return promptTemplates;
 }
@@ -241,7 +244,6 @@ function AddFileButton() {
 
 const generateAiPrompt = async (inputPrompt, document, previousContent) => {
   // Replace with your AI API integration (e.g., OpenAI API)
-  console.log("Generating AI prompt...: ", document);
   const resp = await axios.post(
     '/api/kalkiai/completions',
     JSON.stringify({
@@ -278,16 +280,14 @@ function AiPromptButton() {
     // Return null if the editor is not initialized
     if (!editor) return null;
 
-    const getPreviousContentToTop = (editor) => {
+    const getPreviousContentToTop = async (editor) => {
       const cursorBlock = editor.getTextCursorPosition().block;
-      const allBlocks = editor.getBlocks();
+      const allBlocks = editor.document;
       const cursorIndex = allBlocks.findIndex((block) => block.id === cursorBlock.id);
     
       // Get all content from the cursor position to the top
-      const previousContent = allBlocks
-        .slice(0, cursorIndex + 1)
-        .map((block) => block.content)
-        .join("\n");
+      const previousContent = await editor.blocksToMarkdownLossy(allBlocks
+        .slice(0, cursorIndex + 1))
     
       return previousContent || "No previous text found.";
     };
@@ -303,16 +303,17 @@ function AiPromptButton() {
         dispatch(setLoading(true));
         // Generate AI prompt based on user input and current editor content
         const currentContent = editor.getSelectedText();
-        const previousContent = getPreviousContentToTop(editor);
+        const previousContent = await getPreviousContentToTop(editor);
         const aiPrompt = await generateAiPrompt(inputPrompt, currentContent, previousContent);
         const currentBlock = editor.getTextCursorPosition().block;
         const newBlocks = await editor.tryParseMarkdownToBlocks(aiPrompt);
         // Replace the content in the editor with the generated AI prompt
         editor.replaceBlocks([currentBlock], newBlocks);
+        dispatch(setLoading(false));
       } catch (error) {
         console.error("Error generating AI prompt:", error);
+        dispatch(setLoading(false));
       }
-      dispatch(setLoading(false));
     };
   
     return (
