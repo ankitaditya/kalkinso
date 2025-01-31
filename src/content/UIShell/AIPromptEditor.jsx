@@ -19,6 +19,7 @@ import {
   useComponentsContext,
   useBlockNoteEditor,
   blockTypeSelectItems,
+  FormattingToolbarController,
  } from "@blocknote/react";
 import {
   BlockNoteSchema,
@@ -605,7 +606,9 @@ export default function BlockNoteEditor(
       }
     }}
   >
-    <FormattingToolbar>
+    <FormattingToolbarController 
+      formattingToolbar={() => (
+        <FormattingToolbar>
           <AddFileButton onClick={()=>{
             dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
             setFileName("Untitled Document");
@@ -663,5 +666,65 @@ export default function BlockNoteEditor(
 
           <CreateLinkButton key={"createLinkButton"} />
         </FormattingToolbar>
+      )}
+     />
+    {/* <FormattingToolbar>
+          <AddFileButton onClick={()=>{
+            dispatch(saveTools("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
+            setFileName("Untitled Document");
+            editor.replaceBlocks(editor.document, []);
+          }} key={"addFileButton"} />
+          <BlockTypeSelect items={blockTypeSelectItems(editor.dictionary).map((val)=>{
+            return {
+              ...val,
+              name: rename[val.name]?rename[val.name]:val.name,
+            }
+          }).slice(0,-1)} key={"blockTypeSelect"} />
+          <InlineMathButton key={"inlineMath"} />
+          <AiPromptButton key={"aiPromptButton"} />
+          <FileCaptionButton key={"fileCaptionButton"} />
+          <FileReplaceButton key={"replaceFileButton"} />
+
+          <BasicTextStyleButton
+            basicTextStyle={"bold"}
+            key={"boldStyleButton"}
+          />
+          <BasicTextStyleButton
+            basicTextStyle={"italic"}
+            key={"italicStyleButton"}
+          />
+          <BasicTextStyleButton
+            basicTextStyle={"underline"}
+            key={"underlineStyleButton"}
+          />
+          <BasicTextStyleButton
+            basicTextStyle={"strike"}
+            key={"strikeStyleButton"}
+          />
+          <BasicTextStyleButton
+            key={"codeStyleButton"}
+            basicTextStyle={"code"}
+          />
+
+          <TextAlignButton
+            textAlignment={"left"}
+            key={"textAlignLeftButton"}
+          />
+          <TextAlignButton
+            textAlignment={"center"}
+            key={"textAlignCenterButton"}
+          />
+          <TextAlignButton
+            textAlignment={"right"}
+            key={"textAlignRightButton"}
+          />
+
+          <ColorStyleButton key={"colorStyleButton"} />
+
+          <NestBlockButton key={"nestBlockButton"} />
+          <UnnestBlockButton key={"unnestBlockButton"} />
+
+          <CreateLinkButton key={"createLinkButton"} />
+        </FormattingToolbar> */}
   </BlockNoteView></div></>;
 }
