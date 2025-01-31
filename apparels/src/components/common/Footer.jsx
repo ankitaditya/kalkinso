@@ -18,7 +18,7 @@ const Footer = () => {
           <span>
             Developed by
             {' '}
-            <a href="https://www.kalkinso.com">KALKINSO SOFTWARE (OPC) </a>
+            <a href="https://www.kalkinso.com">KALKINSO SOFTWARE  </a>
           </span>
         </strong>
       </div>

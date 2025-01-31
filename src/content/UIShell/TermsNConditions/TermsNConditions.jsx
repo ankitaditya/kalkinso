@@ -10,15 +10,15 @@ const TermsNConditions = () => {
 <div class="section-divider"></div>
 <h2>AGREEMENT TO OUR LEGAL TERMS</h2>
 <p><br /></p>
-<p>We are KALKINSO SOFTWARE (OPC)  (&quot;<strong>Company</strong>,&quot; &quot;<strong>we</strong>,&quot; &quot;<strong>us</strong>,&quot; &quot;<strong>our</strong>&quot;), a company registered in India at KALKINSO SOFTWARE (OPC) , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP, PRATAPGARH, Uttar Pradesh 230204. Our VAT number is 09AALCK1714B1ZU.</p>
+<p>We are KALKINSO SOFTWARE   (&quot;<strong>Company</strong>,&quot; &quot;<strong>we</strong>,&quot; &quot;<strong>us</strong>,&quot; &quot;<strong>our</strong>&quot;), a company registered in India at KALKINSO SOFTWARE  , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP, PRATAPGARH, Uttar Pradesh 230204. Our VAT number is 09AALCK1714B1ZU.</p>
 <p><br /></p>
 <p>We operate the website <a href="http://www.kalkinso.com">http://www.kalkinso.com</a> (the &quot;<strong>Site</strong>&quot;), as well as any other related products and services that refer or link to these legal terms (the &quot;<strong>Legal Terms</strong>&quot;) (collectively, the &quot;<strong>Services</strong>&quot;).</p>
 <p><br /></p>
 <p>Kalkinso Software  is a dynamic technology company committed to transforming innovative ideas into reality. Our core strengths lie in bridging the gap between conceptualization and successful implementation. With a dedicated team of skilled engineers and strategists, we specialize in turning ideas into high-quality software products.</p>
 <p><br /></p>
-<p>You can contact us by phone at +91844XXXXXXX, email at info@kalkinso.com, or by mail to KALKINSO SOFTWARE (OPC) , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP, PRATAPGARH, Uttar Pradesh 230204, India.</p>
+<p>You can contact us by phone at +91844XXXXXXX, email at info@kalkinso.com, or by mail to KALKINSO SOFTWARE  , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP, PRATAPGARH, Uttar Pradesh 230204, India.</p>
 <p><br /></p>
-<p>These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&quot;<strong>you</strong>&quot;), and KALKINSO SOFTWARE (OPC) , concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.</p>
+<p>These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&quot;<strong>you</strong>&quot;), and KALKINSO SOFTWARE  , concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.</p>
 <p><br /></p>
 <p>We will provide you with prior notice of any scheduled changes to the Services you are using. Changes to Legal Terms will become effective one hundred eighty (180) days after the notice is given, except if the changes apply to new functionality, security updates, and a court order, in which case the changes will be effective immediately. By continuing to use the Services after the effective date of any changes, you agree to be bound by the modified terms. If you disagree with such changes, you may terminate Services as per the section &quot;TERM AND TERMINATION.&quot;</p>
 <p><br /></p>
@@ -287,7 +287,7 @@ const TermsNConditions = () => {
 <div class="section-divider"></div>
 <h2>22.&nbsp;GOVERNING LAW</h2>
 <p><br /></p>
-<p>These Legal Terms shall be governed by and defined following the laws of India. KALKINSO SOFTWARE (OPC)  and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these Legal Terms.</p>
+<p>These Legal Terms shall be governed by and defined following the laws of India. KALKINSO SOFTWARE   and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these Legal Terms.</p>
 <div class="section-divider"></div>
 <h2>23.&nbsp;DISPUTE RESOLUTION</h2>
 <p><br /></p>
@@ -365,8 +365,8 @@ const TermsNConditions = () => {
 <p><br /></p>
 <p>In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:</p>
 <p><br /></p>
-<p><strong>KALKINSO SOFTWARE (OPC) </strong></p>
-<p><strong>KALKINSO SOFTWARE (OPC) , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP</strong></p>
+<p><strong>KALKINSO SOFTWARE  </strong></p>
+<p><strong>KALKINSO SOFTWARE  , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP</strong></p>
 <p><strong>PRATAPGARH, Uttar Pradesh 230204</strong></p>
 <p><strong>India</strong></p>
 <p><strong>Phone: +91844XXXXXXX&nbsp;</strong></p>

@@ -83,7 +83,7 @@ const PrivacyPolicy = () => {
         <ul>
             <li>Email: <a href="mailto:info@kalkinso.com">info@kalkinso.com</a></li>
             <li>Website: <a href="https://www.kalkinso.com/contact" target="_blank" rel="noreferrer">https://www.kalkinso.com/contact</a></li>
-            <li>Address: KALKINSO SOFTWARE (OPC) , Pratapgarh, Uttar Pradesh, India</li>
+            <li>Address: KALKINSO SOFTWARE  , Pratapgarh, Uttar Pradesh, India</li>
         </ul>
     </div>
     )

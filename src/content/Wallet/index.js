@@ -181,7 +181,7 @@ const WalletPage = () => {
             <div ref={invoiceRef}>
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <img src="https://www.kalkinso.com/logo-new.png" alt="Company Logo" style={{ width: '100px', height: 'auto' }} />
-              <h2>Kalkinso Software (OPC) </h2>
+              <h2>Kalkinso Software  </h2>
               <p>506 Shukl Pure Nanha, Aindha, Pratapgarh, Kunda, Uttar Pradesh, India, 230204</p>
               <p>GSTIN: 09AALCK1714B1ZU</p>
             </div>
