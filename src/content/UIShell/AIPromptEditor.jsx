@@ -152,10 +152,7 @@ const promptTemplate = (prompt, response, previousContent) => {
           Here is my prompt: ${prompt}
           Previous Response: ${response}
         `,
-        editContent: `
-        Context: ${previousContent}
-        Constraints: do not add extra sentences, just edit the content.
-        ${prompt}: ${response}`
+        editContent: `${prompt}: ${response}`
       };  
     return promptTemplates;
 }
