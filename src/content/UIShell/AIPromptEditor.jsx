@@ -287,9 +287,10 @@ function AiPromptButton() {
     
       // Get all content from the cursor position to the top
       const previousContent = await editor.blocksToMarkdownLossy(allBlocks
-        .slice(0, cursorIndex + 1))
+        .slice(cursorIndex, cursorIndex + 1))
     
       return previousContent || "No previous text found.";
+      // return "No previous text found.";
     };
   
     // Function to handle AI Prompt generation
