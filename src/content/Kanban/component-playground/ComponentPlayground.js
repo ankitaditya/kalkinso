@@ -7,24 +7,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Cascade, ExpressiveCard, NotFoundEmptyState, pkg, StatusIcon, UserProfileImage } from '@carbon/ibm-products';
+import { Cascade, NotFoundEmptyState, pkg } from '@carbon/ibm-products';
 import {
   ProductiveCard,
-  GlobalHeader,
   MultiStepTearsheetWide,
   PageHeader,
   SidePanel,
   TearsheetNarrow,
   TearsheetWide,
 } from './components';
-import { Accordion, AccordionItem, ButtonSet, ClickableTile, Column, ContentSwitcher, FileUploader, IconButton, IconSwitch, InlineLoading, Switch, TextArea, Tile, Tooltip } from '@carbon/react';
+import { Column, ContentSwitcher, Switch } from '@carbon/react';
 import './ComponentPlayground.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { Add, Attachment, Chat, Delete, Edit, FaceActivated, FileStorage, Folder, FolderOpen, Gears, Image, Send, TableOfContents, TrashCan, User } from '@carbon/react/icons';
-import { Editor } from 'primereact/editor';
+import { Add, Attachment, FaceActivated, Gears, Image, Send, TrashCan } from '@carbon/react/icons';
 import { Markup } from 'interweave';
-import costaPic from './_story-assets/costa.jpeg';
-import FileUploaderDragAndDrop from './components/CreateTearsheet/FileUploaderDragAndDrop';
 import { useParams } from 'react-router-dom';
 import { setLoading } from '../../../actions/auth';
 import { getSubTasks, openCreateTask } from '../../../actions/task';
@@ -145,7 +141,7 @@ const App = ({breadcrumb}) => {
           "kind": "secondary",
           "text": "Create new",
           "renderIcon": Add,
-          onClick: () => setMultiStepTearsheetOpen(true)
+          onClick: () => dispatch(openCreateTask())
         }}
         />
         </Column>;
@@ -165,7 +161,7 @@ const App = ({breadcrumb}) => {
       "kind": "secondary",
       "text": "Create new",
       "renderIcon": Add,
-      onClick: () => setMultiStepTearsheetOpen(true)
+      onClick: () => dispatch(openCreateTask())
     }}
     />
     </Column>);
