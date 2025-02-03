@@ -85,6 +85,47 @@ const PrivacyPolicy = () => {
             <li>Website: <a href="https://www.kalkinso.com/contact" target="_blank" rel="noreferrer">https://www.kalkinso.com/contact</a></li>
             <li>Address: KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  , Pratapgarh, Uttar Pradesh, India</li>
         </ul>
+
+        <h1> Other Policies </h1>
+
+        <p style={{ color: '#555' }}>
+                Your privacy is important to us. This Privacy Policy explains how we collect, use, disclose, and safeguard 
+                your information when you visit our website and use our services. Please read this policy carefully. If you do 
+                not agree with the terms of this Privacy Policy, please do not access the site.
+            </p>
+
+            <h2 style={{ color: '#333' }}>1. Information We Collect</h2>
+
+            <h3 style={{ color: '#333' }}>1.1 Personal Information</h3>
+            <p style={{ color: '#555' }}>We may collect personal information that you provide to us, such as:</p>
+            <ul style={{ color: '#555' }}>
+                <li><strong>Contact Information:</strong> Name, email address, phone number.</li>
+                <li><strong>Account Information:</strong> Username, password, and other registration details.</li>
+                <li><strong>Location Information:</strong> When you use our services to find nearby vendors, we may collect your location data.</li>
+            </ul>
+
+            <h3 style={{ color: '#333' }}>1.2 Usage Data</h3>
+            <p style={{ color: '#555' }}>We automatically collect certain information when you visit our site, including:</p>
+            <ul style={{ color: '#555' }}>
+                <li><strong>Device Information:</strong> Information about your device, including IP address, browser type, and operating system.</li>
+                <li><strong>Usage Information:</strong> Details about your interactions with our website, such as pages visited, time spent on the site, and other diagnostic data.</li>
+            </ul>
+
+            <h3 style={{ color: '#333' }}>1.3 Cookies and Tracking Technologies</h3>
+            <p style={{ color: '#555' }}>
+                We use cookies and similar tracking technologies to track the activity on our website and store certain information. 
+                You can control the use of cookies through your browser settings.
+            </p>
+
+            <h2 style={{ color: '#333' }}>2. How We Use Your Information</h2>
+            <p style={{ color: '#555' }}>We use the information we collect for various purposes, including:</p>
+            <ul style={{ color: '#555' }}>
+                <li><strong>To Provide and Maintain Our Service:</strong> To connect you with nearby vendors based on your location.</li>
+                <li><strong>To Manage Your Account:</strong> To manage your registration as a user and facilitate your access to the services.</li>
+                <li><strong>To Communicate with You:</strong> To send updates, notifications, and information related to your account or orders.</li>
+                <li><strong>For Marketing Purposes:</strong> To provide you with news, special offers, and general information about other goods, services, and events unless you have opted not to receive such information.</li>
+                <li><strong>To Improve Our Services:</strong> To understand how our services are used and to improve our offerings.</li>
+            </ul>
     </div>
     )
 }

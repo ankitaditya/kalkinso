@@ -13,7 +13,7 @@ const CancellationRefund = () => {
                 <li>In case of receipt of damaged or defective items, please report the same to our Customer Service team. The request will, however, be entertained once the merchant has checked and determined the same at his own end. This should be reported within <strong>7 days</strong> of receipt of the products.</li>
                 <li>In case you feel that the product received is not as shown on the site or as per your expectations, you must bring it to the notice of our customer service within <strong>7 days</strong> of receiving the product. The Customer Service Team, after looking into your complaint, will take an appropriate decision.</li>
                 <li>In case of complaints regarding products that come with a warranty from manufacturers, please refer the issue to them.</li>
-                <li>In case of any refunds approved by KALKINSO SOFTWARE (OPC) PRIVATE LIMITED, it will take <strong>9-15 days</strong> for the refund to be processed to the end customer.</li>
+                <li>In case of any refunds approved by KALKINSO SOFTWARE (OPC) PRIVATE LIMITED, it will get credited to your original payment method within <strong>7 days</strong>.</li>
             </ul>
         </div>
     );
