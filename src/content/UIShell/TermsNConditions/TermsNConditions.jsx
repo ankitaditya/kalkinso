@@ -37,7 +37,7 @@ const TermsNConditions = () => {
 <p><br /></p>
 <p>KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  is a dynamic technology company committed to transforming innovative ideas into reality. Our core strengths lie in bridging the gap between conceptualization and successful implementation. With a dedicated team of skilled engineers and strategists, we specialize in turning ideas into high-quality software products.</p>
 <p><br /></p>
-<p>You can contact us by phone at +91844XXXXXXX, email at info@kalkinso.com, or by mail to KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP, PRATAPGARH, Uttar Pradesh 230204, India.</p>
+<p>You can contact us by email at info@kalkinso.com, or by mail to KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP, PRATAPGARH, Uttar Pradesh 230204, India.</p>
 <p><br /></p>
 <p>These Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity (&quot;<strong>you</strong>&quot;), and KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  , concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.</p>
 <p><br /></p>
@@ -364,7 +364,7 @@ const TermsNConditions = () => {
 <p><br /></p>
 <h3>Support</h3>
 <p><br /></p>
-<p>If you have any questions or need assistance regarding our SMS communications, please email us at info@kalkinso.com or call at +91844XXXXXXX.</p>
+<p>If you have any questions or need assistance regarding our SMS communications, please email us at info@kalkinso.com</p>
 <div class="section-divider"></div>
 <h2>31. CALIFORNIA USERS AND RESIDENTS</h2>
 <p><br /></p>
@@ -390,7 +390,6 @@ const TermsNConditions = () => {
 <p><strong>KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  , SHUKL PURE NANHA SHUKAL AINDHA PRATAPGARH UP</strong></p>
 <p><strong>PRATAPGARH, Uttar Pradesh 230204</strong></p>
 <p><strong>India</strong></p>
-<p><strong>Phone: +91844XXXXXXX&nbsp;</strong></p>
 <p><strong>info@kalkinso.com</strong></p>
         </div>
     )

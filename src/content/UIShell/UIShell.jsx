@@ -45,6 +45,7 @@ import WorkInProgress from "./WorkInProgress";
 import VideoBook from "./VideoBook";
 import Reports from "./Reports";
 import CancellationRefund from "./CancellationRefund/CancellationRefund";
+import Services from "./Services";
 
 
 class UIShell extends React.Component {
@@ -120,6 +121,7 @@ class UIShell extends React.Component {
                             <Route path="privacy-policy" element={<PrivacyPolicy />} />
                             <Route path="terms-n-conditions" element={<TermsNConditions />} />
                             <Route path="return-n-refund-policy" element={<CancellationRefund />} />
+                            <Route path="services" element={<Services />} />
                             <Route path="Login">
                                 <Route path="" element={<VerifyOtp />} />
                                 {/* <Route path="otp" element={<Login />} /> */}
