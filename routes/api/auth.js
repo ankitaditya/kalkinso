@@ -408,7 +408,7 @@ router.post(
 
 
 router.post('/send-email-verification', ipAuth, async (req, res) => {
-	const { email } = req.body;
+	const { email, demo } = req.body;
 	
 	try {
 	  // Using Twilio Verify service to generate OTP
@@ -418,6 +418,10 @@ router.post('/send-email-verification', ipAuth, async (req, res) => {
 					.status(400)
 					.json([{ msg: 'User already exists' }])
 			}
+	  if(demo) {
+		res.json({ success: true, sid: "demo" });
+		return true
+	  }
 	  const verification = await twilioClient.verify.v2
 		.services(verifyServiceSid)
 		.verifications
@@ -431,7 +435,7 @@ router.post('/send-email-verification', ipAuth, async (req, res) => {
   });
 
   router.post('/send-login-email-verification', ipAuth, async (req, res) => {
-	const { email } = req.body;
+	const { email, demo } = req.body;
 	
 	try {
 	  // Using Twilio Verify service to generate OTP
@@ -442,6 +446,10 @@ router.post('/send-email-verification', ipAuth, async (req, res) => {
 				.json({ errors: [{ msg: 'User not found!' }] })
 
 		}
+		if(demo) {
+			res.json({ success: true, sid: "demo" });
+			return true
+		  }
 	  const verification = await twilioClient.verify.v2
 		.services(verifyServiceSid)
 		.verifications
@@ -455,10 +463,14 @@ router.post('/send-email-verification', ipAuth, async (req, res) => {
   });
   
 router.post('/verify-email-otp', ipAuth, async (req, res) => {
-	const { email, otp } = req.body;
+	const { email, otp, demo } = req.body;
 	
 	try {
 	  // Verify the OTP using Twilio Verify service
+	  if(demo) {
+		res.json({ success: true, message: "OTP validated successfully!" });
+		return true
+	  }
 	  const verificationCheck = await twilioClient.verify.v2
 		.services(verifyServiceSid)
 		.verificationChecks
@@ -476,9 +488,40 @@ router.post('/verify-email-otp', ipAuth, async (req, res) => {
   });
 
   router.post('/verify-login-email-otp', ipAuth, async (req, res) => {
-	const { email, otp } = req.body;
+	const { email, otp, demo } = req.body;
 	
 	try {
+		if(demo) {
+			const user = await User.findOne({email:email});
+		if (!user) {
+			return res
+				.status(403)
+				.json({ errors: [{ msg: 'Unauthorized Access!' }] })
+		}
+		const payload = {
+			user: {
+				id: user._id,
+			},
+		}
+		let jwt_result = {}
+		const token = jwt.sign(
+			payload,
+			process.env.REACT_APP_JWT_SECRET,
+			{ expiresIn: '4 hours' },
+		)
+		if (!user.sessions) {
+			user.sessions = []
+		}
+		jwt_result['token'] = token
+		user.sessions.push(jwt_result)
+		await User.findOneAndUpdate(
+			{ email: email },
+			{ $set: user },
+			{ new: true }
+		)
+			res.json({ success: true, message: "OTP validated successfully!", token: token });
+			return true
+		  }
 	  // Verify the OTP using Twilio Verify service
 	  const verificationCheck = await twilioClient.verify.v2
 		.services(verifyServiceSid)

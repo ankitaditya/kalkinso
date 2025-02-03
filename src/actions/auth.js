@@ -214,12 +214,16 @@ export const sendVerificationLogin = ({email=null, mobile=null, adhar=null, upi=
 			'Content-Type': 'application/json',
 		},
 	}
+	let demo = false
 	let bodyJson = {}
 	let verifyType = ''
 	if (email === null && mobile === null && adhar === null && upi === null) {
 		dispatch(setAlert('Please provide a valid email or mobile or adhar or upi', 'error'))
 		return
 	} else if (email){
+		if (email === 'info@kalkinso.com'){
+			demo = true
+		}
 		bodyJson = { email }
 		verifyType = 'email'
 	} else if (mobile){
@@ -232,7 +236,7 @@ export const sendVerificationLogin = ({email=null, mobile=null, adhar=null, upi=
 		bodyJson = { upi, consent }
 		verifyType = 'upi'
 	}
-	const body = JSON.stringify(bodyJson)
+	const body = JSON.stringify({...bodyJson, demo})
 	try {
 		const res = await axios.post(`/api/auth/send-login-${verifyType}-verification`, body, config)
 		dispatch({
@@ -296,12 +300,16 @@ export const verifyOtp = ({email=null, mobile=null, adhar=null, upi=null, otp=nu
 			'Content-Type': 'application/json',
 		},
 	}
+	let demo = false
 	let bodyJson = {}
 	let verifyType = ''
 	if (email === null && mobile === null && adhar === null && upi === null) {
 		dispatch(setAlert('Please provide a valid OTP', 'error'))
 		return
 	} else if (email){
+		if (email.replace(/\s+/g, '') === 'info@kalkinso.com'){
+			demo = true
+		}
 		bodyJson = { email:email.replace(/\s+/g, ''), otp}
 		verifyType = 'email'
 	} else if (mobile){
@@ -314,7 +322,7 @@ export const verifyOtp = ({email=null, mobile=null, adhar=null, upi=null, otp=nu
 		bodyJson = { reference_id:upi.toString(), otp}
 		verifyType = 'upi'
 	}
-	const body = JSON.stringify(bodyJson)
+	const body = JSON.stringify({...bodyJson, demo})
 
 	try {
 		const res = await axios.post(`/api/auth/verify-${verifyType}-otp`, body, config);
@@ -348,12 +356,16 @@ export const otpLogin = ({email=null, mobile=null, adhar=null, upi=null, otp=nul
 			'Content-Type': 'application/json',
 		},
 	}
+	let demo = false
 	let bodyJson = {}
 	let verifyType = ''
 	if (email === null && mobile === null && adhar === null && upi === null) {
 		dispatch(setAlert('Please provide a valid OTP', 'error'))
 		return
 	} else if (email){
+		if (email.replace(/\s+/g, '') === 'info@kalkinso.com'){
+			demo = true
+		}
 		bodyJson = { email:email.replace(/\s+/g, ''), otp}
 		verifyType = 'email'
 	} else if (mobile){
@@ -366,7 +378,7 @@ export const otpLogin = ({email=null, mobile=null, adhar=null, upi=null, otp=nul
 		bodyJson = { reference_id:upi.toString(), otp}
 		verifyType = 'upi'
 	}
-	const body = JSON.stringify(bodyJson)
+	const body = JSON.stringify({...bodyJson, demo})
 
 	try {
 		const res = await axios.post(`/api/auth/verify-login-${verifyType}-otp`, body, config);
