@@ -13,10 +13,11 @@ import { Lightning, Gears, Edit, Search } from '@carbon/react/icons';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Avatar } from 'primereact/avatar';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { ProgressBar } from '@carbon/react';
+import { openCreateTask } from '../../../../../actions/task';
 
 const ProgresBarDemo = (props) => {
   const size = 728;
@@ -104,6 +105,7 @@ const PageHeader = (props) => {
   const [ taskCard, setTaskCard ] = useState({});
   const [ taskIndex, setTaskIndex ] = useState(0);
   const [ actionBarItems, setActionBarItems ] = useState([2,3].map((item, index) => getActions(item, props, taskIndex)));
+  const dispatch = useDispatch();
   const [ tags, setTags ] = useState(taskCard?.skills?.map((skill, index) => ({
     type: colors[index % colors.length],
     label: skill,
@@ -259,7 +261,7 @@ const PageHeader = (props) => {
           kind: 'primary',
           label: 'Create new task',
           onClick: () => {
-            props.setIsOpen(true);
+            dispatch(openCreateTask());
           },
         },
       ]}

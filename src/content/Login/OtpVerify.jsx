@@ -248,7 +248,7 @@ const VerifyOtp = () => {
                 </SemanticButton>
                 <ButtonOr style={{zIndex: 0}} />
                 <SemanticButton type="button" onClick={()=>handleVerify(sendOtp&&!registerRecaptchaToken)} className="submit-button form-item" disabled={sendOtp?otp.length!==6:false} primary>
-                  {sendOtp&&!registerRecaptchaToken?"Verify OTP":"Google"}
+                  {sendOtp&&!registerRecaptchaToken?"Verify OTP":"Register"}
                 </SemanticButton>
               </ButtonGroup>
             </SemanticForm>

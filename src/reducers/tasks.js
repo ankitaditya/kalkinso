@@ -771,6 +771,7 @@ const intialState =  {
 	kanban: {
 		task_heirarchy: {},
 		task_files: {},
+		createTask: false,
 		tasks: [],
 		file_context: null,
 	} 
@@ -927,6 +928,14 @@ export default function taskReducer(state = intialState, action) {
 				kanban: {
 					...state.kanban,
 					file_context: action.payload,
+				}
+			}
+		case actionTypes.CREATE_TASK:
+			return {
+				...state,
+				kanban: {
+					...state.kanban,
+					createTask: action.payload,
 				}
 			}
 		default:

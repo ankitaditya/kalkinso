@@ -377,3 +377,17 @@ export const deleteCommentReaction = (task_id, comment_id) => async dispatch => 
     });
   }
 };
+
+export const openCreateTask = () => async dispatch => {
+  return {
+    type: 'CREATE_TASK',
+    payload: true,
+  };
+}
+
+export const closeCreateTask = () => async dispatch => {
+  return {
+    type: 'CREATE_TASK',
+    payload: false,
+  };
+}

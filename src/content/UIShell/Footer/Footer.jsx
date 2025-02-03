@@ -31,6 +31,9 @@ const Footer = () => {
             <a className='a-tag' href={`${window.location.origin}/#/privacy-policy`} style={{ color:"white",margin: '0 15px' }}>
               Privacy Policy
             </a>
+            <a className='a-tag' href={`${window.location.origin}/#/return-n-refund-policy`} style={{ color:"white",margin: '0 15px' }}>
+              Return & Refund Policy
+            </a>
             <a className='a-tag' href={`${window.location.origin}/#/terms-n-conditions`} style={{ color:"white", margin: '0 15px' }}>
               Terms & Conditions
             </a>

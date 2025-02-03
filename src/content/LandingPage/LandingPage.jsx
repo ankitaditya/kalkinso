@@ -40,9 +40,9 @@ class LandingPage extends Component {
             <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
               <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
             </IconButton>
-            {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
+            <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
               <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
-            </IconButton> */}
+            </IconButton>
           </FluidForm>:<><FluidForm style={{marginTop:"35px"}}>
             <Button href='/#/register'>Sign Up</Button>
             <Button kind="secondary" href='/#/login'>Login</Button>
@@ -51,9 +51,9 @@ class LandingPage extends Component {
             <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
               <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
             </IconButton>
-            {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
+            <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
               <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
-            </IconButton> */}
+            </IconButton>
           </FluidForm>
           </>}/>
         </Column>
@@ -128,9 +128,9 @@ class LandingPage extends Component {
                                               <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
                                                 <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
                                               </IconButton>
-                                              {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
+                                              <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
                                                 <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
-                                              </IconButton> */}
+                                              </IconButton>
                                             </FluidForm>
                                             </FluidForm>}/>} />
                   </Column>
