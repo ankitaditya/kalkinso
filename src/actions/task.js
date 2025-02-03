@@ -9,6 +9,7 @@ import {
   GET_SUB_TASKS,
   SET_DELETE_FILE,
   UPDATE_MESSAGE,
+  CREATE_TASK,
 } from './types';
 import { setAlert } from './alert';
 import { setLoading } from './auth';
@@ -379,15 +380,15 @@ export const deleteCommentReaction = (task_id, comment_id) => async dispatch => 
 };
 
 export const openCreateTask = () => async dispatch => {
-  return {
-    type: 'CREATE_TASK',
+  return dispatch({
+    type: CREATE_TASK,
     payload: true,
-  };
+  });
 }
 
 export const closeCreateTask = () => async dispatch => {
-  return {
-    type: 'CREATE_TASK',
+  return dispatch({
+    type: CREATE_TASK,
     payload: false,
-  };
+  });
 }

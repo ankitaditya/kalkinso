@@ -37,6 +37,11 @@ const HeaderGlobal = () => {
             }
         })})
     },[tasks])
+    useEffect(() => {
+        if(createTask){
+            setState({ ...state,activeTab: 3 });
+        }
+    },[createTask])
     const setNotificationsData = (data) => {
         let newState = state;
         newState.notificationsData = data;
@@ -66,7 +71,7 @@ const HeaderGlobal = () => {
                 aria-label="Assistance"
                 kind="secondary"
                 tooltipAlignment="end"
-                isActive={ state.activeTab === 3 || createTask }
+                isActive={ state.activeTab === 3 }
                 onClick={() =>  {setState({ ...state,activeTab:  state.activeTab === 3 ? 0 : 3}); dispatch(closeCreateTask())}}
                 >
                 <AiGenerate size={20} />

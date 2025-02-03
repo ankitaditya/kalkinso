@@ -27,7 +27,7 @@ import costaPic from './_story-assets/costa.jpeg';
 import FileUploaderDragAndDrop from './components/CreateTearsheet/FileUploaderDragAndDrop';
 import { useParams } from 'react-router-dom';
 import { setLoading } from '../../../actions/auth';
-import { getSubTasks } from '../../../actions/task';
+import { getSubTasks, openCreateTask } from '../../../actions/task';
 import { Input, Button as ChatButton } from 'react-chat-elements';
 import Comments from './components/Comments/Comments';
 pkg.component.ProductiveCard = true;
@@ -53,7 +53,7 @@ const App = ({breadcrumb}) => {
       "kind": "secondary",
       "text": "Create new",
       "renderIcon": Add,
-      onClick: () => setMultiStepTearsheetOpen(true)
+      onClick: () => dispatch(openCreateTask())
     }}
     />
     </Column>);
