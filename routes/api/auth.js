@@ -408,7 +408,7 @@ router.post(
 
 
 router.post('/send-email-verification', ipAuth, async (req, res) => {
-	const { email, demo } = req.body;
+	const { email } = req.body;
 	
 	try {
 	  // Using Twilio Verify service to generate OTP
@@ -418,10 +418,6 @@ router.post('/send-email-verification', ipAuth, async (req, res) => {
 					.status(400)
 					.json([{ msg: 'User already exists' }])
 			}
-	  if(demo) {
-		res.json({ success: true, sid: "demo" });
-		return true
-	  }
 	  const verification = await twilioClient.verify.v2
 		.services(verifyServiceSid)
 		.verifications
