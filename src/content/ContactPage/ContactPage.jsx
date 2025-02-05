@@ -155,6 +155,7 @@ export function ContactPage() {
           <ul>
             <li>Email: <a href="mailto:info@kalkinso.com">info@kalkinso.com</a></li>
             <li>Address: KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  , Pratapgarh, Uttar Pradesh, India</li>
+            <li>Mobile: +91 8447100544</li>
           </ul>
           <br />
           <h2>Our Location</h2>
