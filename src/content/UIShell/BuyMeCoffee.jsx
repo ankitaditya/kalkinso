@@ -73,7 +73,7 @@ function BuyCoffeePage() {
               value={cups}
               disableWheel={true}
               hideSteppers={true}
-              onChange={(event, { value }) => setCups(value)}
+              onChange={(event) => setCups(event.target.value)}
             />
           </div>
           <div className="coffee-action">
