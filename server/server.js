@@ -247,6 +247,7 @@ app.use('/api/how-to', require('../routes/api/how_to'))
 app.use('/api/payments', require('../routes/api/payments'))
 app.use('/api/apparels', require('../routes/api/apparels'))
 app.use('/api/news', require('../routes/api/news'))
+app.use('/api/phonepe', require('../routes/api/phonepe'))
 
 
 app.use(express.static(path.join(__dirname, '../build')));

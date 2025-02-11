@@ -47,6 +47,7 @@ import Reports from "./Reports";
 import CancellationRefund from "./CancellationRefund/CancellationRefund";
 import Services from "./Services";
 import TermsAndConditions from "./TermsNConditions/TermsNConditions_1_0";
+import BuyCoffeePage from "./BuyMeCoffee";
 
 
 class UIShell extends React.Component {
@@ -122,6 +123,7 @@ class UIShell extends React.Component {
                             <Route path="privacy-policy" element={<PrivacyPolicy />} />
                             <Route path="terms-n-conditions" element={<TermsAndConditions />} />
                             <Route path="return-n-refund-policy" element={<CancellationRefund />} />
+                            <Route path="buy-me-coffee" element={<BuyCoffeePage />} />
                             <Route path="services" element={<Services />} />
                             <Route path="Login">
                                 <Route path="" element={<VerifyOtp />} />
