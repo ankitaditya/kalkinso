@@ -18,7 +18,7 @@ import {
   IconButton,
 } from '@carbon/react';
 import { InfoSection, InfoCard } from '../../components/Info';
-import { Globe, Application, PersonFavorite, WatsonHealth3DSoftware, ShoppingCart } from '@carbon/react/icons';
+import { Globe, Application, PersonFavorite, WatsonHealth3DSoftware, ShoppingCart, AiLaunch } from '@carbon/react/icons';
 import Login from '../Login/Login';
 import HeroSection from './HeroSection';
 import TaskCarousel from './TaskCarousel';
@@ -40,6 +40,9 @@ class LandingPage extends Component {
             <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
               <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
             </IconButton>
+            <IconButton style={{minWidth:"106px"}} href='https://www.kalkinso.com/#/services' label="services" kind="secondary">
+              <AiLaunch style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Services</span>
+            </IconButton>
             {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
               <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
             </IconButton> */}
@@ -50,6 +53,9 @@ class LandingPage extends Component {
           <FluidForm style={{marginTop:"35px"}}>
             <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
               <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
+            </IconButton>
+            <IconButton style={{minWidth:"106px"}} href='https://www.kalkinso.com/#/services' label="services" kind="secondary">
+              <AiLaunch style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Services</span>
             </IconButton>
             {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
               <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
@@ -128,9 +134,9 @@ class LandingPage extends Component {
                                               <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
                                                 <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
                                               </IconButton>
-                                              {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
-                                                <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
-                                              </IconButton> */}
+                                              <IconButton style={{minWidth:"106px"}} href='https://www.kalkinso.com/#/services' label="services" kind="secondary">
+                                                <AiLaunch style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Services</span>
+                                              </IconButton>
                                             </FluidForm>
                                             </FluidForm>}/>} />
                   </Column>
