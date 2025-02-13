@@ -14,7 +14,7 @@ const PrivateRoute = ({ Component, access_page, ...rest }) => {
 			setRedirect(<Component {...rest} />)
 		}
 		if(!localStorage.getItem('token') || (auth.user?.access&&!auth.user.access.includes(access_page))) {
-			setRedirect(<Navigate to='/login' />)
+			setRedirect(<Navigate to='/' />)
 		}
 	}, [isAuthenticated])
 

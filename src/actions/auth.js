@@ -60,7 +60,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 		dispatch(setLoading(true))
 		window.localStorage.removeItem('__data')
 		if (!['login', 'register', 'search', '#', 'privacy-policy', 'terms-n-conditions', 'contact'].includes(window.location.href.split('/').slice(-1)[0])){
-			window.location.href = `${window.location.origin}/#/login`
+			window.location.href = `${window.location.origin}`
 		}
 		setTimeout(() => dispatch(setLoading(false)), 1000)
 	}
