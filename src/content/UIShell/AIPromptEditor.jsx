@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "@blocknote/core/fonts/inter.css";
 import "./AIPromptEditor.css";
 import { pkg, SidePanel, ActionBar, EditInPlace } from "@carbon/ibm-products";
-import { TextArea, TextInput, Select, SelectItem, usePrefix } from "@carbon/react";
+import { TextArea, TextInput, Select, SelectItem, Button, usePrefix } from "@carbon/react";
 import {
   useCreateBlockNote,
   createReactInlineContentSpec,
@@ -36,6 +36,7 @@ import {
 } from "@carbon/react/icons";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setLoading } from "../../actions/auth";
 
 // Enable SidePanel components from Carbon
 pkg.component.SidePanel = true;
@@ -94,9 +95,9 @@ Previous Response: ${previousContent || ""}
   `;
   try {
     const response = await axios.post(
-      "/api/openai/completions",
+      "/api/kalkiai/completions",
       JSON.stringify({
-        model: "gpt-4",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
@@ -111,7 +112,6 @@ Previous Response: ${previousContent || ""}
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer YOUR_API_KEY`,
         },
       }
     );
@@ -178,12 +178,21 @@ function AiPromptButton() {
     const previousContent = await getPreviousContent();
     const aiResult = await generateAiPrompt(inputPrompt, selectedText, previousContent);
     if (aiResult) {
-      editor.replaceSelection(aiResult);
+      const currentBlock = editor.getTextCursorPosition().block;
+      const newBlocks = await editor.tryParseMarkdownToBlocks(aiResult);
+      editor.replaceBlocks([currentBlock], newBlocks);
     }
   };
 
   return (
-    <Components.FormattingToolbar.Button mainTooltip="Generate AI Prompt" onClick={handleGenerateAiPrompt}>
+    <Components.FormattingToolbar.Button
+      mainTooltip="Generate AI Prompt"
+      onClick={async () => {
+        dispatch(setLoading(true));
+        await handleGenerateAiPrompt();
+        dispatch(setLoading(false));
+      }}
+    >
       AI Prompt
     </Components.FormattingToolbar.Button>
   );
@@ -205,7 +214,8 @@ function AddFileButton() {
 }
 
 /* -------------------------------------------------------------------------
-   4. Main BlockNoteEditor Component with Book Preview & Metadata SidePanel
+   4. Main BlockNoteEditor Component with Book Preview, Metadata,
+      and Auto-Save Toggle & Notifications
 ------------------------------------------------------------------------- */
 
 export default function BlockNoteEditor({ initialContent, ...rest }) {
@@ -215,6 +225,10 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
   const [fileName, setFileName] = useState("Untitled Document");
   const [wordCount, setWordCount] = useState(0);
   const [isChanged, setIsChanged] = useState(false);
+
+  // --- Auto-Save State ---
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [saveNotification, setSaveNotification] = useState("Saved");
 
   // --- SidePanel State for Book Preview & Metadata ---
   const [isPreviewPanelOpen, setIsPreviewPanelOpen] = useState(false);
@@ -266,30 +280,58 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
     }
   };
 
-  // Auto-save every 5 seconds.
+  // Auto-save every 5 seconds if enabled.
   useEffect(() => {
+    if (!autoSaveEnabled) return;
     const interval = setInterval(() => {
       if (isChanged) {
         console.log("Auto-saving document:", fileName);
-        setIsChanged(false);
+        setSaveNotification("Saving...");
+        // Simulate auto-save delay
+        setTimeout(() => {
+          setSaveNotification("Saved");
+          setIsChanged(false);
+          // Clear notification after a short delay
+          setTimeout(() => setSaveNotification("Saved"), 2000);
+        }, 1000);
       }
     }, 5000);
     return () => clearInterval(interval);
-  }, [isChanged, fileName]);
+  }, [isChanged, fileName, autoSaveEnabled]);
 
   return (
     <div style={{ margin: "2rem" }}>
-      {/* Header with editable filename and word count */}
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
+      {/* Header with editable filename, word count, and auto-save toggle */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "1rem",
+          gap: "1rem",
+        }}
+      >
         <EditInPlace
           value={fileName}
           onChange={setFileName}
           onSave={(newName) => setFileName(newName)}
         />
         <div style={{ marginLeft: "auto" }}>Word Count: {wordCount}</div>
+        <Button
+          size="small"
+          kind="ghost"
+          onClick={() => setAutoSaveEnabled(!autoSaveEnabled)}
+        >
+          {autoSaveEnabled ? "Disable Auto-Save" : "Enable Auto-Save"}
+        </Button>
       </div>
+      {/* Save Notification */}
+      {saveNotification && (
+        <div style={{ marginBottom: "1rem", color: "#0072C3" }}>
+          {saveNotification}
+        </div>
+      )}
 
-      {/* ActionBar with Save, Download, Delete, and Preview & Metadata actions */}
+      {/* ActionBar with Save, Download, Delete, Preview & Metadata actions */}
       <ActionBar
         actions={[
           {
@@ -299,7 +341,12 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
             label: "Save",
             onClick: () => {
               console.log("Saving document:", fileName);
-              setIsChanged(false);
+              setSaveNotification("Saving...");
+              setTimeout(() => {
+                setSaveNotification("Saved");
+                setIsChanged(false);
+                setTimeout(() => setSaveNotification("Saved"), 2000);
+              }, 1000);
             },
             disabled: !isChanged,
           },
@@ -455,7 +502,9 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
               <strong>Author: </strong>
               {bookMetaData.author || "Author Name"}
             </p>
-            <p>{bookMetaData.description || "Book description will appear here."}</p>
+            <p>
+              {bookMetaData.description || "Book description will appear here."}
+            </p>
             <div>
               <strong>Content Preview:</strong>
               <div
