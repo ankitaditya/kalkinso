@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const { v4: uuidv4 } = require('uuid');
+const AWS = require('aws-sdk');
 
 // Assuming you have some method to generate OTP
 const { generateOTP, verifyOTP } = require('../../utils/otpUtils');
@@ -119,6 +120,49 @@ router.post(
 
 			const salt = await bcrypt.genSalt(10)
 			user.password = await bcrypt.hash(password, salt)
+
+			// **** S3 Folder Copy Code Start ****
+			// Create an S3 client instance
+			const s3 = new AWS.S3({
+				region: 'ap-south-1',
+				accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+				secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+			})
+
+			// Define your source and destination. You can set these via env variables or hard-code them.
+			const sourceBucket = 'kalkinso.com' // e.g., 'my-source-bucket'
+			const destinationBucket = 'kalkinso.com' // e.g., 'my-destination-bucket'
+			const sourceFolder = 'tools/' // source folder prefix (ensure trailing slash)
+			const destinationFolder = `users/${req.user.id}/tasks/tools/` // destination folder prefix (change if needed)
+
+			// List all objects in the source folder
+			const listParams = {
+				Bucket: sourceBucket,
+				Prefix: sourceFolder,
+			}
+
+			const listData = await s3.listObjectsV2(listParams).promise()
+
+			if (listData.Contents && listData.Contents.length > 0) {
+				for (const obj of listData.Contents) {
+					const sourceKey = obj.Key
+					// Construct the destination key by replacing the source folder prefix with the destination folder prefix
+					const destinationKey = destinationFolder + sourceKey.substring(sourceFolder.length)
+
+					const copyParams = {
+						Bucket: destinationBucket,
+						// Encode the source in case it has special characters
+						CopySource: encodeURIComponent(`${sourceBucket}/${sourceKey}`),
+						Key: destinationKey,
+					}
+
+					await s3.copyObject(copyParams).promise()
+					console.log(`Copied ${sourceKey} to ${destinationKey}`)
+				}
+			} else {
+				console.log('No objects found in the source folder.')
+			}
+			// **** S3 Folder Copy Code End ****
 
 			await user.save()
 			await profile.save()
