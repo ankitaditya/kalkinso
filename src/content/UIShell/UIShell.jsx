@@ -48,6 +48,7 @@ import CancellationRefund from "./CancellationRefund/CancellationRefund";
 import Services from "./Services";
 import TermsAndConditions from "./TermsNConditions/TermsNConditions_1_0";
 import BuyCoffeePage from "./BuyMeCoffee";
+import CandidateWriter from "./CandidateWriter";
 
 
 class UIShell extends React.Component {
@@ -120,6 +121,7 @@ class UIShell extends React.Component {
                             {/* <Route path="/" element={<ComingSoon />} /> */}
                             <Route path="/" element={<LandingPage />} />
                             <Route path="Search" element={<SearchPage />} />
+                            <Route path="writer" element={<CandidateWriter />} />
                             <Route path="privacy-policy" element={<PrivacyPolicy />} />
                             <Route path="terms-n-conditions" element={<TermsAndConditions />} />
                             <Route path="return-n-refund-policy" element={<CancellationRefund />} />
