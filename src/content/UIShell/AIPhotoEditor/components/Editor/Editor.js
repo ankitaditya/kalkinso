@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import Konva from "konva";
-import Draggable from 'react-draggable';
+import Draggable from "react-draggable";
 import { Stage, Layer } from "react-konva";
-import { CirclePicker } from 'react-color'
-import ColorPickerPalette from '../ColorPickerPalette'
+import { CirclePicker } from "react-color";
+import ColorPickerPalette from "../ColorPickerPalette";
 import { DropImage } from "../DropImage";
-import { v4 as uuidv1 } from 'uuid';
+import { v4 as uuidv1 } from "uuid";
 import KeyboardEventHandler from "react-keyboard-event-handler";
 import { connect } from "react-redux";
 import { Sidebar } from "primereact/sidebar";
-import { Divider } from 'primereact/divider';
-import { Buffer } from 'buffer';
+import { Divider } from "primereact/divider";
+import { Buffer } from "buffer";
 import axios from "axios";
 import {
   Retangulo,
@@ -41,36 +41,37 @@ import Underline from "../../assets/icons-editor-bar/underline.png";
 import ZoomIn from "../../assets/icons-editor-bar/zoom-in.png";
 import ZoomOut from "../../assets/icons-editor-bar/zoom-out.png";
 import BackgroundIcon from "../../assets/icons-editor-bar/background.png";
+import Preview from "../../assets/icons-editor-bar/preview.png";
 import AiIcon from "../../assets/icons-editor-bar/ai.png";
 import { generateSignedUrl } from "../../../../../utils/redux-cache";
 import { Loading } from "@carbon/react";
 import { Close } from "@carbon/react/icons";
 
-var HISTORY = []
+var HISTORY = [];
 
-var POSITION = 0
+var POSITION = 0;
 
 function saveHistory(history) {
   var remove = (HISTORY.length - 1) - POSITION;
   HISTORY = HISTORY.slice(0, HISTORY.length - remove);
-  HISTORY.push(history.slice(0))
-  POSITION = HISTORY.length - 1
+  HISTORY.push(history.slice(0));
+  POSITION = HISTORY.length - 1;
 }
 
 function revertHistory() {
-  return HISTORY[POSITION]
+  return HISTORY[POSITION];
 }
 
 const Btn = props => {
   return (
     <div className="proximo-btn" onClick={props.onClick}>
       {props.title}
-    </div >
-  )
-}
+    </div>
+  );
+};
 
 const promptTemplates = {
-  "Book Writer": "bookWriter",    
+  "Book Writer": "bookWriter",
   "Book Cover Designer": "bookCoverDesigner",
   "Research Paper Writer": "researchPaperWriter",
   "Task Description Writer": "taskDescriptionWriter",
@@ -80,7 +81,8 @@ const promptTemplates = {
   "Business Plan Writer": "businessPlanWriter",
   "PCB Component List": "pcbComponentList",
   "Additional Category": "additionalCategory",
-}
+};
+
 const promptTemplate = (prompt, response) => {
   const promptTemplates = {
     editContent: `
@@ -112,7 +114,7 @@ const promptTemplate = (prompt, response) => {
 
         Ensure that the suggestions are unique, creative, and aligned with the user's input.
         `,
-      bookWriter: `
+    bookWriter: `
         For my prompt, generate an image that visually represents the theme, setting, or concept of a book. 
         When generating the image:
         1. Ensure the style is detailed and professional, appropriate for use as a book cover or thematic artwork.
@@ -122,14 +124,12 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      bookCoverDesigner: `
-        Generate a visually appealing and professionally designed image suitable for a book or article cover based on the following prompt:
+    bookCoverDesigner: `
+        Generate a visually appealing and professionally designed image suitable for a book or article cover. Ensure that the design incorporates well-calculated margins for text and imagery, keeping important elements within safe zones.
         Prompt Details: "${prompt}"
         Context from Previous Response (if any): "${response}"
       `,
-    
-      researchPaperWriter: `
+    researchPaperWriter: `
         For my prompt, generate an image that complements an academic research paper. 
         When generating the image:
         1. Include diagrams, charts, or visual aids that help explain the paper's main findings or concepts.
@@ -139,8 +139,7 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      taskDescriptionWriter: `
+    taskDescriptionWriter: `
         For my prompt, generate an image that illustrates or supports a detailed task description. 
         When generating the image:
         1. Include clear, step-by-step visual instructions or representations of the task.
@@ -150,8 +149,7 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      sopWriter: `
+    sopWriter: `
         For my prompt, generate an image that complements a Standard Operating Procedure (SOP). 
         When generating the image:
         1. Include flowcharts, diagrams, or illustrations that clarify the procedure.
@@ -161,8 +159,7 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      questionPaperWriter: `
+    questionPaperWriter: `
         For my prompt, generate an image that can be used in a professionally formatted question paper. 
         When generating the image:
         1. Include educational visuals, diagrams, or illustrations relevant to the subject.
@@ -172,8 +169,7 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      standardWorkInstructionDocument: `
+    standardWorkInstructionDocument: `
         For my prompt, generate an image that supports a Standard Work Instruction (SWI) document. 
         When generating the image:
         1. Include step-by-step diagrams, process flowcharts, or illustrations that clarify instructions.
@@ -183,8 +179,7 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      businessPlanWriter: `
+    businessPlanWriter: `
         For my prompt, generate an image that visually represents a business plan. 
         When generating the image:
         1. Include charts, graphs, or conceptual visuals related to market analysis, financial projections, or strategies.
@@ -194,8 +189,7 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      pcbComponentList: `
+    pcbComponentList: `
         For my prompt, generate an image that complements a PCB component list. 
         When generating the image:
         1. Include detailed visual representations of the PCB layout, components, or design schematics.
@@ -205,8 +199,7 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    
-      additionalCategory: `
+    additionalCategory: `
         For my prompt, generate an image that matches the provided description or theme. 
         When generating the image:
         1. Ensure the visual elements are consistent with the specified category or purpose.
@@ -215,9 +208,9 @@ const promptTemplate = (prompt, response) => {
         Here is my prompt: ${prompt}
         Previous Response: ${response}
       `,
-    };           
+  };
   return promptTemplates;
-}
+};
 
 class Editor extends Component {
   constructor(props) {
@@ -228,6 +221,7 @@ class Editor extends Component {
   state = {
     arrayObjectsLayer: [],
     visibleTray: true,
+    visiblePreview: false, // New state: toggles preview sidebar
     kanvasWidth: 18.9,
     kanvasHeight: 10,
     widthKanvas: 421,
@@ -241,6 +235,14 @@ class Editor extends Component {
     assets: [],
     zoom: 1,
     imgBase64: undefined,
+    margin: { // Margin configuration for book cover design
+      horizontal: 50,
+      top: 40,
+    },
+    printSize: { // New state: print dimensions for book printing (in pixels)
+      width: 600,
+      height: 800,
+    },
     newTextObj: {
       textEditVisible: false,
       fill: "black",
@@ -257,7 +259,7 @@ class Editor extends Component {
       fontStyle: "normal",
       align: "left",
       id: 0,
-      type: 'text',
+      type: "text",
     },
     newCircleObj: {
       y: 100,
@@ -265,13 +267,13 @@ class Editor extends Component {
       radius: 50,
       fill: "#637EF7",
       id: 0,
-      type: 'circle',
+      type: "circle",
     },
     newImageObj: {
       x: 0,
       image: null,
       id: 50,
-      type: 'image',
+      type: "image",
     },
     newSquareObj: {
       y: 100,
@@ -280,7 +282,7 @@ class Editor extends Component {
       height: 50,
       fill: "#637EF7",
       id: 0,
-      type: 'square',
+      type: "square",
     },
     newTriangleObj: {
       y: 100,
@@ -289,27 +291,28 @@ class Editor extends Component {
       radius: 80,
       fill: "#637EF7",
       id: 0,
-      type: 'triangule',
+      type: "triangule",
     },
     // state draggable stuff
     activeDrags: 0,
     deltaPosition: {
-      x: 0, y: 0
+      x: 0,
+      y: 0,
     },
     controlledPosition: {
-      x: -400, y: 200
-    }
+      x: -400,
+      y: 200,
+    },
   };
-
 
   handleDragStart = e => {
     e.target.setAttrs({
       shadowOffset: {
         x: 15,
-        y: 15
+        y: 15,
       },
       scaleX: 1.1,
-      scaleY: 1.1
+      scaleY: 1.1,
     });
   };
 
@@ -320,7 +323,7 @@ class Editor extends Component {
       scaleX: 1,
       scaleY: 1,
       shadowOffsetX: 5,
-      shadowOffsetY: 5
+      shadowOffsetY: 5,
     });
   };
 
@@ -334,31 +337,36 @@ class Editor extends Component {
     if (state) this.setState(JSON.parse(state));
   };
 
-
   async componentDidMount() {
-    const selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
-    const assets = JSON.parse(localStorage.getItem('images'));
-    if (selectedTool&&selectedTool.name==='design-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
-      console.log(selectedTool)
-      if(selectedTool.selectedEntry.fileType.includes('json')){
-        axios.get(selectedTool.selectedEntry.signedUrl).then((response) => {
+    const selectedTool = JSON.parse(localStorage.getItem("selectedTool"));
+    const assets = JSON.parse(localStorage.getItem("images"));
+    if (
+      selectedTool &&
+      selectedTool.name === "design-assistant" &&
+      Object.keys(selectedTool.selectedEntry).length > 0
+    ) {
+      console.log(selectedTool);
+      if (selectedTool.selectedEntry.fileType.includes("json")) {
+        axios.get(selectedTool.selectedEntry.signedUrl).then(response => {
           this.setState({ arrayObjectsLayer: response.data });
-          localStorage.removeItem('selectedTool')
-        })
+          localStorage.removeItem("selectedTool");
+        });
       } else {
-        this.loadImageSrc(selectedTool.selectedEntry.signedUrl, this.addNewImage)
-        localStorage.removeItem('selectedTool')
+        this.loadImageSrc(
+          selectedTool.selectedEntry.signedUrl,
+          this.addNewImage
+        );
+        localStorage.removeItem("selectedTool");
       }
     }
-    if (assets&&this.state.assets.length===0) {
+    if (assets && this.state.assets.length === 0) {
       this.setState({ assets: assets });
     }
-    saveHistory(this.state.arrayObjectsLayer)
+    saveHistory(this.state.arrayObjectsLayer);
     await localStorage.setItem("defaultState", JSON.stringify(this.state));
     const state = await localStorage.getItem("stateSaved");
-    if (state) this.setState(JSON.parse(state))
-    else this.setState({ selectedObject: this.state.arrayObjectsLayer[0] })
-
+    if (state) this.setState(JSON.parse(state));
+    else this.setState({ selectedObject: this.state.arrayObjectsLayer[0] });
   }
 
   handleTextDblClick = (e, index) => {
@@ -370,10 +378,17 @@ class Editor extends Component {
     }
     arrayObjectsLayer[index].textEditVisible = true;
     arrayObjectsLayer[index].textXTextArea =
-      (stageBox.left + absPos.x + this.containerCanvas.current.scrollLeft) / this.state.zoom;
+      (stageBox.left +
+        absPos.x +
+        this.containerCanvas.current.scrollLeft) /
+      this.state.zoom;
     arrayObjectsLayer[index].textYTextArea =
-      stageBox.bottom + absPos.y - stageBox.height + 40 + this.containerCanvas.current.scrollTop;
-    saveHistory(arrayObjectsLayer)
+      stageBox.bottom +
+      absPos.y -
+      stageBox.height +
+      40 +
+      this.containerCanvas.current.scrollTop;
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       arrayObjectsLayer,
@@ -382,7 +397,7 @@ class Editor extends Component {
 
   handleSelect = index => {
     this.setState({
-      indexTextSelected: index
+      indexTextSelected: index,
     });
   };
 
@@ -390,7 +405,7 @@ class Editor extends Component {
     let { arrayObjectsLayer, indexTextSelected } = this.state;
     if (arrayObjectsLayer[indexTextSelected])
       arrayObjectsLayer[indexTextSelected].fontStyle = style;
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
     this.setState({
       arrayObjectsLayer,
     });
@@ -400,7 +415,7 @@ class Editor extends Component {
     let { arrayObjectsLayer, indexTextSelected } = this.state;
     if (arrayObjectsLayer[indexTextSelected])
       arrayObjectsLayer[indexTextSelected].textDecoration = underline;
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       arrayObjectsLayer,
@@ -411,7 +426,7 @@ class Editor extends Component {
     let { arrayObjectsLayer, indexTextSelected } = this.state;
     arrayObjectsLayer[indexTextSelected].fontSize = parseInt(event.target.value);
 
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
     this.setState({
       arrayObjectsLayer,
     });
@@ -420,46 +435,47 @@ class Editor extends Component {
   handleTextEdit = (e, index) => {
     let { arrayObjectsLayer } = this.state;
     arrayObjectsLayer[index].textValue = e.target.value;
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       arrayObjectsLayer,
     });
   };
 
-  trazerItem = (front) => {
+  trazerItem = front => {
     let { arrayObjectsLayer, selectedObject } = this.state;
     if (this.state.selectedObject) {
-      front ?
-        arrayObjectsLayer.push(
-          arrayObjectsLayer.splice(
-            arrayObjectsLayer.findIndex(
-              elt => elt.id === selectedObject.id),
-            1)[0]
-        )
+      front
+        ? arrayObjectsLayer.push(
+            arrayObjectsLayer.splice(
+              arrayObjectsLayer.findIndex(elt => elt.id === selectedObject.id),
+              1
+            )[0]
+          )
         : arrayObjectsLayer.unshift(
-          arrayObjectsLayer.splice(
-            arrayObjectsLayer.findIndex(
-              elt => elt.id === selectedObject.id),
-            1)[0]
-        )
-      saveHistory(arrayObjectsLayer)
+            arrayObjectsLayer.splice(
+              arrayObjectsLayer.findIndex(elt => elt.id === selectedObject.id),
+              1
+            )[0]
+          );
+      saveHistory(arrayObjectsLayer);
 
       this.setState({
         arrayObjectsLayer,
       });
     }
-  }
+  };
 
   addNewText = () => {
     let { arrayObjectsLayer, newTextObj } = this.state;
     newTextObj.id = Math.round(Math.random() * 10000);
     arrayObjectsLayer.push(newTextObj);
     let selectedObject = newTextObj;
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
-      arrayObjectsLayer, selectedObject,
+      arrayObjectsLayer,
+      selectedObject,
     });
   };
 
@@ -469,11 +485,11 @@ class Editor extends Component {
     newSquareObj.id = Math.round(Math.random() * 10000);
     let selectedObject = newSquareObj;
     arrayObjectsLayer.push(newSquareObj);
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       arrayObjectsLayer,
-      selectedObject
+      selectedObject,
     });
   };
 
@@ -483,10 +499,10 @@ class Editor extends Component {
     arrayObjectsLayer.id = Math.round(Math.random() * 10000);
     let selectedObject = newTriangleObj;
     arrayObjectsLayer.push(newTriangleObj);
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
     this.setState({
       arrayObjectsLayer,
-      selectedObject
+      selectedObject,
     });
   };
 
@@ -496,11 +512,11 @@ class Editor extends Component {
     newCircleObj.id = Math.round(Math.random() * 10000);
     let selectedObject = newCircleObj;
     arrayObjectsLayer.push(newCircleObj);
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       arrayObjectsLayer,
-      selectedObject
+      selectedObject,
     });
   };
 
@@ -509,7 +525,7 @@ class Editor extends Component {
     newImageObj.id = Math.round(Math.random() * 10000);
     newImageObj.image = image;
     arrayObjectsLayer.push(newImageObj);
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       arrayObjectsLayer,
@@ -519,7 +535,7 @@ class Editor extends Component {
   tooglePallet = () => {
     if (this.state.selectedObject)
       this.setState({
-        showPallet: !this.state.showPallet
+        showPallet: !this.state.showPallet,
       });
   };
 
@@ -530,77 +546,49 @@ class Editor extends Component {
   };
 
   loadImageSrc = async (src, func) => {
-    axios.get(src, {
-      responseType: 'arraybuffer'
-    }).then(response => {
-      let image = new window.Image();
-      const base64 = Buffer.from(response.data, 'binary').toString('base64');
-      image.src = `data:image/png;base64,${base64}`;
-      image.addEventListener("load", () => func(image));
-    }).catch(error => {
-      console.error("Error loading image from URL:", error);
-    });
+    axios
+      .get(src, {
+        responseType: "arraybuffer",
+      })
+      .then(response => {
+        let image = new window.Image();
+        const base64 = Buffer.from(response.data, "binary").toString("base64");
+        image.src = `data:image/png;base64,${base64}`;
+        image.addEventListener("load", () => func(image));
+      })
+      .catch(error => {
+        console.error("Error loading image from URL:", error);
+      });
   };
 
-  genImage =  async () => {
-    let response = prompt("Please enter your prompt", "Sample Book Cover Designer");
+  genImage = async () => {
+    let response = prompt(
+      "Please enter your prompt",
+      "Sample Book Cover Designer"
+    );
     this.setState({ loading: true });
-    await this.getSuggestionsJson(response)
-    // try {
-    //   let uniqueId = uuidv1();
-    //   const resp = await axios.post(
-    //     '/api/kalkiai/images',
-    //     JSON.stringify({
-    //         params: {
-    //             "model": "dall-e-2",
-    //             "prompt": promptTemplate(response, '')["bookCoverDesigner"],
-    //             "n": 1,
-    //             "size": "512x512",
-    //         },
-    //         key: `tools/image-designer/${uniqueId}.jpeg`,
-    //     }),
-    //     {
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //     }
-    // );
-
-    // // Update response state with the fetched data
-    // const json_response = resp?.data?.result;
-    // const imageUrl = json_response.signedUrl;
-    // // Convert the image from the signed URL to Base64
-    // const base64Image = await this.convertImageToBase64(imageUrl);
-    // // Create a new Image object and add it to the canvas
-    // const image = new window.Image();
-    // image.src = `data:image/png;base64,${base64Image}`;
-    // image.addEventListener("load", () => this.addNewImage(image));
-    // } catch (err) {
-    //   console.log(err)
-    // }
+    await this.getSuggestionsJson(response);
     this.setState({ loading: false });
   };
 
   // Utility function to convert the image URL to Base64
-convertImageToBase64 = async (url) => {
-  const response = await fetch(url);
-  const blob = await response.blob();
+  convertImageToBase64 = async url => {
+    const response = await fetch(url);
+    const blob = await response.blob();
 
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64data = reader.result.split(',')[1]; // Extract base64 without metadata
-      resolve(base64data);
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(blob);
-  });
-};
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64data = reader.result.split(",")[1];
+        resolve(base64data);
+      };
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(blob);
+    });
+  };
 
   selectShape = (selectedObject, index = undefined) => {
-    // console.log('dentro')
     let { arrayObjectsLayer, indexTextSelected } = this.state;
-    // fecha a text area do texto
     for (let i; i < arrayObjectsLayer.length; i++) {
       arrayObjectsLayer[i].textEditVisible = false;
     }
@@ -621,23 +609,24 @@ convertImageToBase64 = async (url) => {
   };
 
   desfazer = () => {
-    POSITION = POSITION === 0 ? POSITION : POSITION - 1
-    const history = revertHistory()
+    POSITION = POSITION === 0 ? POSITION : POSITION - 1;
+    const history = revertHistory();
     this.setState({
       arrayObjectsLayer: history.slice(0),
-    })
-  }
+    });
+  };
 
   refazer = () => {
-    POSITION = POSITION < HISTORY.length - 1 ? POSITION + 1 : POSITION
-    const history = revertHistory()
+    POSITION =
+      POSITION < HISTORY.length - 1 ? POSITION + 1 : POSITION;
+    const history = revertHistory();
     this.setState({
       arrayObjectsLayer: history.slice(0),
-    })
-  }
+    });
+  };
 
   setArrayObject = arrayObjectsLayer => {
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       arrayObjectsLayer,
@@ -647,8 +636,8 @@ convertImageToBase64 = async (url) => {
   zommStage(zoom) {
     if (!(zoom < 1) && !(zoom > 4)) {
       this.setState({
-        zoom
-      })
+        zoom,
+      });
     }
   }
 
@@ -656,16 +645,16 @@ convertImageToBase64 = async (url) => {
     let { arrayObjectsLayer, selectedObject } = this.state;
     if (selectedObject) {
       let copy = { ...selectedObject };
-      copy.x = copy.x + 10
-      copy.y = copy.y + 10
+      copy.x = copy.x + 10;
+      copy.y = copy.y + 10;
       copy.id = Math.round(Math.random() * 10000);
-      selectedObject = { ...copy }
+      selectedObject = { ...copy };
       arrayObjectsLayer.push(copy);
     }
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
     this.setState({
       arrayObjectsLayer,
-      selectedObject
+      selectedObject,
     });
   };
 
@@ -675,14 +664,14 @@ convertImageToBase64 = async (url) => {
 
     for (let i = 0; i < arrayObjectsLayer.length; i++) {
       if (selectedObject.id === arrayObjectsLayer[i].id) {
-        if (typeof color === 'string') {
+        if (typeof color === "string") {
           arrayObjectsLayer[i].fill = color;
         } else {
           arrayObjectsLayer[i].fill = color.hex;
         }
       }
     }
-    saveHistory(arrayObjectsLayer)
+    saveHistory(arrayObjectsLayer);
 
     this.setState({
       selectedObject,
@@ -691,15 +680,16 @@ convertImageToBase64 = async (url) => {
   };
 
   deleteNodeSelected = () => {
-    let { selectedObject, arrayObjectsLayer } = this.state
+    let { selectedObject, arrayObjectsLayer } = this.state;
     if (arrayObjectsLayer.length > 0) {
       for (let i = 0; i < arrayObjectsLayer.length; i++) {
-        if (arrayObjectsLayer[i].type === 'text') arrayObjectsLayer[i].textEditVisible = false;
+        if (arrayObjectsLayer[i].type === "text")
+          arrayObjectsLayer[i].textEditVisible = false;
         if (selectedObject.id === arrayObjectsLayer[i].id) {
           arrayObjectsLayer.splice(i, 1);
         }
       }
-      saveHistory(arrayObjectsLayer)
+      saveHistory(arrayObjectsLayer);
 
       this.setState({
         arrayObjectsLayer,
@@ -707,19 +697,23 @@ convertImageToBase64 = async (url) => {
     }
   };
 
-  setVisibleTray = (value) => {
+  setVisibleTray = value => {
     this.setState({
-      visibleTray: value
+      visibleTray: value,
     });
   };
 
   b64toBlob = b64Data => {
-    const contentType = 'image/png';
+    const contentType = "image/png";
     const sliceSize = 1024;
     let byteCharacters = atob(b64Data);
     const byteArrays = [];
 
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    for (
+      let offset = 0;
+      offset < byteCharacters.length;
+      offset += sliceSize
+    ) {
       let slice = byteCharacters.slice(offset, offset + sliceSize);
 
       let byteNumbers = new Array(slice.length);
@@ -733,300 +727,217 @@ convertImageToBase64 = async (url) => {
     }
 
     const blob = new Blob(byteArrays, { type: contentType });
-    this.savePng(blob)
-  }
+    this.savePng(blob);
+  };
+
   imageToBlob = () => {
-    const { zoom } = this.state
+    const { zoom } = this.state;
     this.setState({
       selectedObject: {},
-      showBackground: true
-    })
+      showBackground: true,
+    });
     setTimeout(() => {
       const base64Image = this.stageRef.current.getStage().toDataURL({
-        pixelRatio: zoom // qualidade da imagem
-      })
-      // Split the base64 string in data and contentType
+        pixelRatio: zoom, // quality of image
+      });
       const block = base64Image.split(";");
-      // Get the content type of the image
-      const contentType = block[0].split(":")[1];// In this case "image/gif"
-      // get the real base64 content of the file
-      const realData = block[1].split(",")[1];// In this case "R0lGODlhPQBEAPeoAJosM...."
+      const contentType = block[0].split(":")[1];
+      const realData = block[1].split(",")[1];
       this.setState({
-        showBackground: false
-      })
-      // Convert it to a blob to upload
+        showBackground: false,
+      });
       return this.b64toBlob(realData, contentType);
     }, 200);
-  }
+  };
 
-  savePng = async (blob) => {
+  savePng = async blob => {
     const fileName = `design-${uuidv1()}.png`;
     const params = {
-      Bucket: 'kalkinso.com',
+      Bucket: "kalkinso.com",
       Key: `users/${this.props.user}/tasks/tools/design-assistant/${fileName}`,
-      ContentType: 'image/png',
-  };
-  const formData = new FormData();
-  formData.append('file', blob);
-  formData.append('params', JSON.stringify(params));
-    axios.post('/api/kits/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      }}).then((response) => {
-        if(response.data.success){
-          console.log('sucessfully saved!')
+      ContentType: "image/png",
+    };
+    const formData = new FormData();
+    formData.append("file", blob);
+    formData.append("params", JSON.stringify(params));
+    axios
+      .post("/api/kits/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then(response => {
+        if (response.data.success) {
+          console.log("sucessfully saved!");
         }
-      }).catch((error) => {});
-    // Create a temporary link element
-    const link = document.createElement('a');
-    
-    // Create a blob URL for the image
+      })
+      .catch(error => {});
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    
-    // Set the download attributes for the link
     link.href = url;
     link.download = fileName;
-  
-    // Append the link to the document
     document.body.appendChild(link);
-  
-    // Trigger the download
     link.click();
-  
-    // Remove the link from the document
     document.body.removeChild(link);
-  
-    // Revoke the blob URL to free memory
     URL.revokeObjectURL(url);
   };
 
-  getSuggestionsJson = async (inputPrompt) => {
+  getSuggestionsJson = async inputPrompt => {
     const canvasWidth = 421;
     const canvasHeight = 596;
+    const { margin } = this.state;
+    const marginX = margin.horizontal;
+    const marginTop = margin.top;
 
     try {
-        // Step 1: Fetch book suggestions using the text API
-        const textResponse = await axios.post(
-            '/api/kalkiai/completions',
+      // Step 1: Fetch book suggestions using the text API
+      const textResponse = await axios.post(
+        "/api/kalkiai/completions",
+        JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are an expert text editor and book writer in multi-language. and give output only in JSON format. do not include any else other than json",
+            },
+            {
+              role: "user",
+              content: promptTemplate(inputPrompt, "")["editContent"],
+            },
+          ],
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const bookSuggestions = JSON.parse(
+        textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim()
+      )?.books?.slice(0, 1) || [];
+
+      let { arrayObjectsLayer, newImageObj } = this.state;
+      const suggestions = await Promise.all(
+        bookSuggestions.map(async (book, index) => {
+          const { title, subtitle, coverPrompt, otherImagePrompts } = book;
+          const titleObj = {
+            textEditVisible: false,
+            fill: "white",
+            textX: canvasWidth / 2,
+            textY: marginTop + 10,
+            textYTextArea: marginTop + 10,
+            textXTextArea: canvasWidth / 2,
+            x: marginX,
+            y: marginTop,
+            textValue: title,
+            fontSize: 40,
+            width: canvasWidth - 2 * marginX,
+            height: 60,
+            fontStyle: "bold",
+            align: "center",
+            id: Math.round(Math.random() * 10000),
+            type: "text",
+          };
+          const subtitleObj = {
+            textEditVisible: false,
+            fill: "white",
+            textX: canvasWidth / 2,
+            textY: marginTop + 60 + 20,
+            textYTextArea: marginTop + 60 + 20,
+            textXTextArea: canvasWidth / 2,
+            x: marginX,
+            y: marginTop + 60 + 20,
+            textValue: subtitle,
+            fontSize: 28,
+            width: canvasWidth - 2 * marginX,
+            height: 40,
+            fontStyle: "italic",
+            align: "center",
+            id: Math.round(Math.random() * 10000),
+            type: "text",
+          };
+          const backgroundImageResponse = await axios.post(
+            "/api/kalkiai/images",
             JSON.stringify({
-                model: 'gpt-4o',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You are an expert text editor and book writer in multi-language. and give output only in JSON format. do not include any else other than json',
-                    },
-                    {
-                        role: 'user',
-                        content: promptTemplate(inputPrompt, '')['editContent']
-                    }
-                ]
+              params: {
+                model: "dall-e-3",
+                prompt: coverPrompt,
+                n: 1,
+                size: "1024x1792",
+              },
+              key: `users/${this.props.user}/tasks/tools/design-assistant/images/background_${uuidv1()}.png`,
             }),
             {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
-        );
+          );
 
-        // console.log(textResponse)
+          const backgroundImageData = backgroundImageResponse?.data?.result;
+          const bgX = (canvasWidth - 1024) / 2;
+          const bgY = (canvasHeight - 1792) / 4;
+          let selectedObject = null;
+          this.loadImageSrc(backgroundImageData.signedUrl, image => {
+            const backgroundImageObject = {
+              image,
+              x: 0,
+              y: 0,
+              width: canvasWidth,
+              height: canvasHeight,
+              id: Math.round(Math.random() * 10000),
+              type: "image",
+            };
+            arrayObjectsLayer.push(backgroundImageObject);
+            selectedObject = backgroundImageObject;
+            saveHistory(arrayObjectsLayer);
+            this.setState({
+              arrayObjectsLayer,
+              selectedObject,
+            });
+          });
+          let assets = this.state.assets;
+          assets.push({ signedUrl: backgroundImageData.signedUrl, type: "image" });
+          this.setState({ assets });
 
-        const bookSuggestions = JSON.parse(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())?.books?.slice(0,1) || []
-        // const bookSuggestions = [
-        //     {
-        //       "title": "The Last Algorithm",
-        //       "subtitle": "A Journey into the Heart of AI Consciousness",
-        //       "coverPrompt": "A futuristic cityscape at night, illuminated by neon lights, with a giant humanoid AI figure made of glowing circuits towering over the skyline. The mood is mysterious and awe-inspiring. Include a sense of advanced technology and human connection.",
-        //       "otherImagePrompts": [
-        //         "A close-up of a humanoid AI's face with intricate glowing circuits, looking contemplative.",
-        //       ]
-        //     },
-        //   ]
-        // Step 2: Generate image data for each suggestion
-        console.log(textResponse?.data?.result.replace(/```/g, "").replace(/^json\n/, "").trim())
-        let { arrayObjectsLayer, newImageObj } = this.state;
-        const suggestions = await Promise.all(
-            bookSuggestions.map(async (book, index) => {
-                const { title, subtitle, coverPrompt, otherImagePrompts } = book;
-                const titleObj = {
-                  textEditVisible: false,
-                  fill: "white",
-                  textX: canvasWidth / 2, // Centered horizontally
-                  textY: canvasHeight * 0.2, // Positioned in the top 20% of the canvas
-                  textYTextArea: canvasHeight * 0.2, // Matches textY for initial alignment
-                  textXTextArea: canvasWidth / 2, // Matches textX for initial alignment
-                  x: canvasWidth / 2 - (canvasWidth - 100) / 2, // Centered horizontally with padding
-                  y: canvasHeight * 0.2, // Positioned at 20% height
-                  textValue: title, // Replace with the actual title
-                  fontSize: 40, // Larger font for the title
-                  width: canvasWidth - 100, // Fits most of the canvas width with padding
-                  height: 60, // Estimated height for the text
-                  fontStyle: "bold", // Bold text for title emphasis
-                  align: "center", // Centered alignment
-                  id: Math.round(Math.random() * 10000), // Unique identifier
-                  type: "text",
-                };
-                const subtitleObj = {
-                  textEditVisible: false,
-                  fill: "white",
-                  textX: canvasWidth / 2, // Centered horizontally
-                  textY: canvasHeight * 0.3, // Positioned below the title (30% of canvas height)
-                  textYTextArea: canvasHeight * 0.3, // Matches textY for initial alignment
-                  textXTextArea: canvasWidth / 2, // Matches textX for initial alignment
-                  x: canvasWidth / 2 - (canvasWidth - 150) / 2, // Centered horizontally with padding
-                  y: canvasHeight * 0.3, // Positioned at 30% height
-                  textValue: subtitle, // Replace with the actual subtitle
-                  fontSize: 28, // Smaller font for subtitle
-                  width: canvasWidth - 150, // Slightly narrower width than the title
-                  height: 40, // Estimated height for the text
-                  fontStyle: "italic", // Italicized subtitle for distinction
-                  align: "center", // Centered alignment
-                  id: Math.round(Math.random() * 10000), // Unique identifier
-                  type: "text",
-              };
-                // Fetch background image
-                const backgroundImageResponse = await axios.post(
-                    '/api/kalkiai/images',
-                    JSON.stringify({
-                        params: {
-                            model: 'dall-e-3',
-                            prompt: coverPrompt,
-                            n: 1,
-                            size: '1024x1792',
-                        },
-                        key: `users/${this.props.user}/tasks/tools/design-assistant/images/background_${uuidv1()}.png`,
-                    }),
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
+          arrayObjectsLayer.push(titleObj);
+          selectedObject = titleObj;
+          saveHistory(arrayObjectsLayer);
+          this.setState({
+            arrayObjectsLayer,
+            selectedObject,
+          });
+          arrayObjectsLayer.push(subtitleObj);
+          selectedObject = subtitleObj;
+          saveHistory(arrayObjectsLayer);
+          this.setState({
+            arrayObjectsLayer,
+            selectedObject,
+          });
 
-                const backgroundImageData = backgroundImageResponse?.data?.result;
-                // const backgroundImageData = null;
-                // Center the background image
-                const bgX = (canvasWidth - 1024) / 2; // Center X
-                const bgY = (canvasHeight - 1792) / 4; // Positioned in top quarter
-                let selectedObject = null;
-                this.loadImageSrc(backgroundImageData.signedUrl, (image)=>{
-                  const backgroundImageObject = {
-                    image,
-                    x: 0,
-                    y: 0,
-                    width: canvasWidth,
-                    height: canvasHeight,
-                    id: Math.round(Math.random() * 10000),
-                    type: 'image',
-                }
-                arrayObjectsLayer.push(backgroundImageObject);
-                selectedObject = backgroundImageObject;
-                saveHistory(arrayObjectsLayer)
-                this.setState({
-                  arrayObjectsLayer, selectedObject,
-                });
-                })
-                let assets = this.state.assets;
-                assets.push({ signedUrl: backgroundImageData.signedUrl, type: 'image' })
-                this.setState({ assets })
+          return {
+            title,
+            subtitle,
+            background_image: {
+              prompt: backgroundImageData?.signedUrl,
+              dimension: "512x512",
+              model: "dall-e-2",
+              x: bgX,
+              y: bgY,
+            },
+            other_images: [],
+          };
+        })
+      );
 
-                // Fetch other images and arrange them in a grid
-              //   const otherImages = otherImagePrompts.map(async (prompt, i) => {
-              //     const otherImageResponse = await axios.post(
-              //         '/api/kalkiai/images',
-              //         JSON.stringify({
-              //             params: {
-              //                 model: 'dall-e-2',
-              //                 prompt,
-              //                 n: 1,
-              //                 size: '512x512',
-              //             },
-              //             key: `users/${this.props.user}/tasks/tools/design-assistant/images/background_${uuidv1()}.jpeg`,
-              //         }),
-              //         {
-              //             headers: {
-              //                 'Content-Type': 'application/json',
-              //             },
-              //         }
-              //     );
-
-              //     const otherImageData = otherImageResponse?.data?.result;
-
-              //     // Arrange images in a grid below the background
-              //     const gridCols = Math.floor(canvasWidth / 512); // Number of columns
-              //     const col = i % gridCols;
-              //     const row = Math.floor(i / gridCols);
-              //     const gridX = col * 512; // Horizontal position
-              //     const gridY = bgY + 1024 + (row * 512); // Vertical position below the background image
-                
-              //   this.loadImageSrc(otherImageData.signedUrl, (image)=>{
-              //     const otherImageObject = {
-              //       image,
-              //       x: gridX,
-              //       y: gridY,
-              //       width: 512,
-              //       height: 512,
-              //       id: Math.round(Math.random() * 10000),
-              //       type: 'image',
-              //   }
-
-              //   arrayObjectsLayer.push(otherImageObject);
-              //   let selectedObject = otherImageObject;
-              //   saveHistory(arrayObjectsLayer)
-              //   this.setState({
-              //     arrayObjectsLayer, selectedObject,
-              //   });
-              //   })
-
-              //     return {
-              //         prompt: otherImageData.signedUrl,
-              //         dimension: '512x512',
-              //         model: 'dall-e-2',
-              //         x: gridX,
-              //         y: gridY
-              //     };
-              // })
-                const otherImages = []
-
-                arrayObjectsLayer.push(titleObj);
-                selectedObject = titleObj;
-                saveHistory(arrayObjectsLayer)
-
-                this.setState({
-                  arrayObjectsLayer, selectedObject,
-                });
-              arrayObjectsLayer.push(subtitleObj);
-                selectedObject = subtitleObj;
-                saveHistory(arrayObjectsLayer)
-
-                this.setState({
-                  arrayObjectsLayer, selectedObject,
-                });
-
-                // console.log("This is Array Object",arrayObjectsLayer)
-
-                return {
-                    title,
-                    subtitle,
-                    background_image: {
-                        prompt: backgroundImageData?.signedUrl,
-                        dimension: '512x512',
-                        model: 'dall-e-2',
-                        x: bgX,
-                        y: bgY
-                    },
-                    other_images: otherImages
-                };
-            })
-        );
-
-        return suggestions;
+      return suggestions;
     } catch (error) {
-        console.error('Error generating suggestions JSON:', error);
-        return [];
+      console.error("Error generating suggestions JSON:", error);
+      return [];
     }
-};
-
-  
+  };
 
   handleDrag = (e, ui) => {
     e.stopPropagation();
@@ -1035,12 +946,11 @@ convertImageToBase64 = async (url) => {
       deltaPosition: {
         x: x + ui.deltaX,
         y: y + ui.deltaY,
-      }
+      },
     });
   };
 
-
-  // functions de arrastar o trem da cor
+  // functions for draggable color palette
   onStart = () => {
     this.setState({ activeDrags: ++this.state.activeDrags });
   };
@@ -1049,19 +959,17 @@ convertImageToBase64 = async (url) => {
     this.setState({ activeDrags: --this.state.activeDrags });
   };
 
-  // For controlled component
-  adjustXPos = (e) => {
+  adjustXPos = e => {
     e.preventDefault();
     e.stopPropagation();
     const { x, y } = this.state.controlledPosition;
     this.setState({ controlledPosition: { x: x - 10, y } });
   };
 
-  adjustYPos = (e) => {
+  adjustYPos = e => {
     e.preventDefault();
     e.stopPropagation();
-    const { controlledPosition } = this.state;
-    const { x, y } = controlledPosition;
+    const { x, y } = this.state.controlledPosition;
     this.setState({ controlledPosition: { x, y: y - 10 } });
   };
 
@@ -1077,11 +985,9 @@ convertImageToBase64 = async (url) => {
 
   backgroundToogle = () => {
     this.setState({
-      backgroundOn: !this.state.backgroundOn
-    })
+      backgroundOn: !this.state.backgroundOn,
+    });
   };
-
-  // fim functions de arrastar o trem da cor
 
   render() {
     const {
@@ -1093,111 +999,149 @@ convertImageToBase64 = async (url) => {
       heightKanvas,
       backgroundOn,
       showBackground,
-      zoom
+      zoom,
+      printSize,
     } = this.state;
-    const width = (widthKanvas) / zoom// cm to pixel
-    const height = (heightKanvas) / zoom// cm to pixel
+    const width = widthKanvas / zoom; // cm to pixel
+    const height = heightKanvas / zoom; // cm to pixel
 
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     return (
       <div>
         <div className="containerCanvas" ref={this.containerCanvas}>
-        <Sidebar style={{
-                height: '40vh',
-                // overflowY: 'none',
-              }} visible={this.state.visibleTray} position="bottom" onHide={() => this.setVisibleTray(false)}
-              closeIcon={<div><Close /></div>}
+          <Sidebar
+            style={{
+              height: "40vh",
+            }}
+            visible={this.state.visibleTray}
+            position="bottom"
+            onHide={() => this.setVisibleTray(false)}
+            closeIcon={<div><Close /></div>}
+          >
+            <div
+              className="card flex"
+              style={{
+                marginTop: "1.5rem",
+              }}
+            >
+              <Divider layout="vertical" />
+              <DropImage
+                getImage={base64 => {
+                  this.loadImage(base64);
+                  this.setVisibleTray(false);
+                }}
               >
-              <div className="card flex" style={{
-                marginTop: '1.5rem',
-              }}>
-                <Divider layout="vertical" />
-                <DropImage getImage={base64 => {this.loadImage(base64); this.setVisibleTray(false)}}>
-                <p style={{
-                      cursor: 'pointer',
-                    }} >
-                      <img
-                        src={"https://content.hostgator.com/img/weebly_image_sample.png"} // Replace with your thumbnail URL
-                        alt="Thumbnail"
-                        style={{
-                          minWidth: '25vh',
-                          maxWidth: '25vh',
-                          height: '20vh',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                          marginRight: '1rem',
-                          marginLeft: '1rem'
-                        }}
-                      />
-                      </p>
-                </DropImage>
-                {this.state.assets&&this.state.assets.map((asset, index) => {
+                <p
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <img
+                    src={
+                      "https://content.hostgator.com/img/weebly_image_sample.png"
+                    }
+                    alt="Thumbnail"
+                    style={{
+                      minWidth: "25vh",
+                      maxWidth: "25vh",
+                      height: "20vh",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                      marginRight: "1rem",
+                      marginLeft: "1rem",
+                    }}
+                  />
+                </p>
+              </DropImage>
+              {this.state.assets &&
+                this.state.assets.map((asset, index) => {
                   return (
                     <>
-                    <Divider layout="vertical" />
-                    <p style={{
-                      cursor: 'pointer',
-                    }}>
-                      <img
-                        onClick={(e) => {this.loadImageSrc(this.state.assets[index].signedUrl, this.addNewImage);}}
-                        src={asset.signedUrl} // Replace with your thumbnail URL
-                        value={index}
-                        alt={`Thumbnail-${index}`}
+                      <Divider layout="vertical" />
+                      <p
                         style={{
-                          minWidth: '25vh',
-                          maxWidth: '25vh',
-                          height: '25vh',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                          marginRight: '1rem',
-                          marginLeft: '1rem'
+                          cursor: "pointer",
                         }}
-                      />
+                      >
+                        <img
+                          onClick={e => {
+                            this.loadImageSrc(
+                              this.state.assets[index].signedUrl,
+                              this.addNewImage
+                            );
+                          }}
+                          src={asset.signedUrl}
+                          value={index}
+                          alt={`Thumbnail-${index}`}
+                          style={{
+                            minWidth: "25vh",
+                            maxWidth: "25vh",
+                            height: "25vh",
+                            borderRadius: "8px",
+                            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                            marginRight: "1rem",
+                            marginLeft: "1rem",
+                          }}
+                        />
                       </p>
-                </>
-                  )
+                    </>
+                  );
                 })}
             </div>
-        </Sidebar>
+          </Sidebar>
+
+          {/* Toolbar */}
           <div className="containerToolbar">
             <div
               className="containerIconeToolbar"
               onClick={this.imageToBlob}
             >
-              <img className="img" src={Save} title="Save as png"></img>
+              <img className="img" src={Save} title="Save as png" alt="save" />
             </div>
             <div
               className="containerIconeToolbar"
               onClick={this.desfazer}
             >
-              <img className="img" src={Desfazer} title="Desfazer"></img>
+              <img className="img" src={Desfazer} title="Desfazer" alt="undo" />
             </div>
             <div
               className="containerIconeToolbar"
               onClick={this.refazer}
             >
-              <img className="img" src={Refazer} title="Refazer"></img>
+              <img className="img" src={Refazer} title="Refazer" alt="redo" />
             </div>
             <div
               className="containerIconeToolbar"
-              onClick={()=>this.setVisibleTray(true)}
+              onClick={() => this.setVisibleTray(true)}
             >
-                <img className="img" src={Image} title="Adicionar imagem" />
+              <img className="img" src={Image} title="Adicionar imagem" alt="image" />
             </div>
             <div className="containerIconeToolbar" onClick={this.genImage}>
-              <img className="img" src={AiIcon} title="AIGen"></img>
+              <img className="img" src={AiIcon} title="AIGen" alt="ai" />
             </div>
-            <div className="containerIconeToolbar" onClick={this.addNewCircle}>
-              <img className="img" src={Circle} title="Circulo"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={this.addNewCircle}
+            >
+              <img className="img" src={Circle} title="Circulo" alt="circle" />
             </div>
-            <div className="containerIconeToolbar" onClick={this.addNewSquare}>
-              <img className="img" src={Rectangle} title="Retangulo"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={this.addNewSquare}
+            >
+              <img className="img" src={Rectangle} title="Retangulo" alt="rectangle" />
             </div>
-            <div className="containerIconeToolbar" onClick={this.addNewTriangle}>
-              <img className="img" src={Triangule} title="Triangulo"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={this.addNewTriangle}
+            >
+              <img className="img" src={Triangule} title="Triangulo" alt="triangle" />
             </div>
-            <div className="containerIconeToolbar" onClick={this.addNewText}>
-              <img className="img" src={InsertText} title="Criar texto"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={this.addNewText}
+            >
+              <img className="img" src={InsertText} title="Criar texto" alt="text" />
             </div>
             <div className="containerIconeToolbar">
               <div className="containerOpcao">
@@ -1212,7 +1156,9 @@ convertImageToBase64 = async (url) => {
                         index > 5 && (
                           <option
                             key={index}
-                            onClick={() => this.changeFontSize(`${index * zoom}px`)}
+                            onClick={() =>
+                              this.changeFontSize(`${index * zoom}px`)
+                            }
                             value={index}
                           >
                             {`${index}px`}
@@ -1221,12 +1167,12 @@ convertImageToBase64 = async (url) => {
                     )}
                   </select>
                 ) : (
-                    <select
-                      disabled={true}
-                      value={28}
-                      onChange={this.changeFontSize}
-                    />
-                  )}
+                  <select
+                    disabled={true}
+                    value={28}
+                    onChange={this.changeFontSize}
+                  />
+                )}
               </div>
             </div>
             <div
@@ -1234,105 +1180,150 @@ convertImageToBase64 = async (url) => {
               onClick={() =>
                 this.changeStyle(
                   arrayObjectsLayer[indexTextSelected] &&
-                    arrayObjectsLayer[indexTextSelected].fontStyle == "bold"
+                    arrayObjectsLayer[indexTextSelected].fontStyle === "bold"
                     ? "normal"
                     : "bold"
                 )
               }
               style={
                 arrayObjectsLayer[indexTextSelected] &&
-                  arrayObjectsLayer[indexTextSelected].fontStyle == "bold"
+                arrayObjectsLayer[indexTextSelected].fontStyle === "bold"
                   ? { backgroundColor: "grey" }
                   : {}
               }
             >
-              <img className="img" src={Bold} title="Negrito"></img>
+              <img className="img" src={Bold} title="Negrito" alt="bold" />
             </div>
             <div
               className="containerIconeToolbar"
               onClick={() =>
                 this.changeStyle(
                   arrayObjectsLayer[indexTextSelected] &&
-                    arrayObjectsLayer[indexTextSelected].fontStyle == "italic"
+                    arrayObjectsLayer[indexTextSelected].fontStyle === "italic"
                     ? "normal"
                     : "italic"
                 )
               }
               style={
                 arrayObjectsLayer[indexTextSelected] &&
-                  arrayObjectsLayer[indexTextSelected].fontStyle == "italic"
+                arrayObjectsLayer[indexTextSelected].fontStyle === "italic"
                   ? { backgroundColor: "grey" }
                   : {}
               }
             >
-              <img className="img" src={Italic} title="Italico"></img>
+              <img className="img" src={Italic} title="Italico" alt="italic" />
             </div>
             <div
               className="containerIconeToolbar"
               onClick={() =>
                 this.setUnderline(
                   arrayObjectsLayer[indexTextSelected] &&
-                    arrayObjectsLayer[indexTextSelected].textDecoration == "underline"
+                    arrayObjectsLayer[indexTextSelected].textDecoration === "underline"
                     ? ""
                     : "underline"
                 )
               }
               style={
                 arrayObjectsLayer[indexTextSelected] &&
-                  arrayObjectsLayer[indexTextSelected].textDecoration == "underline"
+                arrayObjectsLayer[indexTextSelected].textDecoration === "underline"
                   ? { backgroundColor: "grey" }
                   : {}
               }
             >
-              <img className="img" src={Underline} title="Sublinhado"></img>
+              <img className="img" src={Underline} title="Sublinhado" alt="underline" />
             </div>
             <div
               className="containerIconeToolbar"
               onClick={this.tooglePallet}
               style={showPallet ? { backgroundColor: "grey" } : {}}
             >
-              <img className="img" src={FillColor} title="Cor"></img>
+              <img className="img" src={FillColor} title="Cor" alt="color" />
             </div>
-            <div className="containerIconeToolbar" onClick={this.duplicarObject}>
-              <img className="img" src={Duplicate} title="Duplicar"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={this.duplicarObject}
+            >
+              <img className="img" src={Duplicate} title="Duplicar" alt="duplicate" />
             </div>
-            <div className="containerIconeToolbar" onClick={() => this.zommStage(zoom + 1)}>
-              <img className="img" src={ZoomOut} title="Zoom -"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={() => this.zommStage(zoom + 1)}
+            >
+              <img className="img" src={ZoomOut} title="Zoom -" alt="zoom out" />
             </div>
-            <div className="containerIconeToolbar" onClick={() => this.zommStage(zoom - 1)}>
-              <img className="img" src={ZoomIn} title="Zoom +"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={() => this.zommStage(zoom - 1)}
+            >
+              <img className="img" src={ZoomIn} title="Zoom +" alt="zoom in" />
             </div>
-            <div className="containerIconeToolbar" onClick={() => this.trazerItem(true)}>
-              <img className="img" src={Front} title="Trazer elemento para frente"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={() => this.trazerItem(true)}
+            >
+              <img className="img" src={Front} title="Trazer elemento para frente" alt="front" />
             </div>
-            <div className="containerIconeToolbar" onClick={() => this.trazerItem()}>
-              <img className="img" src={Back} title="Levar elemento para trás"></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={() => this.trazerItem()}
+            >
+              <img className="img" src={Back} title="Levar elemento para trás" alt="back" />
             </div>
-            <div className="containerIconeToolbar" onClick={() => this.backgroundToogle()}>
-              <img className="img" src={BackgroundIcon} title="Background"
-                style={
-                  !backgroundOn ? { backgroundColor: "grey" }
-                    : {}
-                }></img>
+            <div
+              className="containerIconeToolbar"
+              onClick={() => this.backgroundToogle()}
+            >
+              <img
+                className="img"
+                src={BackgroundIcon}
+                title="Background"
+                style={!backgroundOn ? { backgroundColor: "grey" } : {}}
+                alt="background"
+              />
+            </div>
+            {/* NEW: Preview Toggle Button */}
+            <div
+              className="containerIconeToolbar"
+              onClick={() =>
+                this.setState({ visiblePreview: !this.state.visiblePreview })
+              }
+              style={{ backgroundColor: this.state.visiblePreview ? "grey" : "" }}
+            >
+              <img
+                className="img"
+                src={Preview}
+                title="Preview"
+                style={!this.state.visiblePreview ? { backgroundColor: "grey" } : {}}
+                alt="preview"
+              />
             </div>
           </div>
+
+          {/* Main Canvas */}
           <div>
             {showPallet && (
               <div onClick={this.tooglePallet} className="containerColors">
-                <Draggable onDrag={this.handleDrag} {...dragHandlers} >
-                  <div className="containerColorPickerPalette" onClick={e => e.stopPropagation()}>
+                <Draggable onDrag={this.handleDrag} {...dragHandlers}>
+                  <div
+                    className="containerColorPickerPalette"
+                    onClick={e => e.stopPropagation()}
+                  >
                     <ColorPickerPalette setObjColor={this.setObjColor} />
                     <div className="containerCirclePicker">
-                      <CirclePicker color={selectedObject.fill} onChangeComplete={this.setObjColor} onChange={this.setObjColor} />
-                    </div>
-                    <div>
+                      <CirclePicker
+                        color={selectedObject.fill}
+                        onChangeComplete={this.setObjColor}
+                        onChange={this.setObjColor}
+                      />
                     </div>
                   </div>
                 </Draggable>
               </div>
             )}
             <div className={`container-area`}>
-              {this.state.loading&&<Loading loading={this.state.loading} withOverlay={true} />}
+              {this.state.loading && (
+                <Loading loading={this.state.loading} withOverlay={true} />
+              )}
               <Stage
                 scaleY={1 / zoom}
                 scaleX={1 / zoom}
@@ -1340,118 +1331,108 @@ convertImageToBase64 = async (url) => {
                 width={width}
                 height={height}
                 onMouseDown={e => {
-                  // deselect when clicked on empty area
-                  // console.log(e.target)
-                  // console.log(e.target.getStage())
-                  const clickedOnEmpty = e.target === e.target.getStage();
+                  const clickedOnEmpty =
+                    e.target === e.target.getStage();
                   if (clickedOnEmpty) {
                     this.selectShape(null);
                   }
                 }}
               >
                 <Layer>
-                  {(showBackground && backgroundOn) && <Background width={5000} height={5000} />}
-                  {
-                    arrayObjectsLayer &&
+                  {(showBackground && backgroundOn) && (
+                    <Background width={5000} height={5000} />
+                  )}
+                  {arrayObjectsLayer &&
                     arrayObjectsLayer.map((item, index) => {
-                      return (
-                        item.type === 'square' ?
-                          <Retangulo
-                            key={index}
-                            shapeProps={item}
-                            isSelected={
-                              selectedObject && item.id === selectedObject.id
-                            }
-                            onSelect={() => {
-                              this.selectShape(item);
-                            }}
-                            onChange={newAttrs => {
-                              const item = arrayObjectsLayer.slice();
-                              item[index] = newAttrs;
-                              this.setArrayObject(item);
-                            }}
-                          />
-                          :
-                          item.type === 'triangule' ?
-                            <Triangulo
-                              key={index}
-                              shapeProps={item}
-                              isSelected={
-                                selectedObject && item.id === selectedObject.id
-                              }
-                              onSelect={() => {
-                                this.selectShape(item);
-                              }}
-                              onChange={newAttrs => {
-                                const item = arrayObjectsLayer.slice();
-                                item[index] = newAttrs;
-                                this.setArrayObject(item);
-                              }}
-                            />
-                            :
-                            item.type === 'circle' ?
-                              <Circulo
-                                key={index}
-                                shapeProps={item}
-                                isSelected={
-                                  selectedObject && item.id === selectedObject.id
-                                }
-                                onSelect={() => {
-                                  this.selectShape(item);
-                                }}
-                                onChange={newAttrs => {
-                                  const item = arrayObjectsLayer.slice();
-                                  item[index] = newAttrs;
-                                  this.setArrayObject(item);
-                                }}
-                              />
-                              :
-                              item.type === 'image' ?
-                                <Imagem
-                                  key={index}
-                                  shapeProps={item}
-                                  isSelected={
-                                    selectedObject && item.id === selectedObject.id
-                                  }
-                                  onSelect={() => {
-                                    this.selectShape(item);
-                                  }}
-                                  onChange={newAttrs => {
-                                    const item = arrayObjectsLayer.slice();
-                                    item[index] = newAttrs;
-                                    this.setArrayObject(item);
-                                  }}
-                                />
-                                :
-                                item.type === 'text' ?
-                                  <Texto
-                                    key={index}
-                                    onSelect={() => {
-                                      this.selectShape(item, index + 1);
-                                    }}
-                                    shapeProps={item}
-                                    isSelected={
-                                      selectedObject && item.id === selectedObject.id
-                                    }
-                                    handleTextDblClick={e =>
-                                      this.handleTextDblClick(e, index)
-                                    }
-                                    onChange={newAttrs => {
-                                      const item = arrayObjectsLayer.slice();
-                                      item[index] = newAttrs;
-                                      this.setArrayObject(item);
-                                    }}
-                                  />
-                                  :
-                                  false
-                      )
-                    }
-                    )
-                  }
+                      return item.type === "square" ? (
+                        <Retangulo
+                          key={index}
+                          shapeProps={item}
+                          isSelected={
+                            selectedObject && item.id === selectedObject.id
+                          }
+                          onSelect={() => {
+                            this.selectShape(item);
+                          }}
+                          onChange={newAttrs => {
+                            const itemCopy = arrayObjectsLayer.slice();
+                            itemCopy[index] = newAttrs;
+                            this.setArrayObject(itemCopy);
+                          }}
+                        />
+                      ) : item.type === "triangule" ? (
+                        <Triangulo
+                          key={index}
+                          shapeProps={item}
+                          isSelected={
+                            selectedObject && item.id === selectedObject.id
+                          }
+                          onSelect={() => {
+                            this.selectShape(item);
+                          }}
+                          onChange={newAttrs => {
+                            const itemCopy = arrayObjectsLayer.slice();
+                            itemCopy[index] = newAttrs;
+                            this.setArrayObject(itemCopy);
+                          }}
+                        />
+                      ) : item.type === "circle" ? (
+                        <Circulo
+                          key={index}
+                          shapeProps={item}
+                          isSelected={
+                            selectedObject && item.id === selectedObject.id
+                          }
+                          onSelect={() => {
+                            this.selectShape(item);
+                          }}
+                          onChange={newAttrs => {
+                            const itemCopy = arrayObjectsLayer.slice();
+                            itemCopy[index] = newAttrs;
+                            this.setArrayObject(itemCopy);
+                          }}
+                        />
+                      ) : item.type === "image" ? (
+                        <Imagem
+                          key={index}
+                          shapeProps={item}
+                          isSelected={
+                            selectedObject && item.id === selectedObject.id
+                          }
+                          onSelect={() => {
+                            this.selectShape(item);
+                          }}
+                          onChange={newAttrs => {
+                            const itemCopy = arrayObjectsLayer.slice();
+                            itemCopy[index] = newAttrs;
+                            this.setArrayObject(itemCopy);
+                          }}
+                        />
+                      ) : item.type === "text" ? (
+                        <Texto
+                          key={index}
+                          onSelect={() => {
+                            this.selectShape(item, index + 1);
+                          }}
+                          shapeProps={item}
+                          isSelected={
+                            selectedObject && item.id === selectedObject.id
+                          }
+                          handleTextDblClick={e =>
+                            this.handleTextDblClick(e, index)
+                          }
+                          onChange={newAttrs => {
+                            const itemCopy = arrayObjectsLayer.slice();
+                            itemCopy[index] = newAttrs;
+                            this.setArrayObject(itemCopy);
+                          }}
+                        />
+                      ) : (
+                        false
+                      );
+                    })}
                 </Layer>
               </Stage>
-            </div>
-            <div className="containerBtnExportar">
             </div>
             {arrayObjectsLayer &&
               arrayObjectsLayer.map((item, index) => {
@@ -1469,13 +1450,13 @@ convertImageToBase64 = async (url) => {
                       fontSize: item.fontSize * (1 / zoom),
                       color: item.fill,
                       fontStyle: item.fontStyle,
-                      fontWeight: item.fontStyle
+                      fontWeight: item.fontStyle,
                     }}
                     onChange={e => this.handleTextEdit(e, index)}
                   />
                 ) : (
-                    false
-                  );
+                  false
+                );
               })}
           </div>
           <KeyboardEventHandler
@@ -1483,6 +1464,77 @@ convertImageToBase64 = async (url) => {
             onKeyEvent={this.deleteNodeSelected}
           />
         </div>
+
+        {/* NEW: Preview Sidebar for Print */}
+        <Sidebar
+          visible={this.state.visiblePreview}
+          position="right"
+          style={{ width: "50vw", height: "100vh", overflowY: "auto" }}
+          onHide={() => this.setState({ visiblePreview: false })}
+          closeIcon={<div><Close /></div>}
+        >
+          <div className="previewSidebar" style={{ padding: "1rem" }}>
+            <h3>Print Preview</h3>
+            <div style={{ marginBottom: "1rem" }}>
+              <label>
+                Print Width:{" "}
+                <input
+                  type="number"
+                  value={this.state.printSize.width}
+                  onChange={e =>
+                    this.setState({
+                      printSize: {
+                        ...this.state.printSize,
+                        width: Number(e.target.value),
+                      },
+                    })
+                  }
+                />
+              </label>
+              <br />
+              <label>
+                Print Height:{" "}
+                <input
+                  type="number"
+                  value={this.state.printSize.height}
+                  onChange={e =>
+                    this.setState({
+                      printSize: {
+                        ...this.state.printSize,
+                        height: Number(e.target.value),
+                      },
+                    })
+                  }
+                />
+              </label>
+            </div>
+            <div style={{ border: "1px solid #ccc", padding: "1rem" }}>
+              <Stage
+                width={printSize.width}
+                height={printSize.height}
+              >
+                <Layer>
+                  {arrayObjectsLayer &&
+                    arrayObjectsLayer.map((item, index) => {
+                      if (item.type === "square") {
+                        return <Retangulo key={index} shapeProps={item} />;
+                      } else if (item.type === "triangule") {
+                        return <Triangulo key={index} shapeProps={item} />;
+                      } else if (item.type === "circle") {
+                        return <Circulo key={index} shapeProps={item} />;
+                      } else if (item.type === "image") {
+                        return <Imagem key={index} shapeProps={item} />;
+                      } else if (item.type === "text") {
+                        return <Texto key={index} shapeProps={item} />;
+                      } else {
+                        return null;
+                      }
+                    })}
+                </Layer>
+              </Stage>
+            </div>
+          </div>
+        </Sidebar>
       </div>
     );
   }
