@@ -231,7 +231,7 @@ export default function BlockNoteEditor({ initialContent,
   const carbonPrefix = usePrefix();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const profile = useSelector((state) => state.auth.profile);
+  const profile = useSelector((state) => state.profile);
   const [fileName, setFileName] = useState("Untitled Document");
   const [wordCount, setWordCount] = useState(0);
   const [isChanged, setIsChanged] = useState(false);
