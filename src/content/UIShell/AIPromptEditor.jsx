@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import TurndownService from 'turndown';
 import "@blocknote/core/fonts/inter.css";
 import "./AIPromptEditor.css";
 import { pkg, SidePanel, ActionBar, EditInPlace } from "@carbon/ibm-products";
@@ -34,12 +35,15 @@ import {
   Save,
   TrashCan,
 } from "@carbon/react/icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setLoading } from "../../actions/auth";
+import { deleteFile, save } from "../../actions/kits";
+import { exportToPDF, formatToMarkdown } from "../Dashboard/utils";
 
 // Enable SidePanel components from Carbon
 pkg.component.SidePanel = true;
+const turndownService = new TurndownService();
 
 /* -------------------------------------------------------------------------
    1. Inline Math Support
@@ -218,10 +222,16 @@ function AddFileButton() {
       and Auto-Save Toggle & Notifications
 ------------------------------------------------------------------------- */
 
-export default function BlockNoteEditor({ initialContent, ...rest }) {
+export default function BlockNoteEditor({ initialContent, 
+  item_id,
+  bucket,
+  onKeyDown,
+  markdown=false, 
+  ...rest }) {
   const carbonPrefix = usePrefix();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const profile = useSelector((state) => state.auth.profile);
   const [fileName, setFileName] = useState("Untitled Document");
   const [wordCount, setWordCount] = useState(0);
   const [isChanged, setIsChanged] = useState(false);
@@ -238,6 +248,86 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
     author: "",
     description: "",
   });
+
+
+  useEffect(() => {
+    let cacheContent = JSON.parse(localStorage.getItem('tools/writing-assistant'));
+    let selectedTool = JSON.parse(localStorage.getItem('selectedTool'));
+    if (selectedTool&&selectedTool.name==='writing-assistant'&&Object.keys(selectedTool.selectedEntry).length>0) {
+      setFileName(selectedTool.selectedEntry.title);
+      axios.get(selectedTool.selectedEntry.signedUrl).then(async (res) => {
+        let blocks = res.data;
+        if (selectedTool.selectedEntry.signedUrl.split('?')[0].endsWith('.pdf') && typeof blocks !== "object") {
+          dispatch(setLoading(true));
+          blocks = await extractTextFromPDF(selectedTool.selectedEntry.signedUrl);
+          blocks = await editor.tryParseMarkdownToBlocks(blocks);
+          dispatch(save(bucket, item_id.replace('.pdf', '.txt'), JSON.stringify(blocks)));
+          dispatch(deleteFile(bucket, item_id, false));
+        }
+        if (typeof blocks === "string") {
+          blocks = await editor.tryParseMarkdownToBlocks(blocks);
+        }
+        editor.replaceBlocks(editor.document, blocks);
+        if (setIsChanged) {
+          setIsChanged(null);
+        }
+        localStorage.removeItem('selectedTool')
+      });
+    }
+    if (cacheContent) {
+      editor.replaceBlocks(editor.document, cacheContent.content);
+      setFileName(cacheContent.fileName);
+    }
+    editor.blocksToMarkdownLossy(editor.document).then((res) => {
+      console.log(res);
+      setWordCount(res.replace(/[#*_`>-]|\[.*?\]\(.*?\)/g, "").split(/\s+/).length-1);
+    });
+  }, []);
+
+  const convertToMarkdown = (htmlContent) => {
+    return turndownService.turndown(htmlContent);
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteFile("kalkinso.com", `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, false));
+    window.location.reload();
+  };
+
+  const extractTextFromPDF = async (pdfUrl) => {
+    const pdf = await window.pdfjsLib.getDocument(pdfUrl).promise;
+    let fullText = '';
+  
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const textContent = await page.getTextContent();
+  
+      // Initialize variables to store formatted text
+      let pageFormattedText = '';
+      let previousY = null; // Store the Y coordinate to detect line breaks
+  
+      textContent.items.forEach((item, index) => {
+        const currentY = item.transform[5]; // Y coordinate of the text
+  
+        // Detect a new line based on the Y coordinate difference
+        if (previousY && Math.abs(previousY - currentY) > 10) {
+          pageFormattedText += '\n'; // Insert a line break when a new line starts
+        }
+  
+        // Append text to the current line
+        pageFormattedText += item.str + ' ';
+  
+        // Update previousY to currentY for the next iteration
+        previousY = currentY;
+      });
+  
+      // Add the formatted text of the current page
+      fullText += pageFormattedText.trim() + '\n\n'; // Add spacing between pages
+    }
+  
+    // Optionally convert the extracted text to Markdown
+    const result = await formatToMarkdown(convertToMarkdown(fullText))
+    return result;
+  };
 
   // State for preview HTML content
   const [previewContent, setPreviewContent] = useState("");
@@ -288,6 +378,7 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
         console.log("Auto-saving document:", fileName);
         setSaveNotification("Saving...");
         // Simulate auto-save delay
+        dispatch(save('kalkinso.com', `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
         setTimeout(() => {
           setSaveNotification("Saved");
           setIsChanged(false);
@@ -342,6 +433,7 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
             onClick: () => {
               console.log("Saving document:", fileName);
               setSaveNotification("Saving...");
+              dispatch(save('kalkinso.com', `users/${profile.user}/tasks/tools/writing-assistant/${fileName}`, JSON.stringify(editor.document), true));
               setTimeout(() => {
                 setSaveNotification("Saved");
                 setIsChanged(false);
@@ -356,7 +448,27 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
             renderIcon: () => <Download />,
             label: "Download",
             onClick: () => {
-              console.log("Downloading document:", fileName);
+              if (true) {
+                dispatch(setLoading(true));
+                exportToPDF(editor.document, fileName)
+                  .then(() => {
+                    dispatch(setLoading(false));
+                  })
+                  .catch((error) => {
+                    dispatch(setLoading(false));
+                    console.error(error);
+                  })
+                  .finally(() => {
+                    dispatch(setLoading(false));
+                  });
+              } else {
+                // const aTag = document.createElement("a");
+                // aTag.href = item.signedUrl;
+                // aTag.download = item.title;
+                // document.body.appendChild(aTag);
+                // aTag.click();
+                // aTag.remove();
+              }
             },
           },
           {
@@ -364,10 +476,7 @@ export default function BlockNoteEditor({ initialContent, ...rest }) {
             key: "delete",
             renderIcon: () => <TrashCan />,
             label: "Delete",
-            onClick: () => {
-              console.log("Deleting document:", fileName);
-              navigate("/tools/home");
-            },
+            onClick: handleDelete,
           },
           {
             id: "preview",
