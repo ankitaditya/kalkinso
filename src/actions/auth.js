@@ -23,7 +23,7 @@ export const keepAlive = () => async (dispatch) => {
 			dispatch(loadUser({token:res?.data?.token}))
 		} else {
 			if (!['login', 'register', 'search', '#', 'privacy-policy', 'terms-n-conditions', 'contact'].includes(window.location.href.split('/').slice(-1)[0])) {
-				window.location.href = `${window.location.origin}/#/login`
+				window.location.href = `${window.location.origin}/#`
 			}
 		}
 	} catch (err) {
@@ -33,7 +33,7 @@ export const keepAlive = () => async (dispatch) => {
 		dispatch(setLoading(true))
 		window.localStorage.removeItem('__data')
 		if (!['login', 'register', 'search', '#', 'privacy-policy', 'terms-n-conditions', 'contact'].includes(window.location.href.split('/').slice(-1)[0])) {
-			window.location.href = `${window.location.origin}/#/login`
+			window.location.href = `${window.location.origin}/#`
 		}
 		setTimeout(() => dispatch(setLoading(false)), 1000)
 	}
@@ -60,7 +60,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 		dispatch(setLoading(true))
 		window.localStorage.removeItem('__data')
 		if (!['login', 'register', 'search', '#', 'privacy-policy', 'terms-n-conditions', 'contact'].includes(window.location.href.split('/').slice(-1)[0])){
-			window.location.href = `${window.location.origin}/#/login`
+			window.location.href = `${window.location.origin}/#`
 		}
 		setTimeout(() => dispatch(setLoading(false)), 1000)
 	}
@@ -101,7 +101,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 			payload: res,
 		})
 		dispatch(setAlert(`Welcome ${first_name} ${last_name}, Successfully Registered!`, 'success'))
-		window.location.href = `${window.location.origin}/#/login`
+		window.location.href = `${window.location.origin}/#`
 		dispatch(setLoading(false))
 	} catch (err) {
 		const errors = err?.response?.data
@@ -109,7 +109,7 @@ export const register = ({ first_name, last_name, email, mobile, upi, adhar, ter
 			errors.forEach((error) => dispatch(setAlert(error?.msg, 'error')))
 			setTimeout(() => {
 				dispatch(setLoading(false))
-				// window.location.href = `${window.location.origin}/#/login`
+				// window.location.href = `${window.location.origin}/#`
 			}, 1000)
 		}
 		dispatch(setLoading(false))
@@ -255,7 +255,7 @@ export const sendVerificationLogin = ({email=null, mobile=null, adhar=null, upi=
 	} catch (err) {
 		dispatch(setAlert("User not found!", 'error'))
 		dispatch(setLoading(false));
-		window.location.href = `${window.location.origin}/#/login`
+		window.location.href = `${window.location.origin}/#`
 		window.location.reload()
 	}
 }
@@ -450,7 +450,7 @@ export const reset = (password, password2) => async (dispatch) => {
 			payload: res.data,
 		})
 		dispatch(setAlert('Password Reset Successfully!', 'success'))
-		window.location.href = `${window.location.origin}/#/login`
+		window.location.href = `${window.location.origin}/#`
 	} catch (err) {
 		const errors = err.response.data
 		if (errors) {
