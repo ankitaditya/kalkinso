@@ -26,10 +26,13 @@ const HeaderItemExplore = () => {
                 window.location.href = window.location.origin + '/#/'
                 window.location.reload()
             }
-        }>Logout</HeaderMenuItem></>:<HeaderMenuItem onClick={()=>{
-            window.location.href = window.location.origin + '/#/search'
+        }>Logout</HeaderMenuItem></>:<><HeaderMenuItem onClick={()=>{
+            window.location.href = window.location.origin + '/#/login'
             window.location.reload()
-        }}>Explore</HeaderMenuItem>
+        }}>Signin</HeaderMenuItem><HeaderMenuItem onClick={()=>{
+            window.location.href = window.location.origin + '/#/register'
+            window.location.reload()
+        }}>Signup</HeaderMenuItem></>
     );
 };
 
