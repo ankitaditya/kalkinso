@@ -46,6 +46,7 @@ router.post('/create-order', async (req, res) => {
       user: user_id,
       orderId: order_id,
       paymentSessionId: order.id,
+      description: 'Payment for Kalkinso services',
       amount,
       customerDetails: { name, email, phone },
     });

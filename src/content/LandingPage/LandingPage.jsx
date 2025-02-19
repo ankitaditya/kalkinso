@@ -63,12 +63,11 @@ function PaymentForm({ type }) {
     }
 
     try {
-      const response = await axios.post('/api/payment/create-order', {
+      const response = await axios.post('/api/phonepe/create-order', {
         amount,
         name,
         email,
         phone,
-        type,
       });
 
       const order = response.data;
@@ -84,7 +83,7 @@ function PaymentForm({ type }) {
         prefill: { name, email, contact: phone },
         theme: { color: '#F37254' },
         handler: function (response) {
-          axios.post('/api/payment/verify-payment', {
+          axios.post('/api/phonepe/verify-payment', {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
