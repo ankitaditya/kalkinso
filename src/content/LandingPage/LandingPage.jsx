@@ -15,7 +15,9 @@ import {
   IconButton,
   Tile,
   ButtonSet,
-  Loading
+  Loading,
+  Breadcrumb,
+  BreadcrumbItem
 } from '@carbon/react';
 import { InfoSection, InfoCard } from '../../components/Info';
 import { AIReactDashboardConfig } from '../UIShell/AIReactConfig';
@@ -209,15 +211,15 @@ class LandingPage extends Component {
     return (
       <Grid className="landing-page" fullWidth>
         {/* Top (Hero) Section */}
-        {/* <Column lg={16} md={8} sm={4} className="landing-page__banner">
-          <Breadcrumb noTrailingSlash>
+        <Column lg={16} md={8} sm={4} className="landing-page__banner">
+          {/* <Breadcrumb noTrailingSlash>
             <BreadcrumbItem href="#/Home">Home</BreadcrumbItem>
             <BreadcrumbItem href="#" isCurrentPage>
               Landing Page
             </BreadcrumbItem>
-          </Breadcrumb>
+          </Breadcrumb> */}
           <HeroSection ButtonComponent={this.renderAuthButtons()} />
-        </Column> */}
+        </Column>
         <Column lg={16} md={8} sm={4} className="landing-page__r2">
           <Tabs defaultSelectedIndex={0}>
             <TabList className="tabs-group" aria-label="Tab navigation" style={{
