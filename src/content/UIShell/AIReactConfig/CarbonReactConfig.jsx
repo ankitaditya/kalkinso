@@ -465,6 +465,38 @@ export const ComponentMap = {
     TableCell
   };
 
+  const iconMap = {
+    Document,
+    Folder,
+  };
+  
+  const convertNode = (node) => {
+    // use title (or fallback to value) as the display text
+    const labelText = node.title || node.value;
+  
+    // Create a new node with the expected keys.
+    const newNode = {
+      id: node.id,
+      value: labelText,
+      // you can choose to wrap the text in a <span> or simply use the string
+      label: <span>{labelText}</span>,
+      renderIcon: iconMap[node.icon] || null,
+    };
+  
+    // If this node has children, map over the "entries" array recursively.
+    if (node?.children && Array.isArray(node?.children?.entries) && node?.children?.entries?.length > 0) {
+      newNode.children = node.children.entries.map(convertNode);
+    }
+  
+    return newNode;
+  };
+  
+  // This function takes your DATA (an array) and returns the converted nodes.
+  export function convertDataToNodes(data) {
+    return data.map(convertNode);
+  }
+
+
 export const nodes = [{
     id: '1',
     value: 'Artificial intelligence',

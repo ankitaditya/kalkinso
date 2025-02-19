@@ -1,5 +1,5 @@
 {
-  "name": "LatexIt",
+  "name": "KalkiTex",
   "version": "1.9.2",
   "description": "A react app to preview and edit Latex",
   "private": true,
@@ -7,7 +7,7 @@
     "name": "David Dahlin",
     "email": "david.dahlin@gmail.com"
   },
-  "proxy": "http://localhost:8080",
+  "proxy": "http://localhost:3008",
   "dependencies": {
     "@material-ui/core": "^4.9.11",
     "@material-ui/lab": "^4.0.0-alpha.50",
@@ -15,6 +15,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "ace-builds": "^1.4.12",
+    "babel-jest": "^29.7.0",
     "babel-plugin-prismjs": "^2.0.1",
     "bluebird": "^2.10.0",
     "cors": "^2.8.5",

@@ -1,6 +1,6 @@
 import ChatScreen from "../../ChatScreen/ChatScreen";
 import SearchPage from "../../SearchPage";
-import { nodes, renderTree } from "./CarbonReactConfig";
+import { nodes, renderTree, convertDataToNodes } from "./CarbonReactConfig";
 
 export const AIReactBaseConfig =  {
     "DataTable": {
@@ -314,100 +314,106 @@ export const AIReactBaseConfig =  {
           }
     }
   };
+  
 
-  export const AIReactDashboardConfig = {
-    "Tile": {
-      "SubComponent": {
-        "Grid": {
-          "SubComponent": {
-            "Column": [
-              {
-                "lg": 4,
-                "SubComponent": {
-                  "Tile": {
-                    "children": "Left Sidebar",
-                    "SubComponent": {
-                      "TreeView": {
-                        "label": "Ideas",
-                        "selected": ["1-1-1"],
-                        "active": ["1"],
-                        "hideLabel": false,
-                        "style": {
-                          "height": "65vh",
-                          "width": "100%",
-                          "overflowY": "auto",
-                          "borderRadius": "4px"
-                        },
-                        "children": renderTree({
-                          nodes,
-                          withIcons: true
-                        })
+  export const AIReactDashboardConfig = (nodesTree, onSelect=(e,o) => {
+    console.log("This is selected: ",o.activeNodeId.split('tasks').slice(-1)[0].split("/").slice(1,-1).join('&&'));
+  }) => {
+    return {
+      "Tile": {
+        "SubComponent": {
+          "Grid": {
+            "SubComponent": {
+              "Column": [
+                {
+                  "lg": 4,
+                  "SubComponent": {
+                    "Tile": {
+                      "children": "Left Sidebar",
+                      "SubComponent": {
+                        "TreeView": {
+                          "label": "Ideas",
+                          "selected": ["1-1-1"],
+                          "active": ["1"],
+                          "hideLabel": false,
+                          "style": {
+                            "height": "65vh",
+                            "width": "100%",
+                            "overflowY": "auto",
+                            "borderRadius": "4px"
+                          },
+                          "onSelect": onSelect,
+                          "children": renderTree({
+                            nodes: nodesTree?convertDataToNodes(nodesTree):nodes,
+                            withIcons: true
+                          })
+                        }
+                      },
+                      "style": {
+                        "padding": "1.5rem",
+                        "backgroundColor": "#f4f4f4",
+                        "borderRadius": "8px",
+                        "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
                       }
-                    },
-                    "style": {
-                      "padding": "1.5rem",
-                      "backgroundColor": "#f4f4f4",
-                      "borderRadius": "8px",
-                      "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+                    }
+                  }
+                },
+                {
+                  "lg": 8,
+                  "SubComponent": {
+                    "Tile": {
+                      "children": <ChatScreen 
+                        style={{
+                          "height": "65vh"
+                        }}
+                      />,
+                      "style": {
+                        "backgroundColor": "#f4f4f4",
+                        "height": "70vh",
+                        "padding": "1rem",
+                        "borderRadius": "8px",
+                        "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+                      }
+                    }
+                  }
+                },
+                {
+                  "lg": 4,
+                  "SubComponent": {
+                    "Tile": {
+                      "children": <SearchPage 
+                        landingPage={true}
+                        style={{
+                          "maxHeight": "70vh"
+                        }} 
+                      />,                          
+                      "style": {
+                        "backgroundColor": "#fff",
+                        "maxHeight": "70vh",
+                        "padding": "1rem",
+                        "borderRadius": "8px",
+                        "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+                      }
                     }
                   }
                 }
-              },
-              {
-                "lg": 8,
-                "SubComponent": {
-                  "Tile": {
-                    "children": <ChatScreen 
-                      style={{
-                        "height": "65vh"
-                      }}
-                    />,
-                    "style": {
-                      "backgroundColor": "#f4f4f4",
-                      "height": "70vh",
-                      "padding": "1rem",
-                      "borderRadius": "8px",
-                      "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
-                    }
-                  }
-                }
-              },
-              {
-                "lg": 4,
-                "SubComponent": {
-                  "Tile": {
-                    "children": <SearchPage 
-                      landingPage={true}
-                      style={{
-                        "maxHeight": "70vh"
-                      }} 
-                    />,                          
-                    "style": {
-                      "backgroundColor": "#fff",
-                      "maxHeight": "70vh",
-                      "padding": "1rem",
-                      "borderRadius": "8px",
-                      "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "style": {
-            "height": "80vh",
-            "padding": "1rem",
-            "gap": "1rem"
+              ]
+            },
+            "style": {
+              "height": "80vh",
+              "padding": "1rem",
+              "gap": "1rem"
+            }
           }
+        },
+        "style": {
+          "display": "flex",
+          "background": "none",
+          "flexDirection": "column",
+          "height": "70vh",
+          "padding": "1rem",
+          "gap": "1rem"
         }
-      },
-      "style": {
-        "display": "flex",
-        "background": "none",
-        "flexDirection": "column",
-        "height": "70vh",
-        "padding": "1rem",
-        "gap": "1rem"
       }
     }
   }

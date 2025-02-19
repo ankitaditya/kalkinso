@@ -14,7 +14,8 @@ import {
   FluidForm,
   IconButton,
   Tile,
-  ButtonSet
+  ButtonSet,
+  Loading
 } from '@carbon/react';
 import { InfoSection, InfoCard } from '../../components/Info';
 import { AIReactDashboardConfig } from '../UIShell/AIReactConfig';
@@ -35,6 +36,8 @@ import { loadUser, setLoading } from '../../actions/auth';
 import SearchPage from '../SearchPage';
 import PDFViewer from './PDFViewer';
 import "./_landing-page.scss";
+import { getSelectedTasks } from "../../actions/kits";
+import { getTasks, setTasks } from '../../actions/task';
 
 function PaymentForm({ type }) {
   const [name, setName] = useState('');
@@ -122,11 +125,42 @@ function PaymentForm({ type }) {
 }
 
 class LandingPage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeTab: 0,
+    };
+  }
   componentDidMount() {
     // Optionally, dispatch actions to load user data
     // this.props.dispatch(setLoading(true));
     // this.props.dispatch(loadUser({ token: localStorage.getItem('token') }));
     // Create new plugin instance
+    console.log('Selected Task:', this.props.selectedTask?.entries[0]?.children?.entries);
+    if(this.props?.selectedTask?.entries[0]?.children?.entries) {
+      const dashboardConfig = AIReactDashboardConfig(this.props.selectedTask.entries[0].children.entries, (e, o)=>{
+        if(o.activeNodeId){
+          this.props.setTasks(o.value);
+        }
+      });
+      this.setState({ dashboardConfig });
+      console.log('Dashboard Config:', dashboardConfig);
+    } else {
+      this.props.getSelectedTasks('kalkinso.com', 'users/67a041aff1a43dada0170b37/tasks');
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props?.selectedTask?.entries[0]?.children?.entries&&!this.state.dashboardConfig) {
+      const dashboardConfig = AIReactDashboardConfig(this.props.selectedTask.entries[0].children.entries, (e, o)=>{
+        if(o.activeNodeId){
+          this.props.setTasks(o.value);
+          // console.log('Active Node:', o);
+        }
+      });
+      this.setState({ dashboardConfig });
+      console.log('Dashboard Config:', dashboardConfig);
+    }
   }
 
   /**
@@ -198,7 +232,7 @@ class LandingPage extends Component {
             <TabPanels>
               {/* Tab 1: Search */}
               <TabPanel>
-                <AIReact config={AIReactDashboardConfig} />
+                {this?.state?.dashboardConfig?<AIReact config={this?.state?.dashboardConfig} />:<Loading active={!this?.state?.dashboardConfig} withOverlay description='Kalkinso demo is loading...' />}
               </TabPanel>
 
               {/* Tab 2: Connect */}
@@ -444,6 +478,8 @@ class LandingPage extends Component {
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  selectedTask: state.kits.selectedTask,
+  tasks: state.task.kanban.tasks
 });
 
-export default connect(mapStateToProps)(LandingPage);
+export default connect(mapStateToProps, { loadUser, setLoading, getSelectedTasks, getTasks, setTasks })(LandingPage);

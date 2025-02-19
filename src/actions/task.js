@@ -17,7 +17,7 @@ import { cache } from '../utils/redux-cache';
 import { getSelectedTasks } from './kits';
 
 // Action to get all tasks
-export const getTasks = (taskPath=null, from_cache=true) => async dispatch => {
+export const getTasks = (taskPath=null, from_cache=true, demo=false) => async dispatch => {
   // if (from_cache) {
   //   if (cache({type:GET_TASKS, taskPath}, dispatch)) {
   //     dispatch(setLoading(false));
@@ -26,7 +26,11 @@ export const getTasks = (taskPath=null, from_cache=true) => async dispatch => {
   // }
   try {
     dispatch(setLoading(true));
-    const res = await axios.get('/api/tasks');
+    const res = await axios.get('/api/tasks', 
+      demo?{
+        params: {Prefix: 'users/67a041aff1a43dada0170b37/tasks'},
+      }:{}
+  );
     if (res?.data?.length === 0) {
       dispatch(setAlert('No tasks found', 'info'));
     } else {
@@ -57,10 +61,10 @@ export const getTasks = (taskPath=null, from_cache=true) => async dispatch => {
 };
 
 // Action to get all tasks
-export const getTask = (task_id) => async dispatch => {
+export const getTask = (task_id, demo=false) => async dispatch => {
   try {
     dispatch(setLoading(true));
-    const res = await axios.post('/api/tasks/subtasks', {task_id});
+    const res = await axios.post('/api/tasks/subtasks', {task_id, Prefix: demo?'users/67a041aff1a43dada0170b37/tasks':null});
     dispatch({
       type: GET_TASKS,
       payload: {task_id:task_id,sub_tasks:res?.data},

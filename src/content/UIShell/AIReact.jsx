@@ -1,11 +1,7 @@
 import React from "react-dom";
 import { AllComponents, ComponentMap } from "./AIReactConfig";
-import { useEffect } from "react";
 
 const AIReact = ({config}) => {
-  useEffect(() => {
-    // console.log("AIReact config: ", config);
-    }, []);
 
   return Object.keys(config).map((key)=>{
     if (Array.isArray(config[key])){
