@@ -332,20 +332,20 @@ class LandingPage extends Component {
           <Grid>
             <Column md={4} lg={4} sm={4}>
               <Tile style={{ padding: '1.5rem' }}>
-                <h4>Demo: Kalkinso Services</h4>
+                <h4>Demo: Kalkinso Research</h4>
                 <p>
-                  Try our AI-powered POC generater to experience rapid prototyping.
+                  Research tools for writing research papers and articles.
                 </p>
                 <ButtonSet style={{
                     maxWidth: '10rem',
                 }}>
-                    <Button kind="primary" size="sm" href="/#/services">
+                    <Button kind="primary" size="sm" href="https://kalkitex.kalkinso.com">
                         Demo
                     </Button>
                     <Button
                         kind="tertiary"
                         size="sm"
-                        href="/#/login">
+                        href="/#/services">
                         Solution
                     </Button>
                 </ButtonSet>
