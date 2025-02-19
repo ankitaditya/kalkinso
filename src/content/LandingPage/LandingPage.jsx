@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
-  Breadcrumb,
-  BreadcrumbItem,
+  TextInput,
+  NumberInput,
   Button,
   Tabs,
   Tab,
@@ -11,179 +11,413 @@ import {
   TabPanel,
   Grid,
   Column,
-  Search,
   FluidForm,
-  OrderedList,
-  ListItem,
   IconButton,
+  Tile,
+  ButtonSet
 } from '@carbon/react';
 import { InfoSection, InfoCard } from '../../components/Info';
-import { Globe, Application, PersonFavorite, WatsonHealth3DSoftware, ShoppingCart, AiLaunch } from '@carbon/react/icons';
+import { AIReactDashboardConfig } from '../UIShell/AIReactConfig';
+import AIReact from '../UIShell/AIReact';
+import {
+  Globe,
+  Application,
+  PersonFavorite,
+  WatsonHealth3DSoftware,
+  AiLaunch
+} from '@carbon/react/icons';
+import axios from 'axios';
+// import { ShoppingCart } from '@carbon/react/icons'; // Uncomment if needed
 import Login from '../Login/Login';
 import HeroSection from './HeroSection';
 import TaskCarousel from './TaskCarousel';
 import { loadUser, setLoading } from '../../actions/auth';
+import SearchPage from '../SearchPage';
+import PDFViewer from './PDFViewer';
+import "./_landing-page.scss";
+
+function PaymentForm({ type }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [amount, setAmount] = useState(1000); // Default amount
+
+  useEffect(() => {
+    if (!window.Razorpay) {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  const handlePayment = async () => {
+    if (!name || !email || !phone) {
+      alert('Please fill all the fields');
+      return;
+    }
+
+    try {
+      const response = await axios.post('/api/payment/create-order', {
+        amount,
+        name,
+        email,
+        phone,
+        type,
+      });
+
+      const order = response.data;
+
+      const options = {
+        key: 'rzp_live_Z3U0AoBZ8N7rSf',
+        amount: order.amount,
+        currency: order.currency,
+        name: 'KALKINSO SOFTWARE (OPC) PRIVATE LIMITED',
+        description: type === 'invest' ? 'Investment in Pitch' : 'Service Payment',
+        order_id: order.id,
+        callback_url: `${window.location.origin}/#/wallet/${order.id}`,
+        prefill: { name, email, contact: phone },
+        theme: { color: '#F37254' },
+        handler: function (response) {
+          axios.post('/api/payment/verify-payment', {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          }).then((res) => {
+            if (res.data.status === 'ok') {
+              window.location.href = `${window.location.origin}/#/wallet/${order.id}`;
+            } else {
+              alert('Payment verification failed');
+            }
+          }).catch(() => alert('Error verifying payment'));
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment initiation failed');
+    }
+  };
+
+  return (
+    <div className="payment-container">
+      <img src="/logo-new.png" alt="Kalkinso Logo" style={{ 
+        width: '100px', 
+        height: '100px', 
+        border: '2px solid #000', 
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' 
+        }} />
+      <h3>{type === 'invest' ? 'Investor Connect Payment' : 'Service Payment'}</h3>
+      <TextInput labelText="Your Name" value={name} onChange={(e) => setName(e.target.value)} />
+      <TextInput labelText="Your Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <TextInput labelText="Your Mobile Number" value={phone} onChange={(e) => setPhone(e.target.value)} />
+      <NumberInput hideSteppers={true} label="Amount" min={500} value={amount} onChange={(e) => setAmount(e.target.value)} />
+      <Button style={{
+        marginTop: '1rem',
+      }} onClick={handlePayment}>Pay Now</Button>
+    </div>
+  );
+}
 
 class LandingPage extends Component {
-
   componentDidMount() {
+    // Optionally, dispatch actions to load user data
     // this.props.dispatch(setLoading(true));
-    // this.props.dispatch(loadUser({token: localStorage.getItem('token')}));
+    // this.props.dispatch(loadUser({ token: localStorage.getItem('token') }));
+    // Create new plugin instance
+  }
+
+  /**
+   * Renders the FluidForm that shows authentication buttons (if not logged in)
+   * and always shows the IconButtons for 3D Designer and Services.
+   */
+  renderAuthButtons() {
+    const { isAuthenticated } = this.props.auth || {};
+
+    return (
+      <FluidForm style={{ marginTop: '35px' }}>
+        {/* Show Sign Up & Login only when the user is not authenticated */}
+        {!isAuthenticated && (
+          <>
+            <Button href="/#/register">Sign Up</Button>
+            <Button kind="secondary" href="/#/login">
+              Login
+            </Button>
+          </>
+        )}
+
+        {/* Always available: Direct access to tool demos */}
+        <IconButton
+          style={{ minWidth: '106px' }}
+          href="/3d/editor"
+          label="3D Designer"
+          kind="primary"
+        >
+          <WatsonHealth3DSoftware style={{ marginLeft: '15px' }} />
+          <span style={{ marginLeft: '5px', marginRight: '15px' }}>3D Desi</span>
+        </IconButton>
+        <IconButton
+          style={{ minWidth: '106px' }}
+          href="https://www.kalkinso.com/#/services"
+          label="Services"
+          kind="secondary"
+        >
+          <AiLaunch style={{ marginLeft: '15px' }} />
+          <span style={{ marginLeft: '5px', marginRight: '15px' }}>Services</span>
+        </IconButton>
+      </FluidForm>
+    );
   }
 
   render() {
-
     return (
       <Grid className="landing-page" fullWidth>
-        <Column lg={16} md={8} sm={4} className="landing-page__banner">
-          <HeroSection ButtonComponent={this.props?.auth?.isAuthenticated?<FluidForm style={{marginTop:"35px"}}>
-            <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
-              <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
-            </IconButton>
-            <IconButton style={{minWidth:"106px"}} href='https://www.kalkinso.com/#/services' label="services" kind="secondary">
-              <AiLaunch style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Services</span>
-            </IconButton>
-            {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
-              <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
-            </IconButton> */}
-          </FluidForm>:<><FluidForm style={{marginTop:"35px"}}>
-            <Button href='/#/register'>Sign Up</Button>
-            <Button kind="secondary" href='/#/login'>Login</Button>
-          </FluidForm>
-          <FluidForm style={{marginTop:"35px"}}>
-            <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
-              <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
-            </IconButton>
-            <IconButton style={{minWidth:"106px"}} href='https://www.kalkinso.com/#/services' label="services" kind="secondary">
-              <AiLaunch style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Services</span>
-            </IconButton>
-            {/* <IconButton style={{minWidth:"106px"}} href='https://apparels.kalkinso.com' label="3d designer" kind="secondary">
-              <ShoppingCart style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Apparels</span>
-            </IconButton> */}
-          </FluidForm>
-          </>}/>
-        </Column>
+        {/* Top (Hero) Section */}
+        {/* <Column lg={16} md={8} sm={4} className="landing-page__banner">
+          <Breadcrumb noTrailingSlash>
+            <BreadcrumbItem href="#/Home">Home</BreadcrumbItem>
+            <BreadcrumbItem href="#" isCurrentPage>
+              Landing Page
+            </BreadcrumbItem>
+          </Breadcrumb>
+          <HeroSection ButtonComponent={this.renderAuthButtons()} />
+        </Column> */}
         <Column lg={16} md={8} sm={4} className="landing-page__r2">
           <Tabs defaultSelectedIndex={0}>
-            <TabList className="tabs-group" aria-label="Tab navigation">
-              <Tab>Search</Tab>
-              <Tab>Connect</Tab>
-              <Tab>Earn</Tab>
+            <TabList className="tabs-group" aria-label="Tab navigation" style={{
+                zIndex: 999,
+            }}>
+              <Tab>Idea</Tab>
+              <Tab>Work</Tab>
+              <Tab>Invest</Tab>
+              <Tab>Get Started</Tab>
               {/* <Tab>Join</Tab> */}
             </TabList>
             <TabPanels>
+              {/* Tab 1: Search */}
               <TabPanel>
-                <Grid className="tabs-group-content">
-                  <Column
-                    md={4}
-                    lg={7}
+                <AIReact config={AIReactDashboardConfig} />
+              </TabPanel>
+
+              {/* Tab 2: Connect */}
+              <TabPanel>
+                <SearchPage />
+              </TabPanel>
+
+              {/* Tab 3: Earn */}
+              <TabPanel>
+              <Grid className="investment-collection-content">
+                <Column
+                    lg={16}
+                    md={8}
                     sm={4}
-                    className="landing-page__tab-content">
+                    className="investment-collection__tab-content">
                     <Grid>
-                      <Column md={4}
-                              lg={7}
-                              sm={4}>
-                        <h2 className="landing-page__subheading">What is Kalkinso?</h2>
-                        <p className="landing-page__p">
-                        KALKINSO SOFTWARE (OPC) PRIVATE LIMITED  is a dynamic technology company committed to transforming innovative ideas into reality. 
-                        Our core strengths lie in bridging the gap between conceptualization and successful implementation. 
-                        With a dedicated team of skilled engineers and strategists, 
-                        we specialize in turning ideas into high-quality software products.
-                        </p>
-                      </Column>
-                      <Column md={4}
-                              lg={7}
-                              sm={4}>
-                        <Search
-                        className="landing-page__p"
-                        closeButtonLabelText="Clear search input"
-                        defaultValue="Front End Designing"
-                        id="search-playground-1"
-                        labelText="Label text"
-                        placeholder="Search for tasks"
-                        playgroundWidth={300}
-                        role="searchbox"
-                        size="md"
-                        type="text"
-                        onKeyDownCapture={() => {  }}
-                      />
-                      <Button href='/#/Home/search'>Search Tasks</Button>
+                    {/* Pitch Plan Showcase */}
+                    <Column
+                        lg={8}
+                        md={6}
+                        sm={4}
+                        className="investment-process-column">
+                        <center><h4>Pitch Plan</h4></center>
+                        <PDFViewer file='https://live-kalkinso.s3.ap-south-1.amazonaws.com/Pitch+deck+(UPDATED).pdf' />
+                    </Column>
+
+                    {/* Live Demos & Delivered Solutions */}
+                    <Column
+                        lg={8}
+                        md={6}
+                        sm={4}
+                        className="investment-demo-showcase">
+                        <center><h4>Demos & Deliveries</h4></center>
+                        <TaskCarousel />
                     </Column>
                     </Grid>
-                  </Column>
-                  <Column md={4} lg={{ span: 8, offset: 7 }} sm={4}>
-                    <img
-                      className="landing-page__illo"
-                      src={`${process.env.PUBLIC_URL}/kalkinso-background.png`}
-                      alt="KALKINSO Carbon illustration"
-                    />
-                  </Column>
+                </Column>
                 </Grid>
+
               </TabPanel>
+
+              
               <TabPanel>
-                <Grid className="tabs-group-content">
-                  <Column
-                    lg={16}
-                    md={8}
-                    sm={4}
-                    className="landing-page__tab-content">
-                    <TaskCarousel component={<HeroSection ButtonComponent={<FluidForm style={{marginTop:"35px"}}>
-                                              <Button href='/#/register'>SignUp</Button>
-                                              <Button kind="secondary" href='/#/login'>Login</Button>
-                                              <FluidForm style={{marginTop:"35px"}}>
-                                              <IconButton style={{minWidth:"106px"}} href='/3d/editor' label="3d designer" kind="primary">
-                                                <WatsonHealth3DSoftware style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>3D Desi</span>
-                                              </IconButton>
-                                              <IconButton style={{minWidth:"106px"}} href='https://www.kalkinso.com/#/services' label="services" kind="secondary">
-                                                <AiLaunch style={{marginLeft:"15px"}} /><span style={{marginLeft:"5px", marginRight: "15px"}}>Services</span>
-                                              </IconButton>
-                                            </FluidForm>
-                                            </FluidForm>}/>} />
-                  </Column>
-                </Grid>
+                <PaymentForm type={"invest"} />
               </TabPanel>
-              <TabPanel>
-                <Grid className="tabs-group-content">
-                  <Column
-                    lg={16}
-                    md={8}
-                    sm={4}
-                    className="landing-page__tab-content">
-                    
-                    <Grid>
-                      <Column lg={8} md={6} sm={4} className="process-column">
-                        <h6>Receive direct payment from project managers upon task completion. The process involves:</h6>
-                        <OrderedList style={{margin:'2rem'}}>
-                          <ListItem>
-                            <strong>Search:</strong> Begin by searching for projects or tasks that match your skills and interests.
-                          </ListItem>
-                          <ListItem>
-                            <strong>Select:</strong> Choose the project or task that suits you best and meets your criteria.
-                          </ListItem>
-                          <ListItem>
-                            <strong>Work:</strong> Start working on the selected project, ensuring you meet all the specified requirements and deadlines.
-                          </ListItem>
-                          <ListItem>
-                            <strong>Submit:</strong> Once you have completed the work, submit it for review.
-                          </ListItem>
-                          <ListItem>
-                            <strong>Approval:</strong> Await approval from the project manager, who will review your submission for quality and accuracy.
-                          </ListItem>
-                          <ListItem>
-                            <strong>Payment:</strong> Upon approval, receive your payment directly from the project manager.
-                          </ListItem>
-                        </OrderedList>
-                      </Column>
-                    </Grid>
-                  </Column>
-                </Grid>
-              </TabPanel>
-              {/* <TabPanel>
-                  <Login />
-              </TabPanel> */}
+             
             </TabPanels>
           </Tabs>
         </Column>
+
+        {/* Middle Tabs Section */}
+        
+
+        {/* NEW: AI-Human Synergy Section */}
+        {/* <Column
+          lg={16}
+          md={8}
+          sm={4}
+          className="landing-page__ai-synergy"
+          style={{ marginBottom: '2rem' }}>
+          <h2
+            className="landing-page__subheading"
+            style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            AI-Human Synergy
+          </h2>
+          <p
+            className="landing-page__p"
+            style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            Discover how Kalkinso’s advanced AI tools unite with human expertise to drive innovation.
+            From automated product design to data-driven insights, our platform empowers creators
+            to transform ideas into tangible outcomes.
+          </p>
+          <Grid>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool A: Auto Designer</h4>
+                <p className="landing-page__p">
+                  Rapidly prototype product designs using AI-driven creativity.
+                  Human designers can refine these AI drafts to perfection.
+                </p>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool B: Market Lens</h4>
+                <p className="landing-page__p">
+                  Analyze real-time market trends, then apply human intuition
+                  for strategic positioning.
+                </p>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool C: Smart Assist</h4>
+                <p className="landing-page__p">
+                  Automate repetitive tasks to free up your creative energy,
+                  allowing human insights to flourish where they matter most.
+                </p>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool D: Data Forge</h4>
+                <p className="landing-page__p">
+                  Harness big data for predictive analytics. Combine AI-driven
+                  forecasts with hands-on expertise to minimize risk and maximize ROI.
+                </p>
+              </Tile>
+            </Column>
+          </Grid>
+        </Column> */}
+
+        {/* NEW: Demo Versions & Delivered Solutions Section */}
+        <Column
+          lg={16}
+          md={8}
+          sm={4}
+          className="landing-page__demos"
+          style={{ marginBottom: '2rem', marginTop: '5rem' }}>
+          <h2
+            className="landing-page__subheading"
+            style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            Demo Versions & Delivered Solutions
+          </h2>
+          <p
+            className="landing-page__p"
+            style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            Explore interactive demos of our AI tools and see real-world solutions delivered
+            to our clients.
+          </p>
+          <Grid>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: Kalkinso Services</h4>
+                <p>
+                  Try our AI-powered POC generater to experience rapid prototyping.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="/#/services">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="/#/login">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: Kalkinso Ecommerce</h4>
+                <p>
+                  Explore our interactive demo to sell your products.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="https://apparels.kalkinso.com">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="/apparels">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: BuCAudio Tools</h4>
+                <p>
+                  Experience how Smart Assist can streamline your book writing.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="https://tools.bucaudio.com">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="https://www.bucaudio.com">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: Kalkinso 3D</h4>
+                <p>
+                  See how Kalkinso 3D leverages ThreeJS for Designing.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="/3d/editor">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="/3d/examples">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+          </Grid>
+        </Column>
+
+        {/* Bottom Info Section */}
         <Column lg={16} md={8} sm={4} className="landing-page__r3">
           <InfoSection heading="The Principles">
             <InfoCard
@@ -206,7 +440,7 @@ class LandingPage extends Component {
       </Grid>
     );
   }
-};
+}
 
 const mapStateToProps = (state) => ({
   auth: state.auth,

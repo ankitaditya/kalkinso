@@ -23,7 +23,7 @@ import './ComponentPlayground.scss';
 import { setLoading } from '../../../actions/auth';
 import { ProductiveCard } from '../../Kanban/component-playground/components';
 
-const App = () => {
+const App = ({landingPage,...props}) => {
   const [cards, setCards] = useState([]);
   const profile = useSelector((state) => state.profile);
   const [filteredCards, setFilteredCards] = useState([]);
@@ -75,7 +75,7 @@ const App = () => {
   }, [tasks]);
 
   return (
-    <div className="component-playground">
+    <div className="component-playground" {...props} >
       {/* <GlobalHeader />
       <div
         style={{
@@ -83,7 +83,7 @@ const App = () => {
           marginTop: '48px',
         }}
       ></div> */}
-      <PageHeader setIsOpen={setMultiStepTearsheetOpen} filteredCards={filteredCards} actions={actions} cards={cards} search={search} />
+      {!landingPage&&<PageHeader setIsOpen={setMultiStepTearsheetOpen} filteredCards={filteredCards} actions={actions} cards={cards} search={search} />}
       <MultiStepTearsheetWide
         cards={cards}
         isOpen={multiStepTearsheetOpen}

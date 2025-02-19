@@ -1,4 +1,5 @@
 import ChatScreen from "../../ChatScreen/ChatScreen";
+import SearchPage from "../../SearchPage";
 import { nodes, renderTree } from "./CarbonReactConfig";
 
 export const AIReactBaseConfig =  {
@@ -314,403 +315,103 @@ export const AIReactBaseConfig =  {
     }
   };
 
-export const AIReactDashboardConfig = {
+  export const AIReactDashboardConfig = {
     "Tile": {
       "SubComponent": {
         "Grid": {
-            "SubComponent": {
-              "Column": [
-                {
-                  "lg": 3,
-                  "SubComponent": {
-                    "Tile": {
-                      "children": "Left Sidebar",
-                      "SubComponent": {
-                          "TreeView": {
-                            "label": "Sample TreeView",
-                            "selected": ["1-1-1"],
-                            "active": ["1"],
-                            "hideLabel": false,
-                            "children": renderTree({
-                              nodes,
-                              withIcons: true
-                            }),
-                          }
-                        }
-                        ,
-                      "style": {
-                        "padding": "1rem",
-                        "backgroundColor": "#f4f4f4"
+          "SubComponent": {
+            "Column": [
+              {
+                "lg": 4,
+                "SubComponent": {
+                  "Tile": {
+                    "children": "Left Sidebar",
+                    "SubComponent": {
+                      "TreeView": {
+                        "label": "Ideas",
+                        "selected": ["1-1-1"],
+                        "active": ["1"],
+                        "hideLabel": false,
+                        "style": {
+                          "height": "65vh",
+                          "width": "100%",
+                          "overflowY": "auto",
+                          "borderRadius": "4px"
+                        },
+                        "children": renderTree({
+                          nodes,
+                          withIcons: true
+                        })
                       }
-                    }
-                  }
-                },
-                {
-                  "lg": 8,
-                  "SubComponent": {
-                    "Tile": {
-                      "children": "Middle Column - Wall Posts",
-                      "SubComponent": {
-                          "TableContainer": {
-                            "title": "Employee DataTable",
-                            "description": "With expandable rows for detailed information",
-                            "SubComponent": {
-                              "Table": {
-                                "aria-label": "sample table",
-                                "SubComponent": {
-                                  "TableHead": {
-                                    "SubComponent": {
-                                      "TableRow": {
-                                        "SubComponent": {
-                                          "TableExpandHeader": {
-                                            "aria-label": "expand row"
-                                          },
-                                          "TableHeader": [
-                                            {
-                                              "key": 0,
-                                              "header": "Name",
-                                              "children": "Name"
-                                            },
-                                            {
-                                              "key": 1,
-                                              "header": "Age",
-                                              "children": "Age"
-                                            },
-                                            {
-                                              "key": 2,
-                                              "header": "Location",
-                                              "children": "Location"
-                                            },
-                                            {
-                                              "key": 3,
-                                              "header": "Department",
-                                              "children": "Department"
-                                            },
-                                            {
-                                              "key": 4,
-                                              "header": "Summary",
-                                              "children": "Summary"
-                                            }
-                                          ]
-                                        }
-                                      }
-                                    }
-                                  },
-                                  "TableBody": {
-                                    "SubComponent": {
-                                      "TableExpandRow": [
-                                        {
-                                          "key": "1",
-                                          "SubComponent": {
-                                            "TableCell": [
-                                              {
-                                                "key": "1-name",
-                                                "children": "John Doe"
-                                              },
-                                              {
-                                                "key": "1-age",
-                                                "children": "29"
-                                              },
-                                              {
-                                                "key": "1-location",
-                                                "children": "New York"
-                                              },
-                                              {
-                                                "key": "1-department",
-                                                "children": "Engineering"
-                                              }
-                                            ],
-                                            "TableExpandedRow": {
-                                              "colSpan": 5,
-                                              "className": "demo-expanded-td",
-                                              "SubComponent": {
-                                                "Tile": [
-                                                  {
-                                                    "children": "John Doe's detailed information"
-                                                  },
-                                                  {
-                                                    "children": "Role: Senior Engineer"
-                                                  },
-                                                  {
-                                                    "children": "Joined: 2015"
-                                                  },
-                                                  {
-                                                    "children": "Project: XYZ"
-                                                  }
-                                                ]
-                                              }
-                                            }
-                                          }
-                                        },
-                                        {
-                                          "key": "2",
-                                          "SubComponent": {
-                                            "TableCell": [
-                                              {
-                                                "key": "2-name",
-                                                "children": "Jane Smith"
-                                              },
-                                              {
-                                                "key": "2-age",
-                                                "children": "34"
-                                              },
-                                              {
-                                                "key": "2-location",
-                                                "children": "San Francisco"
-                                              },
-                                              {
-                                                "key": "2-department",
-                                                "children": "Marketing"
-                                              }
-                                            ],
-                                            "TableExpandedRow": {
-                                              "colSpan": 5,
-                                              "className": "demo-expanded-td",
-                                              "SubComponent": {
-                                                "Tile": [
-                                                  {
-                                                    "children": "Jane Smith's detailed information"
-                                                  },
-                                                  {
-                                                    "children": "Role: Marketing Manager"
-                                                  },
-                                                  {
-                                                    "children": "Joined: 2018"
-                                                  },
-                                                  {
-                                                    "children": "Campaign: ABC"
-                                                  }
-                                                ]
-                                              }
-                                            }
-                                          }
-                                        },
-                                        {
-                                          "key": "3",
-                                          "SubComponent": {
-                                            "TableCell": [
-                                              {
-                                                "key": "3-name",
-                                                "children": "Sam Johnson"
-                                              },
-                                              {
-                                                "key": "3-age",
-                                                "children": "45"
-                                              },
-                                              {
-                                                "key": "3-location",
-                                                "children": "Los Angeles"
-                                              },
-                                              {
-                                                "key": "3-department",
-                                                "children": "Sales"
-                                              }
-                                            ],
-                                            "TableExpandedRow": {
-                                              "colSpan": 5,
-                                              "className": "demo-expanded-td",
-                                              "SubComponent": {
-                                                "Tile": [
-                                                  {
-                                                    "children": "Sam Johnson's detailed information"
-                                                  },
-                                                  {
-                                                    "children": "Role: Sales Director"
-                                                  },
-                                                  {
-                                                    "children": "Joined: 2010"
-                                                  },
-                                                  {
-                                                    "children": "Region: West Coast"
-                                                  }
-                                                ]
-                                              }
-                                            }
-                                          }
-                                        },
-                                        {
-                                          "key": "4",
-                                          "SubComponent": {
-                                            "TableCell": [
-                                              {
-                                                "key": "4-name",
-                                                "children": "Emily Davis"
-                                              },
-                                              {
-                                                "key": "4-age",
-                                                "children": "40"
-                                              },
-                                              {
-                                                "key": "4-location",
-                                                "children": "Chicago"
-                                              },
-                                              {
-                                                "key": "4-department",
-                                                "children": "Finance"
-                                              }
-                                            ],
-                                            "TableExpandedRow": {
-                                              "colSpan": 5,
-                                              "className": "demo-expanded-td",
-                                              "SubComponent": {
-                                                "Tile": [
-                                                  {
-                                                    "children": "Emily Davis's detailed information"
-                                                  },
-                                                  {
-                                                    "children": "Role: CFO"
-                                                  },
-                                                  {
-                                                    "children": "Joined: 2012"
-                                                  },
-                                                  {
-                                                    "children": "Responsibilities: Financial Planning"
-                                                  }
-                                                ]
-                                              }
-                                            }
-                                          }
-                                        }
-                                      ]
-                                    }
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }                          
-                        ,
-                      "style": {
-                        // "padding": "1rem",
-                        "backgroundColor": "#fff"
-                      }
-                    }
-                  }
-                },
-                {
-                  "lg": 5,
-                  "SubComponent": {
-                    "Tile": {
-                      "children": <ChatScreen />,
-                      // "SubComponent": {
-                      //   "Tile": {
-                      //     "children": "Ease Assistance",
-                      //     "SubComponent": {
-                      //       "Tile": [
-                      //         {
-                      //           "children": "Messages",
-                      //           "SubComponent": {
-                      //             "ExpressiveCard": [
-                      //               {
-                      //                 "description": "Hello! How can I help you today?",
-                      //                 "label": "bot",
-                      //                 "title": "10:00 AM",
-                      //                 "style": {
-                      //                   "padding": "0.5rem",
-                      //                   "borderRadius": "8px",
-                      //                   "backgroundColor": "#e0e0e0",
-                      //                   "marginBottom": "0.5rem",
-                      //                   "alignSelf": "flex-start",
-                      //                   "maxWidth": "80%"
-                      //                 }
-                      //               },
-                      //               {
-                      //                 "description": "I need some information about your services.",
-                      //                 "label": "user",
-                      //                 "title": "10:01 AM",
-                      //                 "style": {
-                      //                   "padding": "0.5rem",
-                      //                   "borderRadius": "8px",
-                      //                   "backgroundColor": "#0078d4",
-                      //                   "color": "white",
-                      //                   "marginBottom": "0.5rem",
-                      //                   "alignSelf": "flex-end",
-                      //                   "maxWidth": "80%",
-                      //                   "marginLeft": "auto"
-                      //                 }
-                      //               }
-                      //             ]
-                      //           },
-                      //           "style": {
-                      //             "flexGrow": "1",
-                      //             "padding": "1rem",
-                      //             "overflowY": "auto",
-                      //             "backgroundColor": "#f9f9f9"
-                      //           }
-                      //         },
-                      //         {
-                      //           "SubComponent": {
-                      //             "FluidForm": {
-                      //               "SubComponent": {
-                      //                 "TextInput": {
-                      //                   "id": "chat-input",
-                      //                   "placeholder": "Type a message...",
-                      //                   "style": {
-                      //                     "flexGrow": "1",
-                      //                     "marginRight": "0.5rem"
-                      //                   }
-                      //                 },
-                      //                 "Button": [
-                      //                   {
-                      //                     "children": "Attach",
-                      //                     "onClick": "Attach file",
-                      //                     "kind": "ghost",
-                      //                     "style": {}
-                      //                   },
-                      //                   {
-                      //                     "children": "Send",
-                      //                     "kind": "ghost",
-                      //                     "onClick": "Send message",
-                      //                     "style": {}
-                      //                   }
-                      //                 ]
-                      //               },
-                      //               "style": {
-                      //                 "display": "flex",
-                      //                 "padding": "0.5rem",
-                      //                 "backgroundColor": "#fff"
-                      //               }
-                      //             }
-                      //           },
-                      //           "style": {
-                      //             "display": "flex",
-                      //             "padding": "0.5rem",
-                      //             "borderTop": "1px solid #ccc",
-                      //             "backgroundColor": "#fff"
-                      //           }
-                      //         }
-                      //       ]
-                      //     },
-                      //     "style": {
-                      //       "width": "100%",
-                      //       "height": "80vh",
-                      //       "border": "1px solid #ccc",
-                      //       "borderRadius": "8px",
-                      //       "display": "flex",
-                      //       "flexDirection": "column",
-                      //       "overflow": "hidden",
-                      //       "fontFamily": "Arial, sans-serif"
-                      //     }
-                      //   }
-                      // },
-                      "style": {
-                      //   "padding": "1rem",
-                        "backgroundColor": "#f4f4f4"
-                      }
+                    },
+                    "style": {
+                      "padding": "1.5rem",
+                      "backgroundColor": "#f4f4f4",
+                      "borderRadius": "8px",
+                      "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
                     }
                   }
                 }
-              ]
-            }
+              },
+              {
+                "lg": 8,
+                "SubComponent": {
+                  "Tile": {
+                    "children": <ChatScreen 
+                      style={{
+                        "height": "65vh"
+                      }}
+                    />,
+                    "style": {
+                      "backgroundColor": "#f4f4f4",
+                      "height": "70vh",
+                      "padding": "1rem",
+                      "borderRadius": "8px",
+                      "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+                    }
+                  }
+                }
+              },
+              {
+                "lg": 4,
+                "SubComponent": {
+                  "Tile": {
+                    "children": <SearchPage 
+                      landingPage={true}
+                      style={{
+                        "maxHeight": "70vh"
+                      }} 
+                    />,                          
+                    "style": {
+                      "backgroundColor": "#fff",
+                      "maxHeight": "70vh",
+                      "padding": "1rem",
+                      "borderRadius": "8px",
+                      "boxShadow": "0 2px 4px rgba(0,0,0,0.1)"
+                    }
+                  }
+                }
+              }
+            ]
           },
+          "style": {
+            "height": "80vh",
+            "padding": "1rem",
+            "gap": "1rem"
+          }
+        }
       },
       "style": {
         "display": "flex",
+        "background": "none",
         "flexDirection": "column",
-        "height": "80%"
+        "height": "70vh",
+        "padding": "1rem",
+        "gap": "1rem"
       }
     }
   }
+  
   
   
   

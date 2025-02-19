@@ -12,7 +12,7 @@ import ComponentPlayground from './component-playground/ComponentPlayground';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser, setLoading } from '../../actions/auth';
 
-   const SearchPage = () => {
+   const SearchPage = (props) => {
     const itemsPerPage = 10; // Number of items per page
 
     const data = Array.from({ length: 100 }, (_, index) => ({
@@ -75,8 +75,8 @@ import { loadUser, setLoading } from '../../actions/auth';
      };
 
      return (
-       <div className="search-page">
-         <ComponentPlayground />
+       <div className="search-page" {...props}>
+         <ComponentPlayground {...props} />
        </div>
      );
    };

@@ -24,14 +24,16 @@ class TaskCarousel extends React.Component {
     const { tasks } = this.state;
 
     return (
-      <div style={{maxWidth:"25vw"}}>
+      <div style={{
+        margin: '0 auto',
+      }}>
         <Carousel>
           {tasks.map((task, index) => (
             <div key={index}>
                 <ExpressiveCard
                     label={"Example task Kalkinso"}
                     media={<img src={"https://www.shutterstock.com/image-photo/tasks-word-on-wooden-cubes-260nw-1904598853.jpg"} alt={task} style={{ width: '80vw', height: 'auto', borderRadius: '8px 8px 0 0' }} />}
-                    primaryButtonText="Add to Board"
+                    primaryButtonText="View Work"
                     title={task}
                     // slug={this.state.aiLabel((props)=>{}, "Kalkinso", {})}
                     >

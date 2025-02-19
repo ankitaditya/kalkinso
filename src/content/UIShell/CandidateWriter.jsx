@@ -1,476 +1,364 @@
-import React, { useState, useEffect } from "react";
-import "@blocknote/core/fonts/inter.css";
-import "./AIPromptEditor.css";
-import { pkg, SidePanel, ActionBar, EditInPlace } from "@carbon/ibm-products";
-import { TextArea, TextInput, Select, SelectItem, usePrefix } from "@carbon/react";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
-  useCreateBlockNote,
-  createReactInlineContentSpec,
-  BasicTextStyleButton,
-  BlockTypeSelect,
-  ColorStyleButton,
-  CreateLinkButton,
-  FileCaptionButton,
-  FileReplaceButton,
-  FormattingToolbar,
-  NestBlockButton,
-  TextAlignButton,
-  UnnestBlockButton,
-  useComponentsContext,
-  useBlockNoteEditor,
-  blockTypeSelectItems,
-  FormattingToolbarController,
-} from "@blocknote/react";
-import { BlockNoteSchema, defaultInlineContentSpecs } from "@blocknote/core";
-import { BlockNoteView } from "@blocknote/mantine";
-import "@blocknote/mantine/style.css";
-import axios from "axios";
-import katex from "katex";
-import { marked } from "marked";
+  Breadcrumb,
+  BreadcrumbItem,
+  Button,
+  Tabs,
+  Tab,
+  TabList,
+  TabPanels,
+  TabPanel,
+  Grid,
+  Column,
+  Search,
+  FluidForm,
+  OrderedList,
+  ListItem,
+  IconButton,
+  Tile,
+  ButtonSet
+} from '@carbon/react';
+import { InfoSection, InfoCard } from '../../components/Info';
+import { AIReactDashboardConfig } from './AIReactConfig';
+import AIReact from './AIReact';
 import {
-  AddFilled,
-  Download,
-  MathCurve,
-  Save,
-  TrashCan,
-} from "@carbon/react/icons";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+  Globe,
+  Application,
+  PersonFavorite,
+  WatsonHealth3DSoftware,
+  AiLaunch
+} from '@carbon/react/icons';
+// import { ShoppingCart } from '@carbon/react/icons'; // Uncomment if needed
+import Login from '../Login/Login';
+import HeroSection from '../LandingPage/HeroSection';
+import TaskCarousel from '../LandingPage/TaskCarousel';
+import { loadUser, setLoading } from '../../actions/auth';
+import SearchPage from '../SearchPage';
+import PDFViewer from './PDFViewer';
 
-// Enable SidePanel components from Carbon
-pkg.component.SidePanel = true;
-
-/* -------------------------------------------------------------------------
-   1. Inline Math Support
-------------------------------------------------------------------------- */
-
-const MathBlock = ({ content }) => {
-  const [html, setHtml] = useState("");
-  useEffect(() => {
-    try {
-      const renderedHtml = katex.renderToString(content.replace(/\$\$/g, ""), {
-        throwOnError: false,
-      });
-      setHtml(renderedHtml);
-    } catch (error) {
-      console.error("Error rendering math:", error);
-    }
-  }, [content]);
-  return <span dangerouslySetInnerHTML={{ __html: html }} />;
-};
-
-const mathBlockSpec = createReactInlineContentSpec(
-  {
-    type: "math",
-    propSchema: {
-      text: {
-        default: "$$\\frac{a}{b}$$",
-      },
-    },
-    content: "none",
-  },
-  {
-    render: (props) => <MathBlock content={props.inlineContent.props.text} />,
+class LandingPage extends Component {
+  componentDidMount() {
+    // Optionally, dispatch actions to load user data
+    // this.props.dispatch(setLoading(true));
+    // this.props.dispatch(loadUser({ token: localStorage.getItem('token') }));
+    // Create new plugin instance
   }
-);
 
-const schema = BlockNoteSchema.create({
-  inlineContentSpecs: {
-    ...defaultInlineContentSpecs,
-    math: mathBlockSpec,
-  },
+  /**
+   * Renders the FluidForm that shows authentication buttons (if not logged in)
+   * and always shows the IconButtons for 3D Designer and Services.
+   */
+  renderAuthButtons() {
+    const { isAuthenticated } = this.props.auth || {};
+
+    return (
+      <FluidForm style={{ marginTop: '35px' }}>
+        {/* Show Sign Up & Login only when the user is not authenticated */}
+        {!isAuthenticated && (
+          <>
+            <Button href="/#/register">Sign Up</Button>
+            <Button kind="secondary" href="/#/login">
+              Login
+            </Button>
+          </>
+        )}
+
+        {/* Always available: Direct access to tool demos */}
+        <IconButton
+          style={{ minWidth: '106px' }}
+          href="/3d/editor"
+          label="3D Designer"
+          kind="primary"
+        >
+          <WatsonHealth3DSoftware style={{ marginLeft: '15px' }} />
+          <span style={{ marginLeft: '5px', marginRight: '15px' }}>3D Desi</span>
+        </IconButton>
+        <IconButton
+          style={{ minWidth: '106px' }}
+          href="https://www.kalkinso.com/#/services"
+          label="Services"
+          kind="secondary"
+        >
+          <AiLaunch style={{ marginLeft: '15px' }} />
+          <span style={{ marginLeft: '5px', marginRight: '15px' }}>Services</span>
+        </IconButton>
+      </FluidForm>
+    );
+  }
+
+  render() {
+    return (
+      <Grid className="landing-page" fullWidth>
+        {/* Top (Hero) Section */}
+        {/* <Column lg={16} md={8} sm={4} className="landing-page__banner">
+          <Breadcrumb noTrailingSlash>
+            <BreadcrumbItem href="#/Home">Home</BreadcrumbItem>
+            <BreadcrumbItem href="#" isCurrentPage>
+              Landing Page
+            </BreadcrumbItem>
+          </Breadcrumb>
+          <HeroSection ButtonComponent={this.renderAuthButtons()} />
+        </Column> */}
+        <Column lg={16} md={8} sm={4} className="landing-page__r2">
+          <Tabs defaultSelectedIndex={0}>
+            <TabList className="tabs-group" aria-label="Tab navigation" style={{
+                zIndex: 999,
+            }}>
+              <Tab>Idea</Tab>
+              <Tab>Work</Tab>
+              <Tab>Invest</Tab>
+              {/* <Tab>Join</Tab> */}
+            </TabList>
+            <TabPanels>
+              {/* Tab 1: Search */}
+              <TabPanel>
+                <AIReact config={AIReactDashboardConfig} />
+              </TabPanel>
+
+              {/* Tab 2: Connect */}
+              <TabPanel>
+                <SearchPage />
+              </TabPanel>
+
+              {/* Tab 3: Earn */}
+              <TabPanel>
+              <Grid className="investment-collection-content">
+                <Column
+                    lg={16}
+                    md={8}
+                    sm={4}
+                    className="investment-collection__tab-content">
+                    <Grid>
+                    {/* Pitch Plan Showcase */}
+                    <Column
+                        lg={8}
+                        md={6}
+                        sm={4}
+                        className="investment-process-column">
+                        <center><h4>Pitch Plan</h4></center>
+                        <PDFViewer file='https://s3.ap-south-1.amazonaws.com/kalkinso.com/output/svl4.pdf?response-content-disposition=inline&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGEaCmFwLXNvdXRoLTEiRjBEAiAfYQ0M7uKpV0jHLd9nmbj28WOC6rk5%2BHWvnxdu5jHUKAIgIR2Pys4eYY8tSDearqbTuoqEka%2BNbCHhikV5GZNLALUq1AMIiv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw5NzUwNTAwNTk4NDUiDBbNne6IG7lApIYJsSqoA6KMdAxb2SqmQb555GgugeCC72ztenWD9s4n3cmxPCwTeR%2Ft9rjLtkKpm%2FmDsQJuR30%2BmO0DbzEJ6OfmHbKfGrq9l3XdaTZiQWyj7XwfGkmDUw459ZI9JqVrK7iGI7BDsdHpDqzaxlrpKq%2BKNrPaZJIGLDwcmI%2FdxR77bYbKnVfwJkjM5ZtHFr%2BpY3ev%2F8mkmyUa2o0wLUFrmZCfQwhMpghmLsqiAFFkhwNRfsQ1QG6CPili%2BuFTys0UkaxdHdg2%2BLmK26rBeQW2VMlDVXltcTm59rrTVKyG5%2BqdY9Vw5sOkrlYjaPrtwcjlUxVPevYksHB42Ym0dGuFEL%2BAyn9Web0YbNs%2B3KH1vTAZmHIWbdECcmvLY2yZYOMysJ0G7hHMCJiu%2FycHS6Hf6%2FcV%2FxTZSRJaN30RNGrG6hagQ%2BkSBShEosZFqpoLn15z9DdsNI1gnm0vbULU74ZHLJkN84hrBiv13UsEEoTGPOc2a6QmkUd5sMgPi7xeKxUd59eILEI4u3HT9wy0wMYtQnXR7NeC5gVqqq0r6XABjtWP0oQSkkTkAGnZ%2F4MstuAwn5vRvQY65QIcWg76OL%2B9sbdj5nqbSxDWkTyrMFDF%2BtLqQH3%2F7wWbGCb31HtriX9HmyVA5HeMtofRP%2B%2FBAoTn%2B6Syqp8qfiZ7x2YXd64t5yuo%2BwXshZq1BK8YY2suFIHb0MHhMmCRfoNWlfB0c1zk%2F8IrDS77LgxxVk9jCHXEMtCYpmdSv1C5U5Kz8pJc3reBFMOzkqDSN46FAzXOYGPqJKBxQ9%2BqJCaIQByhCwAV2maCvL%2BWJDkjOZhs%2FEWMFPMJWvydkphv1V2DrEedaU3KXrSZ3CjT02PuzHP%2BwVNLosN8wlzwTD5HxaUW1nDZIxJGQsCdoPslr18ve3T%2FLNP8hcLnGiEDTAVbEhCpzigISjSsZjzKG368md9IKrQqqxUSyLNXAw2eodhTMg1sostzDdmtmkRSuQc98P2yuYfkI8zLtuea4pI35ctpP91HlvbyrmncGoqF%2BcDcS4b%2F7jv477SFU6GUyzffn308pEw%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA6GBMDGBCX4USTRQP%2F20250218%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20250218T090840Z&X-Amz-Expires=43200&X-Amz-SignedHeaders=host&X-Amz-Signature=fdaa7d05b623fe6f58fc9357f2391f7f88b372f55f22c87b767911111a1f57fa' />
+                    </Column>
+
+                    {/* Live Demos & Delivered Solutions */}
+                    <Column
+                        lg={8}
+                        md={6}
+                        sm={4}
+                        className="investment-demo-showcase">
+                        <center><h4>Demos & Deliveries</h4></center>
+                        <TaskCarousel />
+                    </Column>
+                    </Grid>
+                </Column>
+                </Grid>
+
+              </TabPanel>
+
+              {/*
+              <TabPanel>
+                <Login />
+              </TabPanel>
+              */}
+            </TabPanels>
+          </Tabs>
+        </Column>
+
+        {/* Middle Tabs Section */}
+        
+
+        {/* NEW: AI-Human Synergy Section */}
+        {/* <Column
+          lg={16}
+          md={8}
+          sm={4}
+          className="landing-page__ai-synergy"
+          style={{ marginBottom: '2rem' }}>
+          <h2
+            className="landing-page__subheading"
+            style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            AI-Human Synergy
+          </h2>
+          <p
+            className="landing-page__p"
+            style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            Discover how Kalkinso’s advanced AI tools unite with human expertise to drive innovation.
+            From automated product design to data-driven insights, our platform empowers creators
+            to transform ideas into tangible outcomes.
+          </p>
+          <Grid>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool A: Auto Designer</h4>
+                <p className="landing-page__p">
+                  Rapidly prototype product designs using AI-driven creativity.
+                  Human designers can refine these AI drafts to perfection.
+                </p>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool B: Market Lens</h4>
+                <p className="landing-page__p">
+                  Analyze real-time market trends, then apply human intuition
+                  for strategic positioning.
+                </p>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool C: Smart Assist</h4>
+                <p className="landing-page__p">
+                  Automate repetitive tasks to free up your creative energy,
+                  allowing human insights to flourish where they matter most.
+                </p>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
+                <h4 className="landing-page__subheading">Tool D: Data Forge</h4>
+                <p className="landing-page__p">
+                  Harness big data for predictive analytics. Combine AI-driven
+                  forecasts with hands-on expertise to minimize risk and maximize ROI.
+                </p>
+              </Tile>
+            </Column>
+          </Grid>
+        </Column> */}
+
+        {/* NEW: Demo Versions & Delivered Solutions Section */}
+        <Column
+          lg={16}
+          md={8}
+          sm={4}
+          className="landing-page__demos"
+          style={{ marginBottom: '2rem', marginTop: '5rem' }}>
+          <h2
+            className="landing-page__subheading"
+            style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            Demo Versions & Delivered Solutions
+          </h2>
+          <p
+            className="landing-page__p"
+            style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            Explore interactive demos of our AI tools and see real-world solutions delivered
+            to our clients.
+          </p>
+          <Grid>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: Auto Designer</h4>
+                <p>
+                  Try our AI-powered Auto Designer demo to experience rapid prototyping.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="/demo/auto-designer">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="/solutions/auto-designer">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: Market Lens</h4>
+                <p>
+                  Explore our interactive demo to analyze market trends and insights.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="/demo/auto-designer">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="/solutions/auto-designer">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: Smart Assist</h4>
+                <p>
+                  Experience how Smart Assist can streamline your workflow.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="/demo/auto-designer">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="/solutions/auto-designer">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+            <Column md={4} lg={4} sm={4}>
+              <Tile style={{ padding: '1.5rem' }}>
+                <h4>Demo: Data Forge</h4>
+                <p>
+                  See how Data Forge leverages big data for predictive analytics.
+                </p>
+                <ButtonSet style={{
+                    maxWidth: '10rem',
+                }}>
+                    <Button kind="primary" size="sm" href="/demo/auto-designer">
+                        Demo
+                    </Button>
+                    <Button
+                        kind="tertiary"
+                        size="sm"
+                        href="/solutions/auto-designer">
+                        Solution
+                    </Button>
+                </ButtonSet>
+              </Tile>
+            </Column>
+          </Grid>
+        </Column>
+
+        {/* Bottom Info Section */}
+        <Column lg={16} md={8} sm={4} className="landing-page__r3">
+          <InfoSection heading="The Principles">
+            <InfoCard
+              heading="Kalkinso is Free for Contributors"
+              body="Kalkinso is free for all individual contributors. Companies are charged for hiring work force."
+              icon={() => <PersonFavorite size={32} />}
+            />
+            <InfoCard
+              heading="Quality and Purity is Guaranteed"
+              body="Quality Assurance is our top priority. We guarantee the quality of the work done by our contributors. Payment is also guaranteed for pure work."
+              icon={() => <Application size={32} />}
+            />
+            <InfoCard
+              heading="Group Hiring and Workforce Management"
+              body="Show efficiency of your team and get hired as a team. Kalkinso provides a platform for group hiring and workforce management."
+              icon={() => <Globe size={32} />}
+            />
+          </InfoSection>
+        </Column>
+      </Grid>
+    );
+  }
+}
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 });
 
-/* -------------------------------------------------------------------------
-   2. AI Prompt Generation Functionality
-------------------------------------------------------------------------- */
-
-const generateAiPrompt = async (inputPrompt, selectedText, previousContent) => {
-  const promptTemplate = `
-For my prompt, respond with detailed, professionally written text formatted in Markdown.
-Here is my prompt: ${inputPrompt}
-Selected Content: ${selectedText}
-Previous Response: ${previousContent || ""}
-  `;
-  try {
-    const response = await axios.post(
-      "/api/openai/completions",
-      JSON.stringify({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content: "You are an expert text editor and writing assistant.",
-          },
-          {
-            role: "user",
-            content: promptTemplate,
-          },
-        ],
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer YOUR_API_KEY`,
-        },
-      }
-    );
-    return response.data.result;
-  } catch (error) {
-    console.error("Error generating AI prompt:", error);
-    return null;
-  }
-};
-
-/* -------------------------------------------------------------------------
-   3. Toolbar Button Components
-------------------------------------------------------------------------- */
-
-function InlineMathButton() {
-  const editor = useBlockNoteEditor({ schema });
-  const Components = useComponentsContext();
-  return editor ? (
-    <Components.FormattingToolbar.Button
-      mainTooltip="Convert to Inline Math"
-      onClick={() => {
-        const selectedText = editor.getSelectedText();
-        if (/\$\$[^\$]+\$\$/.test(selectedText)) {
-          editor.insertInlineContent([
-            {
-              type: "math",
-              props: { text: selectedText },
-            },
-          ]);
-        }
-      }}
-    >
-      <MathCurve />
-    </Components.FormattingToolbar.Button>
-  ) : null;
-}
-
-function AiPromptButton() {
-  const dispatch = useDispatch();
-  const editor = useBlockNoteEditor({ schema });
-  const Components = useComponentsContext();
-  if (!editor) return null;
-
-  const getPreviousContent = async () => {
-    const cursorBlock = editor.getTextCursorPosition().block;
-    const allBlocks = editor.document;
-    const cursorIndex = allBlocks.findIndex((block) => block.id === cursorBlock.id);
-    const previousBlocks = allBlocks.slice(0, cursorIndex);
-    let previousContent = "";
-    if (previousBlocks.length > 0) {
-      previousContent = await editor.blocksToMarkdownLossy(previousBlocks);
-    }
-    return previousContent || "No previous content.";
-  };
-
-  const handleGenerateAiPrompt = async () => {
-    const inputPrompt = prompt("Enter your AI prompt:");
-    if (!inputPrompt) return;
-    const selectedText = editor.getSelectedText();
-    if (!selectedText) {
-      alert("Please select some text.");
-      return;
-    }
-    const previousContent = await getPreviousContent();
-    const aiResult = await generateAiPrompt(inputPrompt, selectedText, previousContent);
-    if (aiResult) {
-      editor.replaceSelection(aiResult);
-    }
-  };
-
-  return (
-    <Components.FormattingToolbar.Button mainTooltip="Generate AI Prompt" onClick={handleGenerateAiPrompt}>
-      AI Prompt
-    </Components.FormattingToolbar.Button>
-  );
-}
-
-function AddFileButton() {
-  const editor = useBlockNoteEditor({ schema });
-  const Components = useComponentsContext();
-  return editor ? (
-    <Components.FormattingToolbar.Button
-      mainTooltip="Create New File"
-      onClick={() => {
-        editor.replaceBlocks(editor.document, []);
-      }}
-    >
-      <AddFilled />
-    </Components.FormattingToolbar.Button>
-  ) : null;
-}
-
-/* -------------------------------------------------------------------------
-   4. Main BlockNoteEditor Component with Book Preview & Metadata SidePanel
-------------------------------------------------------------------------- */
-
-export default function BlockNoteEditor({ initialContent, ...rest }) {
-  const carbonPrefix = usePrefix();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [fileName, setFileName] = useState("Untitled Document");
-  const [wordCount, setWordCount] = useState(0);
-  const [isChanged, setIsChanged] = useState(false);
-
-  // --- SidePanel State for Book Preview & Metadata ---
-  const [isPreviewPanelOpen, setIsPreviewPanelOpen] = useState(false);
-  const [bookMetaData, setBookMetaData] = useState({
-    pageSize: "A4",
-    title: "",
-    author: "",
-    description: "",
-  });
-
-  // State for preview HTML content
-  const [previewContent, setPreviewContent] = useState("");
-
-  // Define page size dimensions (example dimensions in pixels)
-  const pageSizes = {
-    A4: { width: "595px", height: "842px" },
-    Letter: { width: "612px", height: "792px" },
-    Legal: { width: "612px", height: "1008px" },
-  };
-
-  // Rename mapping for BlockTypeSelect.
-  const rename = {
-    "Heading 1": "Title",
-    "Heading 2": "Subtitle",
-    "Bullet List": "Index",
-  };
-
-  const editor = useCreateBlockNote({
-    schema,
-    initialContent: initialContent
-      ? Array.isArray(initialContent)
-        ? initialContent
-        : [{ type: "paragraph", content: initialContent }]
-      : [{ type: "heading", content: "Write something..." }],
-  });
-
-  // Update word count and mark changes on editor content change.
-  const handleEditorChange = async () => {
-    if (editor) {
-      const markdown = await editor.blocksToMarkdownLossy(editor.document);
-      const words = markdown
-        .replace(/[#*_`>-]|\[.*?\]\(.*?\)/g, "")
-        .split(/\s+/)
-        .filter(Boolean);
-      setWordCount(words.length);
-      setIsChanged(true);
-      // Update preview content by converting Markdown to HTML.
-      setPreviewContent(marked(markdown));
-    }
-  };
-
-  // Auto-save every 5 seconds.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isChanged) {
-        console.log("Auto-saving document:", fileName);
-        setIsChanged(false);
-      }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [isChanged, fileName]);
-
-  return (
-    <div style={{ margin: "2rem" }}>
-      {/* Header with editable filename and word count */}
-      <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
-        <EditInPlace
-          value={fileName}
-          onChange={setFileName}
-          onSave={(newName) => setFileName(newName)}
-        />
-        <div style={{ marginLeft: "auto" }}>Word Count: {wordCount}</div>
-      </div>
-
-      {/* ActionBar with Save, Download, Delete, and Preview & Metadata actions */}
-      <ActionBar
-        actions={[
-          {
-            id: "save",
-            key: "save",
-            renderIcon: () => <Save />,
-            label: "Save",
-            onClick: () => {
-              console.log("Saving document:", fileName);
-              setIsChanged(false);
-            },
-            disabled: !isChanged,
-          },
-          {
-            id: "download",
-            key: "download",
-            renderIcon: () => <Download />,
-            label: "Download",
-            onClick: () => {
-              console.log("Downloading document:", fileName);
-            },
-          },
-          {
-            id: "delete",
-            key: "delete",
-            renderIcon: () => <TrashCan />,
-            label: "Delete",
-            onClick: () => {
-              console.log("Deleting document:", fileName);
-              navigate("/tools/home");
-            },
-          },
-          {
-            id: "preview",
-            key: "preview",
-            renderIcon: () => <span role="img" aria-label="preview">👁</span>,
-            label: "Preview & Metadata",
-            onClick: () => setIsPreviewPanelOpen(true),
-          },
-        ]}
-        rightAlign={true}
-        containerWidth={800}
-        style={{ marginBottom: "1rem" }}
-      />
-
-      {/* The BlockNote editor view */}
-      <BlockNoteView
-        editable={true}
-        theme="light"
-        editor={editor}
-        formattingToolbar={false}
-        onChange={handleEditorChange}
-        {...rest}
-      >
-        <FormattingToolbarController
-          formattingToolbar={() => (
-            <FormattingToolbar>
-              <AddFileButton />
-              <BlockTypeSelect
-                items={blockTypeSelectItems(editor.dictionary).map((val) => ({
-                  ...val,
-                  name: rename[val.name] ? rename[val.name] : val.name,
-                }))}
-              />
-              <InlineMathButton />
-              <AiPromptButton />
-              <FileCaptionButton />
-              <FileReplaceButton />
-              <BasicTextStyleButton basicTextStyle="bold" />
-              <BasicTextStyleButton basicTextStyle="italic" />
-              <BasicTextStyleButton basicTextStyle="underline" />
-              <BasicTextStyleButton basicTextStyle="strike" />
-              <BasicTextStyleButton basicTextStyle="code" />
-              <TextAlignButton textAlignment="left" />
-              <TextAlignButton textAlignment="center" />
-              <TextAlignButton textAlignment="right" />
-              <ColorStyleButton />
-              <NestBlockButton />
-              <UnnestBlockButton />
-              <CreateLinkButton />
-            </FormattingToolbar>
-          )}
-        />
-      </BlockNoteView>
-
-      {/* SidePanel for Book Preview & Metadata */}
-      <SidePanel
-        id="book-preview-panel"
-        title="Book Preview & Metadata"
-        subtitle="Customize page size and add metadata"
-        open={isPreviewPanelOpen}
-        primaryButtonText="Apply"
-        secondaryButtonText="Cancel"
-        size="xl"
-        onRequestClose={() => setIsPreviewPanelOpen(false)}
-        onRequestSubmit={() => {
-          console.log("Book Meta Data:", bookMetaData);
-          setIsPreviewPanelOpen(false);
-        }}
-        selectorPrimaryFocus={`.${carbonPrefix}--text-input`}
-      >
-        <div className="book-preview-form" style={{ padding: "1rem" }}>
-          <div className="form-group" style={{ marginBottom: "1rem" }}>
-            <label htmlFor="page-size-select">Page Size</label>
-            <Select
-              id="page-size-select"
-              value={bookMetaData.pageSize}
-              onChange={(e) =>
-                setBookMetaData({ ...bookMetaData, pageSize: e.target.value })
-              }
-            >
-              <SelectItem value="A4" text="A4" />
-              <SelectItem value="Letter" text="Letter" />
-              <SelectItem value="Legal" text="Legal" />
-            </Select>
-          </div>
-          <div className="form-group" style={{ marginBottom: "1rem" }}>
-            <TextInput
-              id="book-title"
-              labelText="Book Title"
-              value={bookMetaData.title}
-              onChange={(e) =>
-                setBookMetaData({ ...bookMetaData, title: e.target.value })
-              }
-            />
-          </div>
-          <div className="form-group" style={{ marginBottom: "1rem" }}>
-            <TextInput
-              id="book-author"
-              labelText="Author"
-              value={bookMetaData.author}
-              onChange={(e) =>
-                setBookMetaData({ ...bookMetaData, author: e.target.value })
-              }
-            />
-          </div>
-          <div className="form-group" style={{ marginBottom: "1rem" }}>
-            <TextArea
-              id="book-description"
-              labelText="Description"
-              value={bookMetaData.description}
-              onChange={(e) =>
-                setBookMetaData({ ...bookMetaData, description: e.target.value })
-              }
-              rows={4}
-            />
-          </div>
-          {/* Book preview area: white background "page" showing formatted content */}
-          <div
-            className="book-preview"
-            style={{
-              marginTop: "1rem",
-              backgroundColor: "#fff",
-              border: "1px solid #ccc",
-              padding: "1rem",
-              width: pageSizes[bookMetaData.pageSize].width,
-              height: pageSizes[bookMetaData.pageSize].height,
-              overflow: "auto",
-            }}
-          >
-            <h2>{bookMetaData.title || "Book Title"}</h2>
-            <p>
-              <strong>Author: </strong>
-              {bookMetaData.author || "Author Name"}
-            </p>
-            <p>{bookMetaData.description || "Book description will appear here."}</p>
-            <div>
-              <strong>Content Preview:</strong>
-              <div
-                style={{
-                  border: "1px dashed #999",
-                  padding: "0.5rem",
-                  marginTop: "0.5rem",
-                }}
-              >
-                <div dangerouslySetInnerHTML={{ __html: previewContent }} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </SidePanel>
-    </div>
-  );
-}
+export default connect(mapStateToProps)(LandingPage);

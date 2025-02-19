@@ -33,7 +33,7 @@ pkg.component.ProductiveCard = true;
 pkg.component.SidePanel = true;
 pkg.component.Cascade = true;
 
-const ChatScreen = () => {
+const ChatScreen = (rest) => {
   const showdown = new Showdown.Converter();
   const { user } = useSelector((state) => state.auth);
   const profile = useSelector((state)=>state.profile);
@@ -435,7 +435,7 @@ const ChatScreen = () => {
 
   return (
     <>
-    <Grid className="chat-screen" style={{height: '85vh'}}>
+    <Grid className="chat-screen" style={{height: '85vh'}} {...rest}>
       {/* <Row className="chat-header" key={"row-ease-header"}>
         <Column lg={14} style={{
                   display: 'grid',
