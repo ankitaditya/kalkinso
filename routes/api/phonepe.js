@@ -24,7 +24,7 @@ router.post('/create-order', async (req, res) => {
 
     // Generate a simple unique order ID
     const id = Math.floor(Math.random() * 1000);
-    const user_id = 'GUEST';
+    const user_id = '67a041aff1a43dada0170b37';
     const order_id = `ORDER_${user_id}_${id}_${Date.now()}`;
 
     const options = {
