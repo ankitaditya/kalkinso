@@ -43,6 +43,7 @@ const ProductiveCard = (props) => {
   }
   const dispatch = useDispatch();
   const { task_files } = useSelector((state) => state.task.kanban);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const [statusIconKind , setStatusIconKind] = useState(
     status[props.data.status]? status[props.data.status]: {}
   );
@@ -119,7 +120,7 @@ const ProductiveCard = (props) => {
       actionsPlacement="bottom"
       description={props.data.short_description}
       // overflowActions={}
-      onPrimaryButtonClick={()=>{
+      onPrimaryButtonClick={isAuthenticated?()=>{
         if(taskPath&&taskPath==='create'){
         window.location.href = `${window.location.pathname}#/home/${props.data?._id}`
         } else if (taskPath){
@@ -127,8 +128,10 @@ const ProductiveCard = (props) => {
         } else {
           window.location.href = `${window.location.pathname}#/home/${props.data?._id}`
         }
+      }:()=>{
+        window.location.href = `${window.location.pathname}#/login`
       }}
-      primaryButtonText={"View"}
+      primaryButtonText={isAuthenticated?"View":"Login & View"}
       secondaryButtonText={"Start"}
       onSecondaryButtonClick={() => handleTaskOpen('multi')}
       title={props.data.name}

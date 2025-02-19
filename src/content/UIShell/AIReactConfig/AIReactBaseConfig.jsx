@@ -327,6 +327,8 @@ export const AIReactBaseConfig =  {
               "Column": [
                 {
                   "lg": 4,
+                  "md": 2,
+                  "sm": 4,
                   "SubComponent": {
                     "Tile": {
                       "children": "Left Sidebar",
@@ -360,6 +362,8 @@ export const AIReactBaseConfig =  {
                 },
                 {
                   "lg": 8,
+                  "md": 4,
+                  "sm": 4,
                   "SubComponent": {
                     "Tile": {
                       "children": <ChatScreen 
@@ -379,6 +383,8 @@ export const AIReactBaseConfig =  {
                 },
                 {
                   "lg": 4,
+                  "md": 2,
+                  "sm": 4,
                   "SubComponent": {
                     "Tile": {
                       "children": <SearchPage 
@@ -400,7 +406,7 @@ export const AIReactBaseConfig =  {
               ]
             },
             "style": {
-              "height": "80vh",
+              // "height": "80vh",
               "padding": "1rem",
               "gap": "1rem"
             }
@@ -410,7 +416,7 @@ export const AIReactBaseConfig =  {
           "display": "flex",
           "background": "none",
           "flexDirection": "column",
-          "height": "70vh",
+          // "height": "70vh",
           "padding": "1rem",
           "gap": "1rem"
         }
