@@ -854,11 +854,11 @@ const SignUp = (props) => {
             </>
           }
           disableSubmit={
-            isInvalid.upi ||
-            isInvalid.upi === null ||
+            // isInvalid.upi ||
+            // isInvalid.upi === null ||
             isInvalid.terms_conditions ||
-            isInvalid.terms_conditions === null || 
-            !verified.upi
+            isInvalid.terms_conditions === null
+            // !verified.upi
           }
           onRequestSubmit={() => {
             // return new Promise((resolve, reject) => {
