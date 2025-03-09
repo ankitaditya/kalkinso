@@ -1,19 +1,40 @@
 .hero-section {
-    text-align: left;
-    padding: 3rem 1rem;
-    background: #f4f4f4;
-  }
-  
-  .hero-section h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-  }
-  
-  .hero-section p {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-  }
-  
-  .hero-image {
-    width: 100%;
-  }
+  text-align: center;
+  padding: 2rem 1rem;
+  background: #f4f4f4;
+}
+
+.hero-section h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-heading {
+  font-size: 2rem;
+}
+
+.hero-section p {
+  font-size: 1rem;
+  margin: 1rem 0;
+  line-height: 1.5;
+  padding: 0 1rem;
+}
+
+.hero-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.hero-image {
+  width: 80%;
+  max-width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.highlight {
+  color: #E31B25;
+  font-weight: bold;
+}

@@ -1,0 +1,88 @@
+.left-column {
+    border-right: 1px solid #e0e0e0;
+  
+    .history-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+  
+    .bx--clickable-tile {
+      margin-bottom: 0.625rem;
+      padding: 0.625rem;
+      background-color: #f4f4f4;
+      cursor: pointer;
+  
+      &.active-tile {
+        background-color: #e0e0e0;
+      }
+    }
+  }
+  
+  .chat-column {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+  
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+  
+      .bx--tile {
+        margin-bottom: 0.625rem;
+        padding: 0.625rem;
+      }
+  
+      .assistant-tile {
+        background-color: #f4f4f4;
+      }
+  
+      .user-tile {
+        background-color: #e0e0e0;
+      }
+  
+      .bx--inline-notification {
+        margin-bottom: 0.625rem;
+      }
+    }
+  
+    .suggestions-container {
+      padding: 1rem;
+      border-top: 1px solid #e0e0e0;
+  
+      .suggestion-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+    }
+  
+    .input-form-container {
+      padding: 1rem;
+      border-top: 1px solid #e0e0e0;
+  
+      .input-wrapper {
+        display: flex;
+        gap: 8px;
+      }
+    }
+  }
+  
+  /* Mobile Styles */
+  @media (max-width: 600px) {
+    .left-column {
+      border-right: none;
+      border-bottom: 1px solid #e0e0e0;
+      max-height: 40vh;
+    }
+  
+    .chat-column {
+      height: auto;
+  
+      .messages-container {
+        max-height: 40vh;
+      }
+    }
+  }
+  

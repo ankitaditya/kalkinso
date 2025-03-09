@@ -27,7 +27,8 @@ import {
   Application,
   PersonFavorite,
   WatsonHealth3DSoftware,
-  AiLaunch
+  AiLaunch,
+  ArrowRight
 } from '@carbon/react/icons';
 import axios from 'axios';
 // import { ShoppingCart } from '@carbon/react/icons'; // Uncomment if needed
@@ -40,6 +41,12 @@ import PDFViewer from './PDFViewer';
 import "./_landing-page.scss";
 import { getSelectedTasks } from "../../actions/kits";
 import { getTasks, setTasks } from '../../actions/task';
+import CCTVAnalytics from './assets/cctv_analytics.webp';
+import OCPPGateway from './assets/ocpp_gateway.webp';
+import Writing from './assets/writing.webp';
+import Design from './assets/design.webp';
+import Videobook from './assets/video.webp';
+import Analysis from './assets/analysis.webp';
 
 function PaymentForm({ type }) {
   const [name, setName] = useState('');
@@ -176,15 +183,21 @@ class LandingPage extends Component {
         {/* Show Sign Up & Login only when the user is not authenticated */}
         {!isAuthenticated && (
           <>
-            <Button href="/#/register">Sign Up</Button>
-            <Button kind="secondary" href="/#/login">
-              Login
-            </Button>
+            {/* <Button href="/#/register">Sign Up</Button> */}
+            <center><Button kind='ghost' style={{
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              color: '#FFF',
+              backgroundColor: '#E31B25',
+            }} href="/#/build">
+              Build Your Vision
+            </Button></center>
           </>
         )}
 
         {/* Always available: Direct access to tool demos */}
-        <IconButton
+        {/* <IconButton
           style={{ minWidth: '106px' }}
           href="/3d/editor"
           label="3D Designer"
@@ -201,7 +214,7 @@ class LandingPage extends Component {
         >
           <AiLaunch style={{ marginLeft: '15px' }} />
           <span style={{ marginLeft: '5px', marginRight: '15px' }}>Services</span>
-        </IconButton>
+        </IconButton> */}
       </FluidForm>
     );
   }
@@ -219,236 +232,287 @@ class LandingPage extends Component {
           </Breadcrumb> */}
           <HeroSection ButtonComponent={this.renderAuthButtons()} />
         </Column>
-        <Column lg={16} md={8} sm={4} className="landing-page__r2">
-          <Tabs defaultSelectedIndex={0}>
-            <TabList className="tabs-group" aria-label="Tab navigation" style={{
-                zIndex: 999,
-            }}>
-              <Tab>Idea</Tab>
-              <Tab>Work</Tab>
-              <Tab>Invest</Tab>
-              <Tab>Get Started</Tab>
-              {/* <Tab>Join</Tab> */}
-            </TabList>
-            <TabPanels>
-              {/* Tab 1: Search */}
-              <TabPanel>
-                {this?.state?.dashboardConfig?<AIReact config={this?.state?.dashboardConfig} />:<Loading active={!this?.state?.dashboardConfig} withOverlay description='Kalkinso demo is loading...' />}
-              </TabPanel>
-
-              {/* Tab 2: Connect */}
-              <TabPanel>
-                <SearchPage />
-              </TabPanel>
-
-              {/* Tab 3: Earn */}
-              <TabPanel>
-              <Grid className="investment-collection-content">
-                <Column
-                    lg={16}
-                    md={8}
-                    sm={4}
-                    className="investment-collection__tab-content">
-                    <Grid>
-                    {/* Pitch Plan Showcase */}
-                    <Column
-                        lg={8}
-                        md={6}
-                        sm={4}
-                        className="investment-process-column">
-                        <center><h4>Pitch Plan</h4></center>
-                        <PDFViewer file='https://live-kalkinso.s3.ap-south-1.amazonaws.com/Pitch+deck+(UPDATED).pdf' />
-                    </Column>
-
-                    {/* Live Demos & Delivered Solutions */}
-                    <Column
-                        lg={8}
-                        md={6}
-                        sm={4}
-                        className="investment-demo-showcase">
-                        <center><h4>Demos & Deliveries</h4></center>
-                        <TaskCarousel />
-                    </Column>
-                    </Grid>
-                </Column>
-                </Grid>
-
-              </TabPanel>
-
-              
-              <TabPanel>
-                <PaymentForm type={"invest"} />
-              </TabPanel>
-             
-            </TabPanels>
-          </Tabs>
-        </Column>
-
-        {/* Middle Tabs Section */}
-        
-
-        {/* NEW: AI-Human Synergy Section */}
-        {/* <Column
-          lg={16}
-          md={8}
-          sm={4}
-          className="landing-page__ai-synergy"
-          style={{ marginBottom: '2rem' }}>
-          <h2
-            className="landing-page__subheading"
-            style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            AI-Human Synergy
-          </h2>
-          <p
-            className="landing-page__p"
-            style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            Discover how Kalkinso’s advanced AI tools unite with human expertise to drive innovation.
-            From automated product design to data-driven insights, our platform empowers creators
-            to transform ideas into tangible outcomes.
-          </p>
-          <Grid>
-            <Column md={4} lg={4} sm={4}>
-              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
-                <h4 className="landing-page__subheading">Tool A: Auto Designer</h4>
-                <p className="landing-page__p">
-                  Rapidly prototype product designs using AI-driven creativity.
-                  Human designers can refine these AI drafts to perfection.
-                </p>
-              </Tile>
-            </Column>
-            <Column md={4} lg={4} sm={4}>
-              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
-                <h4 className="landing-page__subheading">Tool B: Market Lens</h4>
-                <p className="landing-page__p">
-                  Analyze real-time market trends, then apply human intuition
-                  for strategic positioning.
-                </p>
-              </Tile>
-            </Column>
-            <Column md={4} lg={4} sm={4}>
-              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
-                <h4 className="landing-page__subheading">Tool C: Smart Assist</h4>
-                <p className="landing-page__p">
-                  Automate repetitive tasks to free up your creative energy,
-                  allowing human insights to flourish where they matter most.
-                </p>
-              </Tile>
-            </Column>
-            <Column md={4} lg={4} sm={4}>
-              <Tile className="ai-tool-card" style={{ padding: '1.5rem' }}>
-                <h4 className="landing-page__subheading">Tool D: Data Forge</h4>
-                <p className="landing-page__p">
-                  Harness big data for predictive analytics. Combine AI-driven
-                  forecasts with hands-on expertise to minimize risk and maximize ROI.
-                </p>
-              </Tile>
-            </Column>
-          </Grid>
-        </Column> */}
-
         {/* NEW: Demo Versions & Delivered Solutions Section */}
         <Column
           lg={16}
           md={8}
           sm={4}
           className="landing-page__demos"
-          style={{ marginBottom: '2rem', marginTop: '5rem' }}>
-          <h2
-            className="landing-page__subheading"
+          style={{ marginBottom: '2rem' }}>
+          <h1
+            // className="landing-page__subheading"
             style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            Demo Versions & Delivered Solutions
-          </h2>
+            Our Featured Projects
+          </h1>
           <p
             className="landing-page__p"
             style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            Explore interactive demos of our AI tools and see real-world solutions delivered
-            to our clients.
+            Discover our suite of advanced AI solutions designed to bring forth the next era of technology
           </p>
           <Grid>
             <Column md={4} lg={4} sm={4}>
               <Tile style={{ padding: '1.5rem' }}>
-                <h4>Demo: Kalkinso Research</h4>
+                <h2>BuCAudio</h2>
+                <img
+                    src="https://images.unsplash.com/photo-1508873535684-277a3cbcc4e8"
+                    alt="BuCAudio"
+                    style={{
+                        width: '100%',
+                        height: '12rem',
+                        borderRadius: '10px',
+                        marginBottom: '1rem',
+                    }}
+                  />
                 <p>
-                  Research tools for writing research papers and articles.
+                  Advanced audio processing and analysis platform
                 </p>
-                <ButtonSet style={{
-                    maxWidth: '10rem',
-                }}>
-                    <Button kind="primary" size="sm" href="https://kalkitex.kalkinso.com">
-                        Demo
-                    </Button>
-                    <Button
-                        kind="tertiary"
-                        size="sm"
-                        href="/#/services">
-                        Solution
-                    </Button>
-                </ButtonSet>
+                <ul>
+                    <li>- <b>Audio Transcription</b></li>
+                    <li>- <b>Audio Editing</b></li>
+                    <li>- <b>Audio Analysis</b></li>
+                </ul>
+                <Button
+                    kind="tertiary"
+                    size="sm"
+                    href="https://tools.bucaudio.com">
+                    <span>Try Demo</span> <ArrowRight style={{
+                      marginLeft: '3rem',
+                    }} />
+                </Button>
               </Tile>
             </Column>
             <Column md={4} lg={4} sm={4}>
-              <Tile style={{ padding: '1.5rem' }}>
-                <h4>Demo: Kalkinso Ecommerce</h4>
+            <Tile style={{ padding: '1.5rem' }}>
+                <h2>Kalki Research</h2>
+                <img
+                    src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40"
+                    alt="KalkiTex"
+                    style={{
+                        width: '100%',
+                        height: '12rem',
+                        borderRadius: '10px',
+                        marginBottom: '1rem',
+                    }}
+                  />
                 <p>
-                  Explore our interactive demo to sell your products.
+                  Write Research Papers with ease
                 </p>
-                <ButtonSet style={{
-                    maxWidth: '10rem',
-                }}>
-                    <Button kind="primary" size="sm" href="https://apparels.kalkinso.com">
-                        Demo
-                    </Button>
-                    <Button
-                        kind="tertiary"
-                        size="sm"
-                        href="/apparels">
-                        Solution
-                    </Button>
-                </ButtonSet>
+                <ul>
+                    <li>- <b>Latex Formatter</b></li>
+                    <li>- <b>Content Writer and Concept Simulation</b></li>
+                    <li>- <b>Reference Finder and Analyser</b></li>
+                </ul>
+                <Button
+                    kind="tertiary"
+                    size="sm"
+                    href="https://kalkitex.kalkinso.com">
+                    <span>Try Demo</span> <ArrowRight style={{
+                      marginLeft: '3rem',
+                    }} />
+                </Button>
               </Tile>
             </Column>
             <Column md={4} lg={4} sm={4}>
-              <Tile style={{ padding: '1.5rem' }}>
-                <h4>Demo: BuCAudio Tools</h4>
+            <Tile style={{ padding: '1.5rem' }}>
+                <h2>AI Surveillance</h2>
+                <img
+                    src={CCTVAnalytics}
+                    alt="CCTV Analytics"
+                    style={{
+                        width: '100%',
+                        height: '12rem',
+                        borderRadius: '10px',
+                        marginBottom: '1rem',
+                    }}
+                  />
                 <p>
-                  Experience how Smart Assist can streamline your book writing.
+                  Intelligent video surveillance and analysis
                 </p>
-                <ButtonSet style={{
-                    maxWidth: '10rem',
-                }}>
-                    <Button kind="primary" size="sm" href="https://tools.bucaudio.com">
-                        Demo
-                    </Button>
-                    <Button
-                        kind="tertiary"
-                        size="sm"
-                        href="https://www.bucaudio.com">
-                        Solution
-                    </Button>
-                </ButtonSet>
+                <ul>
+                    <li>- <b>Object Detection</b></li>
+                    <li>- <b>Motion Tracking</b></li>
+                    <li>- <b>Behavior Analysis</b></li>
+                </ul>
+                <Button
+                    kind="tertiary"
+                    size="sm"
+                    href="https://cctv.kalkinso.com">
+                    <span>Try Demo</span> <ArrowRight style={{
+                      marginLeft: '3rem',
+                    }} />
+                </Button>
               </Tile>
             </Column>
             <Column md={4} lg={4} sm={4}>
-              <Tile style={{ padding: '1.5rem' }}>
-                <h4>Demo: Kalkinso 3D</h4>
+            <Tile style={{ padding: '1.5rem' }}>
+                <h2>Kalki Charging Solutions</h2>
+                <img
+                    src={OCPPGateway}
+                    alt="OCPP Gateway"
+                    style={{
+                        width: '100%',
+                        height: '12rem',
+                        borderRadius: '10px',
+                        marginBottom: '1rem',
+                    }}
+                  />
                 <p>
-                  See how Kalkinso 3D leverages ThreeJS for Designing.
+                  Open Charge Point Protocol Monitor and Manage for EV charging stations
                 </p>
-                <ButtonSet style={{
-                    maxWidth: '10rem',
-                }}>
-                    <Button kind="primary" size="sm" href="/3d/editor">
-                        Demo
-                    </Button>
-                    <Button
-                        kind="tertiary"
-                        size="sm"
-                        href="/3d/examples">
-                        Solution
-                    </Button>
-                </ButtonSet>
+                <ul>
+                    <li>- <b>Authorization</b></li>
+                    <li>- <b>Monitor Charging Stations</b></li>
+                    <li>- <b>Monitoring and Transaction Control</b></li>
+                </ul>
+                <Button
+                    kind="tertiary"
+                    size="sm"
+                    href="https://cctv.kalkinso.com">
+                    <span>Try Demo</span> <ArrowRight style={{
+                      marginLeft: '3rem',
+                    }} />
+                </Button>
               </Tile>
             </Column>
+          </Grid>
+        </Column>
+
+        <Column
+          lg={16}
+          md={8}
+          sm={4}
+          className="landing-page__demos"
+          style={{ marginBottom: '2rem' }}>
+          <h1
+            // className="landing-page__subheading"
+            style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            Our AI Tools
+          </h1>
+          <p
+            className="landing-page__p"
+            style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            Explore our comprehensive suite of AI technologies, each designed to advance humanity towards a brighter future
+          </p>
+          <Grid>
+          <Column md={4} lg={4} sm={4}>
+          <Tile style={{ padding: '1.5rem' }}>
+            <h2>Writing Assistant</h2>
+            <img
+              src={Writing}
+              alt="Writing Assistant"
+              style={{
+                width: '100%',
+                height: '12rem',
+                borderRadius: '10px',
+                marginBottom: '1rem',
+              }}
+            />
+            <p>Efficient writing, editing, and language enhancement</p>
+            <ul>
+              <li>- <b>Grammar Correction</b></li>
+              <li>- <b>Formatting</b></li>
+              <li>- <b>AI-based Suggestions</b></li>
+            </ul>
+            <Button
+              kind="tertiary"
+              size="sm"
+              href="/#/tools/writing-assistant"
+            >
+              <span>Try Demo</span>
+              <ArrowRight style={{ marginLeft: '3rem' }} />
+            </Button>
+          </Tile>
+        </Column>
+
+        <Column md={4} lg={4} sm={4}>
+          <Tile style={{ padding: '1.5rem' }}>
+            <h2>Design Assistant</h2>
+            <img
+              src={Design}
+              alt="Design Assistant"
+              style={{
+                width: '100%',
+                height: '12rem',
+                borderRadius: '10px',
+                marginBottom: '1rem',
+              }}
+            />
+            <p>AI-powered design suggestions and improvements</p>
+            <ul>
+              <li>- <b>Layout Suggestions</b></li>
+              <li>- <b>Color Palette Generation</b></li>
+              <li>- <b>AI Prototyping</b></li>
+            </ul>
+            <Button
+              kind="tertiary"
+              size="sm"
+              href="/#/tools/design-assistant"
+            >
+              <span>Try Demo</span>
+              <ArrowRight style={{ marginLeft: '3rem' }} />
+            </Button>
+          </Tile>
+        </Column>
+
+        <Column md={4} lg={4} sm={4}>
+          <Tile style={{ padding: '1.5rem' }}>
+            <h2>Videobook Assistant</h2>
+            <img
+              src={Videobook}
+              alt="Videobook Assistant"
+              style={{
+                width: '100%',
+                height: '12rem',
+                borderRadius: '10px',
+                marginBottom: '1rem',
+              }}
+            />
+            <p>Transform text into engaging video presentations</p>
+            <ul>
+              <li>- <b>Text to Video</b></li>
+              <li>- <b>Animations</b></li>
+              <li>- <b>Voice Over</b></li>
+            </ul>
+            <Button
+              kind="tertiary"
+              size="sm"
+              href="/#/tools/videobook-assistant"
+            >
+              <span>Try Demo</span>
+              <ArrowRight style={{ marginLeft: '3rem' }} />
+            </Button>
+          </Tile>
+        </Column>
+
+        <Column md={4} lg={4} sm={4}>
+          <Tile style={{ padding: '1.5rem' }}>
+            <h2>Analysis Assistant</h2>
+            <img
+              src={Analysis}
+              alt="Analysis Assistant"
+              style={{
+                width: '100%',
+                height: '12rem',
+                borderRadius: '10px',
+                marginBottom: '1rem',
+              }}
+            />
+            <p>Advanced data analysis and pattern recognition</p>
+            <ul>
+              <li>- <b>Data Ingestion</b></li>
+              <li>- <b>Predictive Modeling</b></li>
+              <li>- <b>Trend Analysis</b></li>
+            </ul>
+            <Button
+              kind="tertiary"
+              size="sm"
+              href="/#/tools/analysis-assistant"
+            >
+              <span>Try Demo</span>
+              <ArrowRight style={{ marginLeft: '3rem' }} />
+            </Button>
+          </Tile>
+        </Column>
           </Grid>
         </Column>
 

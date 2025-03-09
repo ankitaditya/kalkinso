@@ -1,6 +1,6 @@
 import { NotificationsPanel } from "@carbon/ibm-products";
 import { HeaderGlobalAction, HeaderGlobalBar, Theme } from "@carbon/react"
-import { AiGenerate, Notification, UserProfile } from "@carbon/react/icons"
+import { AiGenerate, Notification, UserProfile, UserAdmin } from "@carbon/react/icons"
 import { useDispatch, useSelector } from "react-redux";
 import SidePanelChat from "../SidePanelChat/SidePanelChat";
 import { useEffect, useState } from "react";
@@ -99,7 +99,26 @@ const HeaderGlobal = () => {
             />
         </div>
         </Theme>
-        </>):<></>
+        </>):<><HeaderGlobalBar kind="secondary">
+            <HeaderGlobalAction
+                aria-label="Sign In"
+                isActive={ state.activeTab === 1}
+                href="/#/login"
+                kind="secondary"
+                tooltipAlignment="end">
+                <UserAdmin size={20} />
+            </HeaderGlobalAction>
+            <HeaderGlobalAction
+                aria-label="Sign Up"
+                kind="secondary"
+                tooltipAlignment="end"
+                isActive={ state.activeTab === 2}
+                // onClick={() =>  {setState({ ...state,activeTab:  state.activeTab === 2 ? 0 : 2}); dispatch(closeCreateTask());}}
+                href="/#/register"
+                >
+                <UserProfile size={20} />
+            </HeaderGlobalAction>
+        </HeaderGlobalBar></>
     )
 }
 

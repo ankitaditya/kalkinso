@@ -49,6 +49,7 @@ import Services from "./Services";
 import TermsAndConditions from "./TermsNConditions/TermsNConditions_1_0";
 import BuyCoffeePage from "./BuyMeCoffee";
 import CandidateWriter from "./CandidateWriter";
+import Build from "./Build";
 
 
 class UIShell extends React.Component {
@@ -101,7 +102,7 @@ class UIShell extends React.Component {
                             render={({isSideNavExpanded, onClickSideNavExpand}) => (
                                 <div>
                                     <Header aria-label="KALKINSO Platform">
-                                        {!(window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))&&(<><HeaderName href="/#" prefix={<img src={brandLogo} alt="KALKINSO KALKINSO Logo" height={75} />}>
+                                        {!(window.location.pathname.split('/').length>1&&window.location.pathname.split('/')[1].startsWith('token='))&&(<><HeaderName href="/#" prefix={<img src={brandLogo} alt="KALKINSO Logo" height={75} />}>
                                             KALKINSO
                                         </HeaderName>
                                         <HeaderNavigation aria-label="KALKINSO App">
@@ -121,6 +122,7 @@ class UIShell extends React.Component {
                             {/* <Route path="/" element={<ComingSoon />} /> */}
                             <Route path="/" element={<LandingPage />} />
                             <Route path="Search" element={<SearchPage />} />
+                            <Route path="build" element={<Build />} />
                             <Route path="writer" element={<CandidateWriter />} />
                             <Route path="privacy-policy" element={<PrivacyPolicy />} />
                             <Route path="terms-n-conditions" element={<TermsAndConditions />} />
@@ -154,13 +156,13 @@ class UIShell extends React.Component {
                                 <Route path=":orderId" element={<OrdersPaymentStatus />} />
                             </Route>
                             <Route path="tools">
-                                    <Route path="home" element={<PrivateRoute access_page={'TOOLS'} Component={DashboardTools} />} />
-                                    <Route path="writing-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AIPromptEditor} />} />
-                                    <Route path="design-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={Editor} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5eAUA&s" />} />
+                                    <Route path="home" element={<DashboardTools />} />
+                                    <Route path="writing-assistant" element={<AIPromptEditor />} />
+                                    <Route path="design-assistant" element={<Editor />} />
                                     <Route path="audiobook-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AudioBook} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:&s" />} />
-                                    <Route path="videobook-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={VideoBook} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBn" />} />
+                                    <Route path="videobook-assistant" element={<VideoBook />} />
                                     <Route path="report" element={<PrivateRoute access_page={'TOOLS'} Component={Reports} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBn" />} />
-                                    <Route path="analysis-assistant" element={<PrivateRoute access_page={'TOOLS'} Component={AnalysisAssistant} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5e" />} />
+                                    <Route path="analysis-assistant" element={<AnalysisAssistant />} />
                                     <Route path="*" element={<PrivateRoute access_page={'TOOLS'} Component={WorkInProgress} image_uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ718nztPNJfCbDJjZG8fOkejBnBAeQw5e" />} />
                             </Route>
                             <Route path="ankit.see" element={
