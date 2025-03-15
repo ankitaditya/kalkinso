@@ -100,7 +100,7 @@ const Build = () => {
 
   // If you have tasks in Redux:
   const { tasks } = useSelector((state) => state.task) || {};
-  const { user } = useSelector((state) => state.auth) || {};
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   // Multi-session state in local storage
   const [sessions, setSessions] = useState([]);
@@ -461,7 +461,7 @@ Organize the tasks in a clear hierarchical structure, with main tasks and nested
         <ActionableNotification
           key={idx}
           kind="info"
-          hidden={user}
+          hidden={isAuthenticated}
           hideCloseButton={true}
 
           style={{ maxWidth: "100%" }}
