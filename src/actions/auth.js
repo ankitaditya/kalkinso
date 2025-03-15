@@ -66,7 +66,7 @@ export const loadUser = ({token}) => async (dispatch) => {
 	}
 }
 
-export const registerWithEmail = async ({email, first_name, last_name}) => {
+export const registerWithEmail = ({email, first_name, last_name, token=null}) => async (dispatch) => {
     const config = {
 		headers: {
 			'Content-Type': 'application/json',
@@ -78,7 +78,40 @@ export const registerWithEmail = async ({email, first_name, last_name}) => {
         console.log(res.data)
         return res.data
     } catch (err) {
-        console.error(err)
+        if(err.message.includes('403')){
+			const config = {
+				headers: {
+				  'Content-Type': 'application/json',
+				},
+				baseURL: "https://www.kalkinso.com"
+			  }
+			  try {
+				let response = await axios.post("/api/auth/login/email", {
+					email: email, password: ""
+				},{
+					headers: {
+					  ...config.headers,
+					  "x-google-token": `${token}`
+					},
+					baseURL: config.baseURL
+				  })
+				  dispatch(setLoading(true))
+				// console.log('RESULT: ', res)
+				dispatch(setAlert(`Welcome ${response?.data?.first_name} ${response?.data?.last_name}!`, 'success'))
+				dispatch({
+					type: actionTypes.LOGIN_SUCCESS,
+					payload: response?.data,
+				})
+				dispatch(loadUser({token:response?.data?.token}))
+				dispatch(setLoading(false))
+				}
+				catch (error){
+					console.error(error)
+					return {
+						error: error
+					}
+				}
+		}
         return { error: err }
     }
 }
