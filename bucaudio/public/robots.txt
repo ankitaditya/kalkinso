@@ -1,0 +1,12 @@
+User-agent: Googlebot
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: *
+Disallow: /
+Sitemap: https://bucaudio.kalkinso.com/sitemap.xml

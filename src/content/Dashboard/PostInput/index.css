@@ -1,0 +1,14 @@
+
+.post-input {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.post-input, .post, .comments {
+    margin-bottom: 20px;
+}
+
+.post-input .p-button, .comments .p-button {
+    margin-top: 10px;
+}

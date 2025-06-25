@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16' # Specify the Node.js version
+
+    - name: Install Dependencies
+      run: npm install dotenv express multer jsonwebtoken helmet path cors events --legacy-peer-deps
+
+    - name: Start Application and Run Tests
+      run: |
+        npm start &
+        sleep 5
+        curl -f http://localhost || exit 1 # Replace with your app's health check URL
+      env:
+        CI: true
+
+    - name: Deploy Application
+      if: success()
+      run: |
+        echo "Deploying application..."
+        # Add your deployment script or commands here
+        echo "Application deployed successfully."
+
+    - name: Notify Failure
+      if: failure()
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: "CI/CD Pipeline Failure"
+        body: "The CI/CD pipeline failed during the test phase. Please check the logs for details."
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: ${{ secrets.EMAIL_USERNAME }}

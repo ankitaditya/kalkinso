@@ -1,0 +1,46 @@
+.chat-window {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 300px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-list {
+    list-style: none;
+    padding: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+  
+  .message-item {
+    margin: 5px 0;
+    display: flex;
+  }
+  
+  .bot-message {
+    padding: 0%;
+  }
+  
+  .user-message {
+    color: green;
+  }
+  
+  .avatar {
+    margin: 0 10px;
+  }
+  
+  .input-form {
+    display: flex;
+  }  
+ 
+  .input-form input {
+    flex-grow: 1;
+    padding: 1px;
+  }
+  
+  .input-form button {
+    padding: 20px;
+  }
+  

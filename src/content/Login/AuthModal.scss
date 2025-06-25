@@ -1,0 +1,18 @@
+.content-switcher {
+    display: flex;
+  }
+  
+  .content-switcher .cds--content-switcher-btn {
+    margin-right: 0; /* Remove any default margin */
+    border-radius: 0; /* Ensure buttons are squared off */
+  }
+  
+  .content-switcher .cds--content-switcher-btn:first-child {
+    border-top-right-radius: 0; /* First button top right corner */
+    border-bottom-right-radius: 0; /* First button bottom right corner */
+  }
+  
+  .content-switcher .cds--content-switcher-btn:last-child {
+    border-top-left-radius: 0; /* Last button top left corner */
+    border-bottom-left-radius: 0; /* Last button bottom left corner */
+  }

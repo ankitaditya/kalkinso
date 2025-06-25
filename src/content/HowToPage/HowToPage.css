@@ -1,0 +1,52 @@
+/* styles.css */
+  
+  #application {
+    padding: 20px;
+  }
+
+  #application::-webkit-scrollbar-track
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      background-color: #F5F5F5;
+    }
+
+    #application::-webkit-scrollbar
+    {
+      width: 12px;
+      background-color: #F5F5F5;
+    }
+
+    #application::-webkit-scrollbar-thumb
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+      background-color: #161616;
+    }
+  
+  .breadcrumb {
+    margin-bottom: 20px;
+  }
+  
+  .how-to-heading {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    margin-top: 20px;
+  }
+  
+  .search-bar {
+    margin-bottom: 20px;
+  }
+  
+  .grid {
+    margin-top: 20px;
+    max-height: 20vh;
+  }
+  
+  .tile h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .tile p {
+    font-size: 1rem;
+    color: #555;
+  }

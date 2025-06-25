@@ -1,0 +1,89 @@
+{
+	"metadata": {
+		"type": "App"
+	},
+	"project": {
+		"shadows": true,
+		"vr": false
+	},
+	"camera": {
+		"metadata": {
+			"version": 4.5,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"object": {
+			"uuid": "4AC7ADED-CC22-4B16-8218-2E0A0C38C8F8",
+			"type": "PerspectiveCamera",
+			"name": "Camera",
+			"layers": 1,
+			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,5,1],
+			"fov": 50,
+			"zoom": 1,
+			"near": 0.1,
+			"far": 10000,
+			"focus": 10,
+			"aspect": 1.5,
+			"filmGauge": 35,
+			"filmOffset": 0
+		}
+	},
+	"scene": {
+		"metadata": {
+			"version": 4.5,
+			"type": "Object",
+			"generator": "Object3D.toJSON"
+		},
+		"geometries": [
+			{
+				"uuid": "SPHERE-GEOMETRY-UUID",
+				"type": "SphereGeometry",
+				"radius": 1,
+				"widthSegments": 64,
+				"heightSegments": 64
+			}
+		],
+		"materials": [
+			{
+				"uuid": "EARTH-MATERIAL-UUID",
+				"type": "ShaderMaterial",
+				"depthFunc": 3,
+				"depthTest": true,
+				"depthWrite": true,
+				"uniforms": {
+					"time": { "value": 0 },
+					"texture": { "value": "textures/earth_texture.jpg" }
+				},
+				"vertexShader": "uniform float time;\nvarying vec2 vUv;\nvoid main() {\n\tvUv = uv;\n\tvec4 modelPosition = modelMatrix * vec4(position, 1.0);\n\tgl_Position = projectionMatrix * viewMatrix * modelPosition;\n}",
+				"fragmentShader": "uniform float time;\nuniform sampler2D texture;\nvarying vec2 vUv;\nvoid main() {\n\tvec4 color = texture2D(texture, vUv);\n\tgl_FragColor = color;\n}"
+			}
+		],
+		"object": {
+			"uuid": "SCENE-UUID",
+			"type": "Scene",
+			"name": "Earth Scene",
+			"layers": 1,
+			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+			"children": [
+				{
+					"uuid": "EARTH-MESH-UUID",
+					"type": "Mesh",
+					"name": "Earth",
+					"layers": 1,
+					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+					"geometry": "SPHERE-GEOMETRY-UUID",
+					"material": "EARTH-MATERIAL-UUID"
+				}
+			],
+			"background": 0
+		}
+	},
+	"scripts": {
+		"EARTH-MESH-UUID": [
+			{
+				"name": "",
+				"source": "function update(event) {\n\tthis.rotation.y += 0.01;\n}"
+			}
+		]
+	}
+}

@@ -1,0 +1,101 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  body {
+    background-color: #f3f4f6;
+    color: #2c2c2c;
+  }
+  
+  .landing-page {
+    position: relative;
+    height: 95vh;
+    overflow: auto;
+  }
+
+  /* Hero Banner */
+  .hero-banner {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+  }
+  
+  .hero-content {
+    position: absolute;
+    z-index: 10;
+    max-width: 600px;
+  }
+  
+  .hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+  
+  .hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Features Section */
+  .features-section {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: #ffffff;
+    color: #2c2c2c;
+  }
+
+  .feature {
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .features-section h2 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+    color: #10a37f;
+  }
+  
+  /* Trending Mudda Section */
+  .trending-mudda-section {
+    padding: 40px 20px;
+    background-color: #f9fafb;
+    text-align: center;
+  }
+  
+  .trending-mudda-section h2 {
+    font-size: 2rem;
+    color: #10a37f;
+    margin-bottom: 20px;
+  }
+  
+  .trending-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .trending-item {
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .trending-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  

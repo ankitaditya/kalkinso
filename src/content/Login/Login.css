@@ -1,0 +1,47 @@
+.login-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+
+  .login-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-container h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .submit-button {
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .divider {
+    margin: 2rem 0;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  .social-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .social-buttons button {
+    flex: 1;
+    margin: 0 0.5rem;
+  }
+
+  .social-buttons button:first-child {
+    margin-left: 0;
+  }
+
+  .social-buttons button:last-child {
+    margin-right: 0;
+  }

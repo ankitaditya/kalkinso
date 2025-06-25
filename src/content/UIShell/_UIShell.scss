@@ -1,0 +1,20 @@
+// @use '@carbon/react/scss/spacing' as *;
+
+@media (min-width: 66rem) {
+    .content {
+        margin-left: 1rem;
+    }
+}
+
+.content {
+    margin-left: 0rem;
+}
+
+// .main--content {
+//     display: flex;
+//     width: 100%;
+//     height: calc(100vh - 3rem);
+//     align-items: center;
+//     justify-content: center;
+//     margin-top: $spacing-09;
+//   }

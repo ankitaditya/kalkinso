@@ -1,0 +1,177 @@
+/* Parent container styles */
+.label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+.flex {
+    display: flex;
+  }
+  
+  .flex-col {
+    flex-direction: column;
+  }
+  
+  .place-items-center {
+    align-items: center;
+  }
+  
+  .place-content-center {
+    justify-content: center;
+  }
+  
+  .h-screen {
+    height: 50vh;
+  }
+  
+  /* Label styling */
+  label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  /* Main div styles */
+  .p-4 {
+    padding: 1rem;
+  }
+  
+  .border {
+    border: 1px solid #ddd;
+  }
+  
+  .shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cursor-text {
+    cursor: text;
+  }
+  
+  .rounded-lg {
+    border-radius: 0.5rem;
+  }
+  
+  .text-left {
+    text-align: left;
+  }
+
+  .text-left-thumb {
+    text-align: left;
+    position: relative;
+    bottom: 7rem;
+  }
+
+  .text-right {
+    text-align: right;
+    position: relative;
+    bottom: 5rem;
+  }
+  
+  .w-\[600px\] {
+    width: 600px;
+  }
+
+  .w-\[1200px\] {
+    width: 80vw;
+  }
+  
+  .h-\[200px\] {
+    height: 200px;
+  }
+  
+  .mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .overflow-auto {
+    overflow: auto;
+  }
+  
+  /* Content editable styles */
+  .border-0 {
+    border: none;
+  }
+  
+  .text-xs {
+    font-size: 0.75rem;
+  }
+  
+  .outline-none {
+    outline: none;
+  }
+  
+  /* AI text suggestion styles */
+  .text-gray-600 {
+    color: #718096;
+  }
+  
+  .transition-opacity {
+    transition: opacity 0.5s;
+  }
+  
+  .duration-500 {
+    transition-duration: 500ms;
+  }
+  
+  .opacity-100 {
+    opacity: 1;
+  }
+  
+  .opacity-0 {
+    opacity: 0;
+  }
+  
+  /* "Tab" suggestion button styles */
+  .p-1\.5 {
+    padding: 0.375rem;
+  }
+  
+  .py-0\.5 {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+  }
+  
+  .text-\[10px\] {
+    font-size: 10px;
+  }
+  
+  .ml-1 {
+    margin-left: 0.25rem;
+  }
+  
+  .inline-block {
+    display: inline-block;
+  }
+  
+  .w-fit {
+    width: fit-content;
+  }
+  
+  .rounded-md {
+    border-radius: 0.375rem;
+  }
+  
+  .border-gray-300 {
+    border-color: #d2d6dc;
+  }
+  
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  
+  /* Loading text styles */
+  .text-gray-700 {
+    color: #4a5568;
+  }
+  
+  .italic {
+    font-style: italic;
+  }
+  
+  .h-10 {
+    height: 2.5rem;
+  }
+  
